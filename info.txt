@@ -1,0 +1,5 @@
+Actualización completa (con respaldos): sudo ./update_jerkhome.sh
+
+Actualización rápida (solo código): sudo ./quick_update.sh
+
+Ver estado del sistema: ./jerkhome_status.sh
