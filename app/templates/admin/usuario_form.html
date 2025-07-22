@@ -1,0 +1,260 @@
+{% extends "admin/base_admin.html" %}
+
+{% block title %}{{ accion }} Usuario - Admin Panel JerkHome{% endblock %}
+{% block page_title %}{{ accion }} Usuario{% endblock %}
+
+{% block content %}
+<div class="max-w-3xl mx-auto">
+    <!-- Header -->
+    <div class="flex items-center justify-between mb-6">
+        <h1 class="text-2xl font-bold">{{ accion }} Usuario</h1>
+        <a href="/admin/usuarios" class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded transition-colors">
+            <i class="fas fa-arrow-left mr-2"></i>Volver
+        </a>
+    </div>
+    
+    <!-- Error Message -->
+    {% if error %}
+    <div class="bg-red-500 bg-opacity-20 border border-red-500 text-red-400 px-4 py-3 rounded mb-6">
+        <i class="fas fa-exclamation-triangle mr-2"></i>{{ error }}
+    </div>
+    {% endif %}
+    
+    <!-- Formulario -->
+    <form method="POST" class="space-y-6">
+        <!-- Información Personal -->
+        <div class="bg-admin-sidebar rounded-lg p-6 border border-gray-600">
+            <h3 class="text-lg font-semibold mb-4 text-admin-accent">
+                <i class="fas fa-user mr-2"></i>Información Personal
+            </h3>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <label for="nombre" class="block text-sm font-medium mb-2">
+                        Nombre *
+                    </label>
+                    <input type="text" id="nombre" name="nombre" required
+                           value="{% if usuario %}{{ usuario.nombre }}{% endif %}"
+                           class="w-full px-3 py-2 bg-admin-dark border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-admin-accent">
+                </div>
+                
+                <div>
+                    <label for="apellido" class="block text-sm font-medium mb-2">
+                        Apellido *
+                    </label>
+                    <input type="text" id="apellido" name="apellido" required
+                           value="{% if usuario %}{{ usuario.apellido }}{% endif %}"
+                           class="w-full px-3 py-2 bg-admin-dark border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-admin-accent">
+                </div>
+                
+                <div>
+                    <label for="email" class="block text-sm font-medium mb-2">
+                        Email *
+                    </label>
+                    <input type="email" id="email" name="email" required
+                           value="{% if usuario %}{{ usuario.email }}{% endif %}"
+                           class="w-full px-3 py-2 bg-admin-dark border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-admin-accent">
+                </div>
+                
+                <div>
+                    <label for="telefono" class="block text-sm font-medium mb-2">
+                        Teléfono
+                    </label>
+                    <input type="tel" id="telefono" name="telefono"
+                           value="{% if usuario %}{{ usuario.telefono or '' }}{% endif %}"
+                           placeholder="+56 9 1234 5678"
+                           class="w-full px-3 py-2 bg-admin-dark border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-admin-accent">
+                </div>
+            </div>
+        </div>
+        
+        <!-- Credenciales -->
+        <div class="bg-admin-sidebar rounded-lg p-6 border border-gray-600">
+            <h3 class="text-lg font-semibold mb-4 text-admin-accent">
+                <i class="fas fa-key mr-2"></i>Credenciales de Acceso
+            </h3>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <label for="username" class="block text-sm font-medium mb-2">
+                        Nombre de Usuario *
+                    </label>
+                    <input type="text" id="username" name="username" required
+                           value="{% if usuario %}{{ usuario.username }}{% endif %}"
+                           class="w-full px-3 py-2 bg-admin-dark border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-admin-accent">
+                    <p class="text-xs text-gray-400 mt-1">Solo letras, números y guiones bajos</p>
+                </div>
+                
+                <div>
+                    <label for="password" class="block text-sm font-medium mb-2">
+                        {% if usuario %}Nueva Contraseña{% else %}Contraseña *{% endif %}
+                    </label>
+                    <input type="password" id="password" name="password" 
+                           {% if not usuario %}required{% endif %}
+                           class="w-full px-3 py-2 bg-admin-dark border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-admin-accent">
+                    {% if usuario %}
+                    <p class="text-xs text-gray-400 mt-1">Dejar vacío para mantener la contraseña actual</p>
+                    {% else %}
+                    <p class="text-xs text-gray-400 mt-1">Mínimo 6 caracteres</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <!-- Roles y Permisos -->
+        <div class="bg-admin-sidebar rounded-lg p-6 border border-gray-600">
+            <h3 class="text-lg font-semibold mb-4 text-admin-accent">
+                <i class="fas fa-shield-alt mr-2"></i>Roles y Permisos
+            </h3>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <label for="rol" class="block text-sm font-medium mb-2">
+                        Rol del Usuario *
+                    </label>
+                    <select id="rol" name="rol" required
+                            class="w-full px-3 py-2 bg-admin-dark border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-admin-accent">
+                        <option value="">Seleccionar rol</option>
+                        <option value="ADMIN" {% if usuario and usuario.rol.value == 'ADMIN' %}selected{% endif %}>
+                            Administrador - Acceso completo
+                        </option>
+                        <option value="VENDEDOR" {% if usuario and usuario.rol.value == 'VENDEDOR' %}selected{% endif %}>
+                            Vendedor - Gestión de ventas y productos
+                        </option>
+                        <option value="OPERADOR" {% if usuario and usuario.rol.value == 'OPERADOR' %}selected{% endif %}>
+                            Operador - Consulta y operaciones básicas
+                        </option>
+                    </select>
+                </div>
+                
+                <div>
+                    <label for="estado" class="block text-sm font-medium mb-2">
+                        Estado del Usuario *
+                    </label>
+                    <select id="estado" name="estado" required
+                            class="w-full px-3 py-2 bg-admin-dark border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-admin-accent">
+                        <option value="ACTIVO" {% if not usuario or usuario.estado.value == 'ACTIVO' %}selected{% endif %}>
+                            Activo - Puede acceder al sistema
+                        </option>
+                        <option value="INACTIVO" {% if usuario and usuario.estado.value == 'INACTIVO' %}selected{% endif %}>
+                            Inactivo - Sin acceso temporal
+                        </option>
+                        <option value="SUSPENDIDO" {% if usuario and usuario.estado.value == 'SUSPENDIDO' %}selected{% endif %}>
+                            Suspendido - Acceso bloqueado
+                        </option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Configuración Adicional -->
+        <div class="bg-admin-sidebar rounded-lg p-6 border border-gray-600">
+            <h3 class="text-lg font-semibold mb-4 text-admin-accent">
+                <i class="fas fa-cogs mr-2"></i>Configuración Adicional
+            </h3>
+            
+            <div class="space-y-4">
+                <div class="flex items-center">
+                    <input type="checkbox" id="cambiar_password" name="cambiar_password" value="true"
+                           {% if not usuario or usuario.cambiar_password %}checked{% endif %}
+                           class="h-4 w-4 text-admin-accent focus:ring-admin-accent border-gray-600 rounded">
+                    <label for="cambiar_password" class="ml-2 block text-sm">
+                        Forzar cambio de contraseña en el próximo acceso
+                    </label>
+                </div>
+                
+                <p class="text-xs text-gray-400">
+                    Si está marcado, el usuario deberá cambiar su contraseña al iniciar sesión.
+                </p>
+            </div>
+        </div>
+        
+        <!-- Información del Usuario (solo para edición) -->
+        {% if usuario %}
+        <div class="bg-admin-sidebar rounded-lg p-6 border border-gray-600">
+            <h3 class="text-lg font-semibold mb-4 text-admin-accent">
+                <i class="fas fa-info-circle mr-2"></i>Información del Sistema
+            </h3>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                <div>
+                    <span class="text-gray-400">ID de Usuario:</span>
+                    <p class="font-medium">{{ usuario.id }}</p>
+                </div>
+                
+                <div>
+                    <span class="text-gray-400">Fecha de Creación:</span>
+                    <p class="font-medium">{{ usuario.created_at.strftime('%d/%m/%Y %H:%M') }}</p>
+                </div>
+                
+                <div>
+                    <span class="text-gray-400">Última Actualización:</span>
+                    <p class="font-medium">{{ usuario.updated_at.strftime('%d/%m/%Y %H:%M') }}</p>
+                </div>
+                
+                <div>
+                    <span class="text-gray-400">Último Acceso:</span>
+                    {% if usuario.ultimo_acceso %}
+                    <p class="font-medium">{{ usuario.ultimo_acceso.strftime('%d/%m/%Y %H:%M') }}</p>
+                    {% else %}
+                    <p class="font-medium text-gray-500">Nunca</p>
+                    {% endif %}
+                </div>
+                
+                <div>
+                    <span class="text-gray-400">Intentos Fallidos:</span>
+                    <p class="font-medium">{{ usuario.intentos_fallidos }}</p>
+                </div>
+                
+                <div>
+                    <span class="text-gray-400">Estado de Bloqueo:</span>
+                    {% if usuario.is_blocked %}
+                    <p class="font-medium text-red-400">Bloqueado</p>
+                    {% else %}
+                    <p class="font-medium text-green-400">Desbloqueado</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% endif %}
+        
+        <!-- Botones -->
+        <div class="flex justify-end space-x-4">
+            <a href="/admin/usuarios" 
+               class="bg-gray-600 hover:bg-gray-700 text-white px-6 py-3 rounded transition-colors">
+                Cancelar
+            </a>
+            <button type="submit" 
+                    class="bg-admin-accent hover:bg-orange-600 text-white px-6 py-3 rounded transition-colors">
+                <i class="fas fa-save mr-2"></i>{{ accion }} Usuario
+            </button>
+        </div>
+    </form>
+</div>
+
+<script>
+// Validación del formulario
+document.querySelector('form').addEventListener('submit', function(e) {
+    const password = document.getElementById('password').value;
+    const isEdit = {{ 'true' if usuario else 'false' }};
+    
+    // Validar contraseña solo en creación o si se está cambiando
+    if (!isEdit || password.length > 0) {
+        if (password.length < 6) {
+            e.preventDefault();
+            alert('La contraseña debe tener al menos 6 caracteres.');
+            return false;
+        }
+    }
+    
+    // Validar nombre de usuario
+    const username = document.getElementById('username').value;
+    const usernameRegex = /^[a-zA-Z0-9_]+$/;
+    if (!usernameRegex.test(username)) {
+        e.preventDefault();
+        alert('El nombre de usuario solo puede contener letras, números y guiones bajos.');
+        return false;
+    }
+});
+</script>
+{% endblock %}

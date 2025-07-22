@@ -1,0 +1,177 @@
+/* Variables de colores */
+:root {
+    --primary-black: #1a1a1a;
+    --secondary-gray: #2d2d2d;
+    --light-gray: #4a4a4a;
+    --accent-orange: #ff6b35;
+    --accent-red: #d32f2f;
+    --text-light: #f5f5f5;
+    --text-gray: #cccccc;
+}
+
+/* Estilos generales */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    line-height: 1.6;
+    background-color: var(--primary-black);
+    color: var(--text-light);
+}
+
+/* Navbar */
+.navbar {
+    background-color: var(--secondary-gray) !important;
+    border-bottom: 2px solid var(--accent-orange);
+}
+
+.navbar-brand {
+    font-weight: bold;
+    font-size: 1.5rem;
+    color: var(--accent-orange) !important;
+}
+
+.navbar-nav .nav-link {
+    color: var(--text-light) !important;
+    font-weight: 500;
+    transition: color 0.3s ease;
+}
+
+.navbar-nav .nav-link:hover {
+    color: var(--accent-orange) !important;
+}
+
+/* Hero Section */
+.hero-section {
+    background: linear-gradient(135deg, var(--secondary-gray) 0%, var(--primary-black) 100%);
+    min-height: 500px;
+    border-bottom: 3px solid var(--accent-orange);
+}
+
+.hero-section h1 {
+    font-size: 3.5rem;
+    margin-bottom: 1rem;
+    color: var(--accent-orange);
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+}
+
+.hero-section .lead {
+    color: var(--text-gray);
+    font-size: 1.3rem;
+}
+
+/* Cards */
+.card {
+    background-color: var(--secondary-gray);
+    border: 1px solid var(--light-gray);
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+}
+
+.card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 8px 25px rgba(255, 107, 53, 0.2);
+    border-color: var(--accent-orange);
+}
+
+.card-title {
+    color: var(--accent-orange);
+    font-weight: bold;
+}
+
+.card-text {
+    color: var(--text-gray);
+}
+
+.card-footer {
+    background-color: var(--light-gray);
+    border-top: 1px solid var(--accent-orange);
+    color: var(--text-gray) !important;
+}
+
+/* Botones */
+.btn-primary {
+    background: linear-gradient(45deg, var(--accent-orange), var(--accent-red));
+    border: none;
+    font-weight: 600;
+    padding: 12px 30px;
+    transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+    background: linear-gradient(45deg, var(--accent-red), var(--accent-orange));
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(255, 107, 53, 0.4);
+}
+
+.btn-light {
+    background-color: var(--text-light);
+    color: var(--primary-black);
+    border: none;
+    font-weight: 600;
+}
+
+.btn-light:hover {
+    background-color: var(--accent-orange);
+    color: var(--text-light);
+}
+
+.btn-outline-primary {
+    border: 2px solid var(--accent-orange);
+    color: var(--accent-orange);
+    background: transparent;
+}
+
+.btn-outline-primary:hover {
+    background-color: var(--accent-orange);
+    color: var(--text-light);
+}
+
+/* Containers y secciones */
+.container {
+    max-width: 1200px;
+}
+
+/* Textos */
+h1, h2, h3, h4, h5, h6 {
+    color: var(--text-light);
+}
+
+.text-muted {
+    color: var(--text-gray) !important;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .hero-section h1 {
+        font-size: 2.5rem;
+    }
+    
+    .hero-section {
+        text-align: center;
+        padding: 3rem 0;
+    }
+    
+    .card {
+        margin-bottom: 2rem;
+    }
+}
+
+/* Efectos adicionales */
+.categoria-card {
+    position: relative;
+    overflow: hidden;
+}
+
+.categoria-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 107, 53, 0.1), transparent);
+    transition: left 0.5s;
+}
+
+.categoria-card:hover::before {
+    left: 100%;
+}

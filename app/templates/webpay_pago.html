@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+
+{% block title %}Procesar Pago - JerkHome{% endblock %}
+{% block description %}Página para confirmar y realizar tu pago seguro con Webpay.{% endblock %}
+
+{% block content %}
+<section class="py-16">
+  <div class="max-w-2xl mx-auto px-6 text-center">
+    <h1 class="text-4xl font-bold text-text-light mb-6">🧾 Confirmar Pago</h1>
+    <p class="text-lg text-text-gray mb-8">Estás a punto de pagar tu pedido <strong>{{ order_id }}</strong></p>
+
+    <div class="bg-tertiary-gray border border-border-gray/50 rounded-xl p-6 mb-6 text-left">
+      <h2 class="text-xl font-semibold text-text-light mb-4">Resumen del Pedido</h2>
+      <ul class="space-y-3">
+        {% for venta in ventas %}
+        <li class="flex justify-between items-center border-b border-border-gray/40 pb-2">
+          <span class="text-text-light font-medium">{{ venta.nombre }}</span>
+          <span class="text-accent-orange font-semibold">{{ venta.cantidad }} x ${{ '{:,.0f}'.format(venta.precio) }}</span>
+        </li>
+        {% endfor %}
+        <li class="flex justify-between items-center pt-4 text-xl font-bold text-text-light">
+          <span>Total:</span>
+          <span class="text-accent-orange">${{ '{:,.0f}'.format(total) }}</span>
+        </li>
+      </ul>
+    </div>
+
+    <form method="post" action="/webpay/iniciar" class="relative" onsubmit="mostrarCargando()">
+      <input type="hidden" name="monto" value="{{ total }}">
+      <input type="hidden" name="orden" value="{{ order_id }}">
+      <button type="submit"
+              class="bg-gradient-to-r from-accent-orange to-accent-red text-white font-bold py-3 px-8 rounded-xl text-lg hover:from-accent-red hover:to-accent-orange transition-all duration-300">
+        Pagar con Webpay
+      </button>
+
+      <!-- Animación de carga -->
+      <div id="animacion-camion" class="hidden absolute left-1/2 transform -translate-x-1/2 mt-8">
+        <img src="{{ url_for('static', path='/images/camion.gif') }}" alt="Procesando pago..." class="w-32 mx-auto">
+        <p class="text-text-gray mt-2 text-sm">Redirigiendo a Webpay...</p>
+      </div>
+    </form>
+  </div>
+</section>
+
+<script>
+  function mostrarCargando() {
+    const anim = document.getElementById('animacion-camion');
+    anim.classList.remove('hidden');
+  }
+</script>
+{% endblock %}

@@ -1,0 +1,190 @@
+{% extends "admin/base_admin.html" %}
+
+{% block title %}{{ accion }} Categoría - Admin Panel JerkHome{% endblock %}
+{% block page_title %}{{ accion }} Categoría{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto">
+    <!-- Header -->
+    <div class="flex items-center justify-between mb-6">
+        <h1 class="text-2xl font-bold">{{ accion }} Categoría</h1>
+        <a href="/admin/categorias" class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded transition-colors">
+            <i class="fas fa-arrow-left mr-2"></i>Volver
+        </a>
+    </div>
+    
+    <!-- Error Message -->
+    {% if error %}
+    <div class="bg-red-500 bg-opacity-20 border border-red-500 text-red-400 px-4 py-3 rounded mb-6">
+        <i class="fas fa-exclamation-triangle mr-2"></i>{{ error }}
+    </div>
+    {% endif %}
+    
+    <!-- Formulario -->
+    <form method="POST" enctype="multipart/form-data" class="space-y-6">
+        <!-- Información básica -->
+        <div class="bg-admin-sidebar rounded-lg p-6 border border-gray-600">
+            <h3 class="text-lg font-semibold mb-4 text-admin-accent">Información de la Categoría</h3>
+            
+            <div class="space-y-4">
+                <div>
+                    <label for="nombre" class="block text-sm font-medium mb-2">
+                        Nombre de la Categoría *
+                    </label>
+                    <input type="text" id="nombre" name="nombre" required
+                           value="{% if categoria %}{{ categoria.nombre }}{% endif %}"
+                           placeholder="Ej: Sofás, Seccionales, etc."
+                           class="w-full px-3 py-2 bg-admin-dark border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-admin-accent">
+                    <p class="text-xs text-gray-400 mt-1">Este nombre aparecerá en el sitio web y en la navegación</p>
+                </div>
+                
+                <div>
+                    <label for="descripcion" class="block text-sm font-medium mb-2">
+                        Descripción
+                    </label>
+                    <textarea id="descripcion" name="descripcion" rows="4"
+                              placeholder="Describe brevemente esta categoría de productos..."
+                              class="w-full px-3 py-2 bg-admin-dark border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-admin-accent">{% if categoria %}{{ categoria.descripcion }}{% endif %}</textarea>
+                    <p class="text-xs text-gray-400 mt-1">Esta descripción se mostrará en las páginas de categoría</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Imagen de la Categoría -->
+        <div class="bg-admin-sidebar rounded-lg p-6 border border-gray-600">
+            <h3 class="text-lg font-semibold mb-4 text-admin-accent">Imagen de la Categoría</h3>
+            
+            <div class="space-y-4">
+                <div>
+                    <label for="imagen" class="block text-sm font-medium mb-2">
+                        Imagen Representativa
+                    </label>
+                    <input type="file" id="imagen" name="imagen" accept="image/*"
+                           onchange="previewImage(this, 'preview_imagen')"
+                           class="w-full px-3 py-2 bg-admin-dark border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-admin-accent">
+                    <p class="text-xs text-gray-400 mt-1">Esta imagen se mostrará en las tarjetas de categoría del sitio web</p>
+                </div>
+                
+                <!-- Preview de imagen -->
+                <div class="mt-4">
+                    {% if categoria and categoria.imagen and categoria.imagen != '' %}
+                    <p class="text-sm text-gray-400 mb-2">Imagen actual:</p>
+                    <img id="preview_imagen" 
+                        src="{{ url_for('static', path='/images/categorias/' + categoria.imagen) }}" 
+                        alt="Preview" 
+                        class="w-48 h-32 object-cover rounded border border-gray-600">
+                    {% else %}
+                    <p class="text-sm text-gray-400 mb-2">Sin imagen seleccionada</p>
+                    <img id="preview_imagen" src="#" alt="Preview" 
+                        class="w-48 h-32 object-cover rounded border border-gray-600 hidden">
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <!-- Configuración -->
+        <div class="bg-admin-sidebar rounded-lg p-6 border border-gray-600">
+            <h3 class="text-lg font-semibold mb-4 text-admin-accent">Configuración</h3>
+            
+            <div class="flex items-center">
+                <input type="checkbox" id="activo" name="activo" value="true"
+                       {% if not categoria or categoria.activo %}checked{% endif %}
+                       class="h-4 w-4 text-admin-accent focus:ring-admin-accent border-gray-600 rounded">
+                <label for="activo" class="ml-2 block text-sm">
+                    Categoría Activa
+                </label>
+            </div>
+            <p class="text-xs text-gray-400 mt-1">Las categorías inactivas no se mostrarán en el sitio web</p>
+        </div>
+        
+        <!-- Vista previa -->
+        {% if categoria %}
+        <div class="bg-admin-sidebar rounded-lg p-6 border border-gray-600">
+            <h3 class="text-lg font-semibold mb-4 text-admin-accent">Información Actual</h3>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                <div>
+                    <span class="text-gray-400">Productos asociados:</span>
+                    <span class="font-medium">{{ categoria.productos|length }}</span>
+                </div>
+                
+                <div>
+                    <span class="text-gray-400">Fecha de creación:</span>
+                    <span class="font-medium">
+                        {% if categoria.created_at %}
+                        {{ categoria.created_at.strftime('%d/%m/%Y') }}
+                        {% endif %}
+                    </span>
+                </div>
+                
+                <div>
+                    <span class="text-gray-400">Estado actual:</span>
+                    {% if categoria.activo %}
+                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-500 bg-opacity-20 text-green-400">
+                        Activa
+                    </span>
+                    {% else %}
+                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-500 bg-opacity-20 text-gray-400">
+                        Inactiva
+                    </span>
+                    {% endif %}
+                </div>
+                
+                <div>
+                    <span class="text-gray-400">Imagen:</span>
+                    {% if categoria.imagen %}
+                    <span class="font-medium text-green-400">Configurada</span>
+                    {% else %}
+                    <span class="font-medium text-gray-500">Sin imagen</span>
+                    {% endif %}
+                </div>
+                
+                {% if categoria.productos|length > 0 %}
+                <div class="md:col-span-2">
+                    <span class="text-gray-400">Productos:</span>
+                    <div class="mt-1">
+                        {% for producto in categoria.productos[:3] %}
+                        <span class="inline-block bg-admin-dark px-2 py-1 rounded text-xs mr-1 mb-1">
+                            {{ producto.nombre }}
+                        </span>
+                        {% endfor %}
+                        {% if categoria.productos|length > 3 %}
+                        <span class="text-gray-400 text-xs">y {{ categoria.productos|length - 3 }} más...</span>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
+        
+        <!-- Botones -->
+        <div class="flex justify-end space-x-4">
+            <a href="/admin/categorias" 
+               class="bg-gray-600 hover:bg-gray-700 text-white px-6 py-3 rounded transition-colors">
+                Cancelar
+            </a>
+            <button type="submit" 
+                    class="bg-admin-accent hover:bg-orange-600 text-white px-6 py-3 rounded transition-colors">
+                <i class="fas fa-save mr-2"></i>{{ accion }} Categoría
+            </button>
+        </div>
+    </form>
+</div>
+
+<script>
+function previewImage(input, previewId) {
+    const file = input.files[0];
+    const preview = document.getElementById(previewId);
+    
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            preview.src = e.target.result;
+            preview.classList.remove('hidden');
+        };
+        reader.readAsDataURL(file);
+    }
+}
+</script>
+{% endblock %}

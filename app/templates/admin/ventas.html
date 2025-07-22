@@ -1,0 +1,450 @@
+{% extends "admin/base_admin.html" %}
+
+{% block title %}Ventas - Admin Panel JerkHome{% endblock %}
+{% block page_title %}Gestión de Ventas{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+    <!-- Header con acciones -->
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-4 sm:space-y-0">
+        <div>
+            <h1 class="text-2xl font-bold">Ventas</h1>
+            <p class="text-gray-400">{{ ventas|length }} ventas encontradas</p>
+        </div>
+        
+        <div class="flex space-x-3">
+            <button onclick="exportarVentas()" 
+                    class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded transition-colors">
+                <i class="fas fa-download mr-2"></i>Exportar
+            </button>
+            
+            <button onclick="toggleFilters()" 
+                    class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded transition-colors">
+                <i class="fas fa-filter mr-2"></i>Filtros
+            </button>
+        </div>
+    </div>
+    
+    <!-- Acciones masivas -->
+    <div id="accionesMasivas" class="hidden bg-admin-sidebar rounded-lg p-4 border border-gray-600">
+        <div class="flex items-center justify-between">
+            <div class="flex items-center space-x-4">
+                <span class="text-sm text-gray-400">
+                    <span id="contadorSeleccionadas">0</span> ventas seleccionadas
+                </span>
+                
+                <select id="nuevoEstadoVenta" class="px-3 py-2 bg-admin-dark border border-gray-600 rounded-md text-sm">
+                    <option value="">Cambiar estado a...</option>
+                    <option value="NUEVA">Nueva</option>
+                    <option value="EN_DESPACHO">En Despacho</option>
+                    <option value="ENTREGADA">Entregada</option>
+                    <option value="ANULADA">Anulada</option>
+                    <option value="DEVOLUCION">Devolución</option>
+                </select>
+                
+                <button onclick="aplicarCambioMasivo()" 
+                        class="bg-admin-accent hover:bg-orange-600 text-white px-4 py-2 rounded text-sm transition-colors">
+                    <i class="fas fa-check mr-2"></i>Aplicar
+                </button>
+            </div>
+            
+            <button onclick="limpiarSeleccion()" class="text-gray-400 hover:text-white">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+    </div>
+    
+    <!-- Estadísticas rápidas -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div class="bg-admin-sidebar rounded-lg p-4 border border-gray-600">
+            <div class="flex items-center">
+                <div class="p-2 rounded-full bg-blue-500 bg-opacity-20">
+                    <i class="fas fa-shopping-cart text-blue-400"></i>
+                </div>
+                <div class="ml-3">
+                    <p class="text-sm text-gray-400">Total Ventas</p>
+                    <p class="text-lg font-semibold">{{ stats.total_ventas }}</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="bg-admin-sidebar rounded-lg p-4 border border-gray-600">
+            <div class="flex items-center">
+                <div class="p-2 rounded-full bg-yellow-500 bg-opacity-20">
+                    <i class="fas fa-clock text-yellow-400"></i>
+                </div>
+                <div class="ml-3">
+                    <p class="text-sm text-gray-400">Pendientes</p>
+                    <p class="text-lg font-semibold">{{ stats.ventas_pendientes }}</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="bg-admin-sidebar rounded-lg p-4 border border-gray-600">
+            <div class="flex items-center">
+                <div class="p-2 rounded-full bg-green-500 bg-opacity-20">
+                    <i class="fas fa-check-circle text-green-400"></i>
+                </div>
+                <div class="ml-3">
+                    <p class="text-sm text-gray-400">Entregadas</p>
+                    <p class="text-lg font-semibold">{{ stats.ventas_entregadas }}</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="bg-admin-sidebar rounded-lg p-4 border border-gray-600">
+            <div class="flex items-center">
+                <div class="p-2 rounded-full bg-admin-accent bg-opacity-20">
+                    <i class="fas fa-dollar-sign text-admin-accent"></i>
+                </div>
+                <div class="ml-3">
+                    <p class="text-sm text-gray-400">Total Mes</p>
+                    <p class="text-lg font-semibold">${{ "{:,.0f}".format(stats.total_mes) }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Filtros -->
+    <div id="filters" class="hidden bg-admin-sidebar rounded-lg p-6 border border-gray-600">
+        <form method="GET" class="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div>
+                <label class="block text-sm font-medium mb-2">Estado Venta</label>
+                <select name="estado_venta" class="w-full px-3 py-2 bg-admin-dark border border-gray-600 rounded-md">
+                    <option value="todos">Todos los estados</option>
+                    <option value="NUEVA" {% if estado_venta_filter == 'NUEVA' %}selected{% endif %}>Nueva</option>
+                    <option value="EN_DESPACHO" {% if estado_venta_filter == 'EN_DESPACHO' %}selected{% endif %}>En Despacho</option>
+                    <option value="ENTREGADA" {% if estado_venta_filter == 'ENTREGADA' %}selected{% endif %}>Entregada</option>
+                    <option value="ANULADA" {% if estado_venta_filter == 'ANULADA' %}selected{% endif %}>Anulada</option>
+                    <option value="DEVOLUCION" {% if estado_venta_filter == 'DEVOLUCION' %}selected{% endif %}>Devolución</option>
+                </select>
+            </div>
+            
+            <div>
+                <label class="block text-sm font-medium mb-2">Estado Pago</label>
+                <select name="estado_pago" class="w-full px-3 py-2 bg-admin-dark border border-gray-600 rounded-md">
+                    <option value="todos">Todos los estados</option>
+                    <option value="PENDIENTE" {% if estado_pago_filter == 'PENDIENTE' %}selected{% endif %}>Pendiente</option>
+                    <option value="PAGADA" {% if estado_pago_filter == 'PAGADA' %}selected{% endif %}>Pagada</option>
+                    <option value="ANULADA" {% if estado_pago_filter == 'ANULADA' %}selected{% endif %}>Anulada</option>
+                </select>
+            </div>
+            
+            <div>
+                <label class="block text-sm font-medium mb-2">Búsqueda</label>
+                <input type="text" name="buscar" value="{{ buscar }}" 
+                       placeholder="Orden, cliente, RUT..."
+                       class="w-full px-3 py-2 bg-admin-dark border border-gray-600 rounded-md">
+            </div>
+            
+            <div class="flex items-end">
+                <button type="submit" class="bg-admin-accent hover:bg-orange-600 text-white px-4 py-2 rounded transition-colors mr-2">
+                    Filtrar
+                </button>
+                <a href="/admin/ventas" class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded transition-colors">
+                    Limpiar
+                </a>
+            </div>
+        </form>
+    </div>
+    
+    <!-- Tabla de ventas -->
+    <div class="bg-admin-sidebar rounded-lg border border-gray-600 overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="w-full">
+                <thead class="bg-admin-dark">
+                    <tr>
+                        <th class="px-6 py-3 text-left">
+                            <input type="checkbox" id="selectAll" onchange="toggleSelectAll()" 
+                                   class="h-4 w-4 text-admin-accent focus:ring-admin-accent border-gray-600 rounded">
+                        </th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                            Orden
+                        </th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                            Cliente
+                        </th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                            Producto
+                        </th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                            Total
+                        </th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                            Fecha
+                        </th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                            Estado Venta
+                        </th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                            Estado Pago
+                        </th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                            Acciones
+                        </th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-600">
+                    {% for venta in ventas %}
+                    <tr class="hover:bg-admin-dark transition-colors">
+                        <td class="px-6 py-4">
+                            <input type="checkbox" class="venta-checkbox h-4 w-4 text-admin-accent focus:ring-admin-accent border-gray-600 rounded" 
+                                   value="{{ venta.id }}" onchange="updateSelectionCount()">
+                        </td>
+                        
+                        <td class="px-6 py-4">
+                            <div class="text-sm font-medium">{{ venta.orden_compra }}</div>
+                            <div class="text-xs text-gray-400">{{ venta.numero_venta }}</div>
+                        </td>
+                        
+                        <td class="px-6 py-4">
+                            <div class="text-sm font-medium">{{ venta.nombre_cliente }}</div>
+                            <div class="text-xs text-gray-400">{{ venta.rut_cliente }}</div>
+                            <div class="text-xs text-gray-400">{{ venta.comuna_cliente }}</div>
+                        </td>
+                        
+                        <td class="px-6 py-4">
+                            <div class="text-sm font-medium">{{ venta.nombre }}</div>
+                            <div class="text-xs text-gray-400">SKU: {{ venta.sku }}</div>
+                            <div class="text-xs text-gray-400">Cant: {{ venta.cantidad }}</div>
+                        </td>
+                        
+                        <td class="px-6 py-4">
+                            <div class="text-sm font-medium">${{ "{:,.0f}".format(venta.total) }}</div>
+                            <div class="text-xs text-gray-400">${{ "{:,.0f}".format(venta.precio) }} c/u</div>
+                        </td>
+                        
+                        <td class="px-6 py-4 text-sm">
+                            <div>{{ venta.fecha_compra.strftime('%d/%m/%Y') }}</div>
+                            <div class="text-xs text-gray-400">{{ venta.fecha_compra.strftime('%H:%M') }}</div>
+                        </td>
+                        
+                        <td class="px-6 py-4">
+                            {% if venta.estado_venta.value == 'NUEVA' %}
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-500 bg-opacity-20 text-blue-400">
+                                Nueva
+                            </span>
+                            {% elif venta.estado_venta.value == 'EN_DESPACHO' %}
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-500 bg-opacity-20 text-yellow-400">
+                                En Despacho
+                            </span>
+                            {% elif venta.estado_venta.value == 'ENTREGADA' %}
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-500 bg-opacity-20 text-green-400">
+                                Entregada
+                            </span>
+                            {% elif venta.estado_venta.value == 'ANULADA' %}
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-500 bg-opacity-20 text-red-400">
+                                Anulada
+                            </span>
+                            {% elif venta.estado_venta.value == 'DEVOLUCION' %}
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-500 bg-opacity-20 text-purple-400">
+                                Devolución
+                            </span>
+                            {% endif %}
+                        </td>
+                        
+                        <td class="px-6 py-4">
+                            {% if venta.estado_pago.value == 'PENDIENTE' %}
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-500 bg-opacity-20 text-yellow-400">
+                                Pendiente
+                            </span>
+                            {% elif venta.estado_pago.value == 'PAGADA' %}
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-500 bg-opacity-20 text-green-400">
+                                Pagada
+                            </span>
+                            {% elif venta.estado_pago.value == 'ANULADA' %}
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-500 bg-opacity-20 text-red-400">
+                                Anulada
+                            </span>
+                            {% endif %}
+                        </td>
+                        
+                        <td class="px-6 py-4 text-sm">
+                            <div class="flex space-x-2">
+                                <a href="/admin/ventas/{{ venta.id }}"
+                                   class="text-blue-400 hover:text-blue-300 transition-colors" title="Ver detalle">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                                
+                                {% if venta.estado_venta.value == 'ANULADA' %}
+                                <button onclick="confirmDelete('{{ venta.orden_compra }}', '/admin/ventas/{{ venta.id }}/eliminar')"
+                                        class="text-red-400 hover:text-red-300 transition-colors" title="Eliminar">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                                {% endif %}
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        
+        {% if not ventas %}
+        <div class="text-center py-12">
+            <i class="fas fa-shopping-cart text-6xl text-gray-400 mb-4"></i>
+            <h3 class="text-lg font-medium text-gray-400 mb-2">No hay ventas</h3>
+            <p class="text-gray-500">Las ventas aparecerán aquí cuando se realicen.</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+let ventasSeleccionadas = [];
+
+function toggleFilters() {
+    const filters = document.getElementById('filters');
+    filters.classList.toggle('hidden');
+}
+
+function toggleSelectAll() {
+    const selectAll = document.getElementById('selectAll');
+    const checkboxes = document.querySelectorAll('.venta-checkbox');
+    
+    checkboxes.forEach(checkbox => {
+        checkbox.checked = selectAll.checked;
+    });
+    
+    updateSelectionCount();
+}
+
+function updateSelectionCount() {
+    const checkboxes = document.querySelectorAll('.venta-checkbox:checked');
+    const count = checkboxes.length;
+    const accionesMasivas = document.getElementById('accionesMasivas');
+    const contador = document.getElementById('contadorSeleccionadas');
+    
+    ventasSeleccionadas = Array.from(checkboxes).map(cb => cb.value);
+    contador.textContent = count;
+    
+    if (count > 0) {
+        accionesMasivas.classList.remove('hidden');
+    } else {
+        accionesMasivas.classList.add('hidden');
+    }
+    
+    // Actualizar el checkbox "select all"
+    const selectAll = document.getElementById('selectAll');
+    const allCheckboxes = document.querySelectorAll('.venta-checkbox');
+    selectAll.checked = count === allCheckboxes.length && count > 0;
+}
+
+function limpiarSeleccion() {
+    const checkboxes = document.querySelectorAll('.venta-checkbox');
+    checkboxes.forEach(checkbox => {
+        checkbox.checked = false;
+    });
+    document.getElementById('selectAll').checked = false;
+    updateSelectionCount();
+}
+
+function aplicarCambioMasivo() {
+    const nuevoEstado = document.getElementById('nuevoEstadoVenta').value;
+    
+    if (!nuevoEstado) {
+        alert('Por favor selecciona un estado.');
+        return;
+    }
+    
+    if (ventasSeleccionadas.length === 0) {
+        alert('Por favor selecciona al menos una venta.');
+        return;
+    }
+    
+    if (confirm(`¿Estás seguro de cambiar ${ventasSeleccionadas.length} ventas al estado "${nuevoEstado}"?`)) {
+        // Hacer la petición AJAX
+        fetch('/admin/ventas/cambio-masivo', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                venta_ids: ventasSeleccionadas,
+                nuevo_estado: nuevoEstado
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showNotification('Estados actualizados correctamente', 'success');
+                setTimeout(() => {
+                    location.reload();
+                }, 1000);
+            } else {
+                showNotification('Error al actualizar estados', 'error');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showNotification('Error al actualizar estados', 'error');
+        });
+    }
+}
+
+function confirmDelete(ordenCompra, deleteUrl) {
+    if (confirm(`¿Estás seguro de que quieres eliminar la venta "${ordenCompra}"?\n\nEsta acción no se puede deshacer.`)) {
+        window.location.href = deleteUrl;
+    }
+}
+
+function exportarVentas() {
+    // Obtener los filtros actuales de la URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const estado_venta = urlParams.get('estado_venta') || '';
+    const estado_pago = urlParams.get('estado_pago') || '';
+    const buscar = urlParams.get('buscar') || '';
+    
+    // Construir la URL de exportación con los mismos filtros
+    let exportUrl = '/admin/ventas/exportar?';
+    
+    if (estado_venta && estado_venta !== 'todos') {
+        exportUrl += `estado_venta=${encodeURIComponent(estado_venta)}&`;
+    }
+    
+    if (estado_pago && estado_pago !== 'todos') {
+        exportUrl += `estado_pago=${encodeURIComponent(estado_pago)}&`;
+    }
+    
+    if (buscar) {
+        exportUrl += `buscar=${encodeURIComponent(buscar)}&`;
+    }
+    
+    // Remover el último & si existe
+    exportUrl = exportUrl.replace(/&$/, '');
+    
+    // Mostrar mensaje de descarga
+    showNotification('Preparando archivo Excel...', 'info');
+    
+    // Redirigir para descargar el archivo
+    window.location.href = exportUrl;
+    
+    // Mostrar mensaje de éxito después de un momento
+    setTimeout(() => {
+        showNotification('Archivo Excel descargado correctamente', 'success');
+    }, 2000);
+}
+
+function showNotification(message, type) {
+    const notification = document.createElement('div');
+    notification.className = `fixed top-4 right-4 px-6 py-4 rounded-lg text-white z-50 ${
+        type === 'success' ? 'bg-green-500' : 
+        type === 'error' ? 'bg-red-500' :
+        type === 'info' ? 'bg-blue-500' :
+        'bg-gray-500'
+    }`;
+    notification.textContent = message;
+    
+    document.body.appendChild(notification);
+    
+    setTimeout(() => {
+        notification.remove();
+    }, 3000);
+}
+
+// Inicializar contadores al cargar la página
+document.addEventListener('DOMContentLoaded', function() {
+    updateSelectionCount();
+});
+</script>
+{% endblock %}

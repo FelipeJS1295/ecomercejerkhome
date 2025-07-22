@@ -1,0 +1,164 @@
+{% extends "admin/base_admin.html" %}
+
+{% block title %}{{ accion }} Producto - Admin Panel JerkHome{% endblock %}
+{% block page_title %}{{ accion }} Producto{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto">
+    <!-- Header -->
+    <div class="flex items-center justify-between mb-6">
+        <h1 class="text-2xl font-bold">{{ accion }} Producto</h1>
+        <a href="/admin/productos" class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded transition-colors">
+            <i class="fas fa-arrow-left mr-2"></i>Volver
+        </a>
+    </div>
+    
+    <!-- Error Message -->
+    {% if error %}
+    <div class="bg-red-500 bg-opacity-20 border border-red-500 text-red-400 px-4 py-3 rounded mb-6">
+        {{ error }}
+    </div>
+    {% endif %}
+    
+    <!-- Formulario -->
+    <form method="POST" enctype="multipart/form-data" class="space-y-6">
+        <!-- Información básica -->
+        <div class="bg-admin-sidebar rounded-lg p-6 border border-gray-600">
+            <h3 class="text-lg font-semibold mb-4 text-admin-accent">Información Básica</h3>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <label for="sku" class="block text-sm font-medium mb-2">SKU *</label>
+                    <input type="text" id="sku" name="sku" required
+                           value="{% if producto %}{{ producto.sku }}{% endif %}"
+                           class="w-full px-3 py-2 bg-admin-dark border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-admin-accent">
+                </div>
+                
+                <div>
+                    <label for="categoria_id" class="block text-sm font-medium mb-2">Categoría *</label>
+                    <select id="categoria_id" name="categoria_id" required
+                            class="w-full px-3 py-2 bg-admin-dark border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-admin-accent">
+                        <option value="">Seleccionar categoría</option>
+                        {% for categoria in categorias %}
+                        <option value="{{ categoria.id }}" 
+                                {% if producto and producto.categoria_id == categoria.id %}selected{% endif %}>
+                            {{ categoria.nombre }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <div class="md:col-span-2">
+                    <label for="nombre" class="block text-sm font-medium mb-2">Nombre del Producto *</label>
+                    <input type="text" id="nombre" name="nombre" required
+                           value="{% if producto %}{{ producto.nombre }}{% endif %}"
+                           class="w-full px-3 py-2 bg-admin-dark border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-admin-accent">
+                </div>
+                
+                <div class="md:col-span-2">
+                    <label for="descripcion" class="block text-sm font-medium mb-2">Descripción</label>
+                    <textarea id="descripcion" name="descripcion" rows="4"
+                              class="w-full px-3 py-2 bg-admin-dark border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-admin-accent">{% if producto %}{{ producto.descripcion }}{% endif %}</textarea>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Precios y Stock -->
+        <div class="bg-admin-sidebar rounded-lg p-6 border border-gray-600">
+            <h3 class="text-lg font-semibold mb-4 text-admin-accent">Precios y Stock</h3>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div>
+                    <label for="precio" class="block text-sm font-medium mb-2">Precio Regular *</label>
+                    <input type="number" id="precio" name="precio" step="0.01" required
+                           value="{% if producto %}{{ producto.precio }}{% endif %}"
+                           class="w-full px-3 py-2 bg-admin-dark border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-admin-accent">
+                </div>
+                
+                <div>
+                    <label for="precio_oferta" class="block text-sm font-medium mb-2">Precio Oferta</label>
+                    <input type="number" id="precio_oferta" name="precio_oferta" step="0.01"
+                           value="{% if producto and producto.precio_oferta %}{{ producto.precio_oferta }}{% endif %}"
+                           class="w-full px-3 py-2 bg-admin-dark border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-admin-accent">
+                </div>
+                
+                <div>
+                    <label for="stock" class="block text-sm font-medium mb-2">Stock</label>
+                    <input type="number" id="stock" name="stock" min="0"
+                           value="{% if producto %}{{ producto.stock }}{% else %}0{% endif %}"
+                           class="w-full px-3 py-2 bg-admin-dark border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-admin-accent">
+                </div>
+            </div>
+        </div>
+        
+        <!-- Imágenes -->
+        <div class="bg-admin-sidebar rounded-lg p-6 border border-gray-600">
+            <h3 class="text-lg font-semibold mb-4 text-admin-accent">Imágenes del Producto</h3>
+            <p class="text-sm text-gray-400 mb-4">Puedes subir hasta 7 imágenes. La primera imagen será la principal.</p>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {% for i in range(1, 8) %}
+                <div class="space-y-2">
+                    <label for="imagen_{{ i }}" class="block text-sm font-medium">
+                        Imagen {{ i }}{% if i == 1 %} (Principal){% endif %}
+                    </label>
+                    <input type="file" id="imagen_{{ i }}" name="imagen_{{ i }}" accept="image/*"
+                           onchange="previewImage(this, 'preview_{{ i }}')"
+                           class="w-full px-3 py-2 bg-admin-dark border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-admin-accent">
+                    
+                    <!-- Preview de imagen -->
+                    <div class="mt-2">
+                        {% set imagen_field = 'imagen_' + i|string %}
+                        {% if producto and producto[imagen_field] %}
+                        <img id="preview_{{ i }}" 
+                             src="{{ url_for('static', path='/images/productos/' + producto[imagen_field]) }}" 
+                             alt="Preview" class="w-full h-32 object-cover rounded">
+                        {% else %}
+                        <img id="preview_{{ i }}" src="#" alt="Preview" 
+                             class="w-full h-32 object-cover rounded hidden">
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        
+        <!-- Opciones -->
+        <div class="bg-admin-sidebar rounded-lg p-6 border border-gray-600">
+            <h3 class="text-lg font-semibold mb-4 text-admin-accent">Opciones</h3>
+            
+            <div class="space-y-4">
+                <div class="flex items-center">
+                    <input type="checkbox" id="destacado" name="destacado" value="true"
+                           {% if producto and producto.destacado %}checked{% endif %}
+                           class="h-4 w-4 text-admin-accent focus:ring-admin-accent border-gray-600 rounded">
+                    <label for="destacado" class="ml-2 block text-sm">
+                        Producto Destacado
+                    </label>
+                </div>
+                
+                <div class="flex items-center">
+                    <input type="checkbox" id="activo" name="activo" value="true"
+                           {% if not producto or producto.activo %}checked{% endif %}
+                           class="h-4 w-4 text-admin-accent focus:ring-admin-accent border-gray-600 rounded">
+                    <label for="activo" class="ml-2 block text-sm">
+                        Producto Activo
+                    </label>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Botones -->
+        <div class="flex justify-end space-x-4">
+            <a href="/admin/productos" 
+               class="bg-gray-600 hover:bg-gray-700 text-white px-6 py-3 rounded transition-colors">
+                Cancelar
+            </a>
+            <button type="submit" 
+                    class="bg-admin-accent hover:bg-orange-600 text-white px-6 py-3 rounded transition-colors">
+                <i class="fas fa-save mr-2"></i>{{ accion }} Producto
+            </button>
+        </div>
+    </form>
+</div>
+{% endblock %}

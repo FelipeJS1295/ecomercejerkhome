@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}JerkHome - Fábrica de Muebles Tapizados{% endblock %}</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'primary-black': '#0f0f0f',
+                        'secondary-gray': '#1c1c1c',
+                        'tertiary-gray': '#2a2a2a',
+                        'light-gray': '#3a3a3a',
+                        'accent-orange': '#e74c3c',
+                        'accent-red': '#c0392b',
+                        'text-light': '#ffffff',
+                        'text-gray': '#b0b0b0',
+                        'border-gray': '#2a2a2a',
+                        'soft-white': '#f8f9fa',
+                    },
+                    fontFamily: {
+                        'sans': ['Inter', 'system-ui', 'sans-serif'],
+                        'display': ['Inter', 'system-ui', 'sans-serif'],
+                    },
+                    animation: {
+                        'fade-in': 'fadeIn 0.4s ease-out',
+                        'slide-down': 'slideDown 0.3s ease-out',
+                        'fade-up': 'fadeUp 0.5s ease-out',
+                    },
+                    keyframes: {
+                        fadeIn: {
+                            '0%': { opacity: '0' },
+                            '100%': { opacity: '1' },
+                        },
+                        slideDown: {
+                            '0%': { transform: 'translateY(-8px)', opacity: '0' },
+                            '100%': { transform: 'translateY(0)', opacity: '1' },
+                        },
+                        fadeUp: {
+                            '0%': { transform: 'translateY(20px)', opacity: '0' },
+                            '100%': { transform: 'translateY(0)', opacity: '1' },
+                        }
+                    },
+                    spacing: {
+                        '18': '4.5rem',
+                        '22': '5.5rem',
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Custom CSS -->
+    <link href="{{ url_for('static', path='/css/custom.css') }}" rel="stylesheet">
+    
+    <!-- Meta tags para SEO -->
+    <meta name="description" content="{% block description %}JerkHome - Fábrica especializada en muebles tapizados de alta calidad. Sofás, seccionales, poltronas, camas y más.{% endblock %}">
+    <meta name="keywords" content="muebles tapizados, sofás, seccionales, poltronas, camas, living, fábrica de muebles, La Pintana, Santiago">
+    <meta name="author" content="JerkHome">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static', path='/favicon.ico') }}">
+</head>
+<body class="bg-primary-black text-text-light font-sans antialiased">
+    
+    <!-- Navigation con efectos de scroll -->
+    <nav id="navbar" class="bg-primary-black/95 backdrop-blur-md border-b border-border-gray/50 fixed top-0 w-full z-50 transition-all duration-500">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-20">
+                
+                <!-- Logo -->
+                <div class="flex items-center">
+                    <a href="/" class="flex items-center space-x-3 group">
+                        <!-- Logo Image -->
+                        <div class="w-12 h-12 relative">
+                            <img src="{{ url_for('static', path='/images/logo_pn.png') }}" 
+                                 alt="JerkHome Logo" 
+                                 class="w-full h-full object-contain group-hover:scale-105 transition-transform duration-300"
+                                 onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                            <!-- Fallback SVG -->
+                            <div class="w-12 h-12 bg-gradient-to-br from-accent-orange to-accent-red rounded-lg flex items-center justify-center group-hover:scale-105 transition-transform duration-300" style="display:none;">
+                                <svg class="w-7 h-7 text-white" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M12 2L2 7v10c0 5.55 3.84 10 9 10s9-4.45 9-10V7l-10-5z"/>
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="flex flex-col">
+                            <span class="text-2xl font-light italic text-text-light group-hover:text-accent-orange transition-colors duration-300 tracking-tight" style="font-family: 'Georgia', 'Times New Roman', serif;">
+                                <span class="text-accent-orange">Jerk</span><span class="text-white"> home</span>
+                            </span>
+                            <span class="text-xs text-text-gray font-medium tracking-wider uppercase">
+                                Muebles Tapizados
+                            </span>
+                        </div>
+                    </a>
+                </div>
+                
+                <!-- Desktop Navigation -->
+                <div class="hidden lg:block">
+                    <div class="flex items-center space-x-1">
+                        <a href="/" class="relative text-text-light hover:text-accent-orange px-4 py-2 transition-all duration-300 font-medium group">
+                            <span>Inicio</span>
+                            <div class="absolute bottom-0 left-4 right-4 h-0.5 bg-accent-orange transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
+                        </a>
+                        
+                        <!-- Dropdown Categorías Dinámico -->
+                        <div class="relative group">
+                            <button class="relative text-text-light hover:text-accent-orange px-4 py-2 transition-all duration-300 flex items-center space-x-2 font-medium">
+                                <span>Categorías</span>
+                                <svg class="w-4 h-4 transform group-hover:rotate-180 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                </svg>
+                                <div class="absolute bottom-0 left-4 right-4 h-0.5 bg-accent-orange transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
+                            </button>
+                            <div class="absolute left-0 mt-2 w-64 bg-secondary-gray/95 backdrop-blur-md rounded-2xl shadow-2xl border border-border-gray/50 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 animate-slide-down">
+                                <div class="p-2">
+                                    <a href="/categorias" class="block px-4 py-3 text-text-light hover:bg-tertiary-gray hover:text-accent-orange transition-all duration-300 font-medium rounded-xl">
+                                        Todas las Categorías
+                                    </a>
+                                    <div class="h-px bg-border-gray my-2"></div>
+                                    
+                                    <!-- Categorías dinámicas desde la DB -->
+                                    {% for categoria in categorias_nav %}
+                                    <a href="/categoria/{{ categoria.nombre.lower() }}" class="block px-4 py-2 text-text-gray hover:bg-tertiary-gray hover:text-accent-orange transition-all duration-300 rounded-xl capitalize">
+                                        {{ categoria.nombre }}
+                                    </a>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <a href="/productos" class="relative text-text-light hover:text-accent-orange px-4 py-2 transition-all duration-300 font-medium group">
+                            <span>Productos</span>
+                            <div class="absolute bottom-0 left-4 right-4 h-0.5 bg-accent-orange transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
+                        </a>
+                        <a href="/nosotros" class="relative text-text-light hover:text-accent-orange px-4 py-2 transition-all duration-300 font-medium group">
+                            <span>Nosotros</span>
+                            <div class="absolute bottom-0 left-4 right-4 h-0.5 bg-accent-orange transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
+                        </a>
+                        <a href="/contacto" class="relative text-text-light hover:text-accent-orange px-4 py-2 transition-all duration-300 font-medium group">
+                            <span>Contacto</span>
+                            <div class="absolute bottom-0 left-4 right-4 h-0.5 bg-accent-orange transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
+                        </a>
+                        
+                        <!-- Carrito de Compras -->
+                        <div class="relative">
+                            <button id="cart-button" class="relative text-text-light hover:text-accent-orange px-4 py-2 transition-all duration-300 font-medium group">
+                                <div class="flex items-center space-x-2">
+                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-1.1 5A2 2 0 007.83 20H16a2 2 0 001.97-1.757L20 13H7z"/>
+                                    </svg>
+                                    <!-- Badge del contador -->
+                                    <span id="cart-count" class="absolute -top-2 -right-2 bg-accent-orange text-white text-xs rounded-full px-2 py-1 min-w-[20px] text-center font-bold hidden">0</span>
+                                </div>
+                                <div class="absolute bottom-0 left-4 right-4 h-0.5 bg-accent-orange transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Mobile menu button -->
+                <div class="lg:hidden">
+                    <button id="mobile-menu-button" class="text-text-light hover:text-accent-orange p-3 rounded-lg hover:bg-secondary-gray/50 transition-all duration-300">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile menu -->
+        <div id="mobile-menu" class="lg:hidden hidden">
+            <div class="px-4 pt-2 pb-4 space-y-1 bg-secondary-gray/95 backdrop-blur-md border-t border-border-gray/50">
+                <button id="cart-button-mobile" class="relative flex items-center space-x-3 w-full px-4 py-3 text-text-light hover:text-accent-orange hover:bg-tertiary-gray rounded-xl transition-all duration-300 font-medium">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-1.1 5A2 2 0 007.83 20H16a2 2 0 001.97-1.757L20 13H7z"/>
+                    </svg>
+                    <span>Carrito</span>
+                    <span id="cart-count-mobile" class="bg-accent-orange text-white text-xs rounded-full px-2 py-1 min-w-[20px] text-center font-bold hidden">0</span>
+                </button>
+                <a href="/" class="block px-4 py-3 text-text-light hover:text-accent-orange hover:bg-tertiary-gray rounded-xl transition-all duration-300 font-medium">Inicio</a>
+                <a href="/categorias" class="block px-4 py-3 text-text-light hover:text-accent-orange hover:bg-tertiary-gray rounded-xl transition-all duration-300 font-medium">Categorías</a>
+                
+                <!-- Categorías móvil dinámicas -->
+                {% for categoria in categorias_nav %}
+                <a href="/categoria/{{ categoria.nombre.lower() }}" class="block px-6 py-2 text-text-gray hover:text-accent-orange hover:bg-tertiary-gray rounded-xl transition-all duration-300 capitalize">
+                    {{ categoria.nombre }}
+                </a>
+                {% endfor %}
+                
+                <a href="/productos" class="block px-4 py-3 text-text-light hover:text-accent-orange hover:bg-tertiary-gray rounded-xl transition-all duration-300 font-medium">Productos</a>
+                <a href="/nosotros" class="block px-4 py-3 text-text-light hover:text-accent-orange hover:bg-tertiary-gray rounded-xl transition-all duration-300 font-medium">Nosotros</a>
+                <a href="/contacto" class="block px-4 py-3 text-text-light hover:text-accent-orange hover:bg-tertiary-gray rounded-xl transition-all duration-300 font-medium">Contacto</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content con padding-top para compensar navbar fijo -->
+    <main class="min-h-screen pt-20">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Cart Modal -->
+    <div id="cart-modal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 hidden">
+        <div class="flex items-center justify-center min-h-screen p-4">
+            <div class="bg-secondary-gray border border-border-gray/50 rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-hidden">
+                
+                <!-- Header -->
+                <div class="flex items-center justify-between p-6 border-b border-border-gray/50">
+                    <h2 class="text-2xl font-bold text-text-light flex items-center space-x-3">
+                        <svg class="w-6 h-6 text-accent-orange" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-1.1 5A2 2 0 007.83 20H16a2 2 0 001.97-1.757L20 13H7z"/>
+                        </svg>
+                        <span>Carrito de Compras</span>
+                    </h2>
+                    <button id="close-cart-modal" class="text-text-gray hover:text-accent-orange transition-colors duration-300 p-2 hover:bg-tertiary-gray rounded-lg">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                        </svg>
+                    </button>
+                </div>
+                
+                <!-- Cart Content -->
+                <div class="p-6 max-h-[60vh] overflow-y-auto">
+                    <div id="cart-items" class="space-y-4">
+                        <!-- Items del carrito se cargarán aquí -->
+                    </div>
+                    
+                    <!-- Empty Cart Message -->
+                    <div id="empty-cart" class="text-center py-12">
+                        <svg class="w-16 h-16 text-text-gray mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-1.1 5A2 2 0 007.83 20H16a2 2 0 001.97-1.757L20 13H7z"/>
+                        </svg>
+                        <p class="text-text-gray text-lg font-medium">Tu carrito está vacío</p>
+                        <p class="text-text-gray/70 text-sm mt-2">Agrega algunos productos para comenzar</p>
+                    </div>
+                </div>
+                
+                <!-- Footer -->
+                <div id="cart-footer" class="hidden border-t border-border-gray/50 p-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <span class="text-lg font-semibold text-text-light">Total:</span>
+                        <span id="cart-total" class="text-2xl font-bold text-accent-orange">$0</span>
+                    </div>
+                    <div class="flex space-x-4">
+                        <button id="clear-cart" class="flex-1 bg-tertiary-gray hover:bg-light-gray text-text-light font-medium py-3 rounded-xl transition-all duration-300">
+                            Vaciar Carrito
+                        </button>
+                        <a href="/checkout" class="flex-1 bg-gradient-to-r from-accent-orange to-accent-red hover:from-accent-red hover:to-accent-orange text-white font-medium py-3 rounded-xl transition-all duration-300 text-center">
+                            Continuar Compra
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-secondary-gray border-t border-border-gray/50 mt-24">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <!-- Main Footer Content -->
+            <div class="py-16">
+                <div class="grid lg:grid-cols-4 md:grid-cols-2 gap-12">
+                    
+                    <!-- Company Info -->
+                    <div class="lg:col-span-2">
+                        <div class="flex items-center space-x-3 mb-6">
+                            <div class="w-12 h-12">
+                                <img src="{{ url_for('static', path='/images/logo_pn.png') }}" 
+                                     alt="JerkHome Logo" 
+                                     class="w-full h-full object-contain"
+                                     onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                                <div class="w-12 h-12 bg-gradient-to-br from-accent-orange to-accent-red rounded-lg flex items-center justify-center" style="display:none;">
+                                    <svg class="w-7 h-7 text-white" fill="currentColor" viewBox="0 0 24 24">
+                                        <path d="M12 2L2 7v10c0 5.55 3.84 10 9 10s9-4.45 9-10V7l-10-5z"/>
+                                    </svg>
+                                </div>
+                            </div>
+                            <div>
+                                <h3 class="text-2xl font-light italic" style="font-family: 'Georgia', 'Times New Roman', serif;">
+                                    <span class="text-accent-orange">Jerk</span><span class="text-white"> home</span>
+                                </h3>
+                                <p class="text-text-gray text-sm">Muebles Tapizados</p>
+                            </div>
+                        </div>
+                        <p class="text-text-gray leading-relaxed mb-6 max-w-md">
+                            Fábrica especializada en muebles tapizados de alta calidad. Diseñamos y fabricamos sofás, seccionales, poltronas y más para transformar tu hogar.
+                        </p>
+                        <div class="flex items-center space-x-2 text-sm text-text-gray">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                            </svg>
+                            <span>Los Paltos 2769, La Pintana, Santiago</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Quick Links -->
+                    <div>
+                        <h4 class="text-lg font-semibold text-text-light mb-6">Enlaces Rápidos</h4>
+                        <ul class="space-y-3">
+                            <li><a href="/" class="text-text-gray hover:text-accent-orange transition-colors duration-300">Inicio</a></li>
+                            <li><a href="/productos" class="text-text-gray hover:text-accent-orange transition-colors duration-300">Productos</a></li>
+                            <li><a href="/categorias" class="text-text-gray hover:text-accent-orange transition-colors duration-300">Categorías</a></li>
+                            <li><a href="/productos/destacados" class="text-text-gray hover:text-accent-orange transition-colors duration-300">Destacados</a></li>
+                            <li><a href="/nosotros" class="text-text-gray hover:text-accent-orange transition-colors duration-300">Nosotros</a></li>
+                            <li><a href="/contacto" class="text-text-gray hover:text-accent-orange transition-colors duration-300">Contacto</a></li>
+                        </ul>
+                    </div>
+                    
+                    <!-- Categories -->
+                    <div>
+                        <h4 class="text-lg font-semibold text-text-light mb-6">Categorías</h4>
+                        <ul class="space-y-3">
+                            {% for categoria in categorias_nav %}
+                            <li><a href="/categoria/{{ categoria.nombre.lower() }}" class="text-text-gray hover:text-accent-orange transition-colors duration-300 capitalize">{{ categoria.nombre }}</a></li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Footer Bottom -->
+            <div class="border-t border-border-gray/50 py-8">
+                <div class="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
+                    <!-- Copyright -->
+                    <div class="text-center md:text-left">
+                        <p class="text-text-gray text-sm">
+                            &copy; 2025 JerkHome. Todos los derechos reservados.
+                        </p>
+                    </div>
+                    
+                    <!-- Developer Credit -->
+                    <div class="flex items-center space-x-3 text-sm">
+                        <span class="text-text-gray">Desarrollado por</span>
+                        <a href="https://quantiumcoders.cl" 
+                           target="_blank" 
+                           class="group flex items-center space-x-2 text-accent-orange hover:text-accent-red transition-colors duration-300">
+                            <svg class="w-4 h-4 group-hover:scale-110 transition-transform duration-300" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M12 2L2 7v10c0 5.55 3.84 10 9 10s9-4.45 9-10V7l-10-5z"/>
+                            </svg>
+                            <span class="font-medium">QuantiumCoders</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="{{ url_for('static', path='/js/main.js') }}"></script>
+    
+    <!-- Script para efectos de scroll del navbar -->
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const navbar = document.getElementById('navbar');
+        let lastScrollTop = 0;
+        let isScrollingUp = false;
+        
+        function updateNavbar() {
+            const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+            const scrollHeight = document.documentElement.scrollHeight - window.innerHeight;
+            const scrollProgress = Math.min(scrollTop / 300, 1); // 300px para transición completa
+            
+            // Determinar dirección del scroll
+            if (scrollTop < lastScrollTop) {
+                isScrollingUp = true;
+            } else if (scrollTop > lastScrollTop) {
+                isScrollingUp = false;
+            }
+            lastScrollTop = scrollTop;
+            
+            // Calcular opacidad del fondo
+            let bgOpacity;
+            if (scrollTop < 50) {
+                // Cerca del top - completamente visible
+                bgOpacity = 0.95;
+            } else if (scrollTop < 300) {
+                // Zona de transición - gradualmente transparente
+                bgOpacity = 0.95 - (scrollProgress * 0.6); // De 0.95 a 0.35
+            } else {
+                // Lejos del top
+                if (isScrollingUp) {
+                    // Scrolling up - más visible
+                    bgOpacity = 0.85;
+                } else {
+                    // Scrolling down - más transparente
+                    bgOpacity = 0.25;
+                }
+            }
+            
+            // Mostrar/ocultar navbar según scroll
+            if (scrollTop > 100) {
+                if (isScrollingUp) {
+                    // Scrolling up - mostrar navbar
+                    navbar.style.transform = 'translateY(0)';
+                } else {
+                    // Scrolling down - ocultar navbar ligeramente
+                    navbar.style.transform = 'translateY(-10px)';
+                }
+            } else {
+                // Cerca del top - siempre visible
+                navbar.style.transform = 'translateY(0)';
+            }
+            
+            // Aplicar estilos
+            navbar.style.backgroundColor = `rgba(15, 15, 15, ${bgOpacity})`;
+            navbar.style.borderBottomColor = `rgba(42, 42, 42, ${bgOpacity * 0.5})`;
+            
+            // Efecto de backdrop-blur más intenso cuando está transparente
+            if (bgOpacity < 0.5) {
+                navbar.style.backdropFilter = 'blur(20px)';
+            } else {
+                navbar.style.backdropFilter = 'blur(8px)';
+            }
+        }
+        
+        // Throttle function para performance
+        let ticking = false;
+        function requestTick() {
+            if (!ticking) {
+                requestAnimationFrame(updateNavbar);
+                ticking = true;
+            }
+        }
+        
+        window.addEventListener('scroll', function() {
+            requestTick();
+            ticking = false;
+        });
+        
+        // Inicializar
+        updateNavbar();
+    });
+    </script>
+    
+    <!-- Cart JavaScript -->
+    <script>
+        // Cart functionality
+        class Cart {
+            constructor() {
+                this.items = JSON.parse(localStorage.getItem('cart')) || [];
+                this.init();
+            }
+            
+            init() {
+                this.updateCartCount();
+                this.bindEvents();
+                this.renderCart();
+            }
+            
+            bindEvents() {
+                // Cart button events
+                document.getElementById('cart-button').addEventListener('click', () => this.openCart());
+                document.getElementById('cart-button-mobile').addEventListener('click', () => this.openCart());
+                document.getElementById('close-cart-modal').addEventListener('click', () => this.closeCart());
+                
+                // Clear cart
+                document.getElementById('clear-cart').addEventListener('click', () => this.clearCart());
+                
+                // Close modal when clicking outside
+                document.getElementById('cart-modal').addEventListener('click', (e) => {
+                    if (e.target === document.getElementById('cart-modal')) {
+                        this.closeCart();
+                    }
+                });
+            }
+            
+            addItem(product) {
+                const existingItem = this.items.find(item => item.id === product.id);
+                
+                if (existingItem) {
+                    existingItem.quantity += 1;
+                } else {
+                    this.items.push({
+                        id: product.id,
+                        name: product.name,
+                        price: product.price,
+                        image: product.image,
+                        quantity: 1
+                    });
+                }
+                
+                this.saveCart();
+                this.updateCartCount();
+                this.renderCart();
+                this.showNotification('Producto agregado al carrito');
+            }
+            
+            removeItem(productId) {
+                this.items = this.items.filter(item => item.id !== productId);
+                this.saveCart();
+                this.updateCartCount();
+                this.renderCart();
+            }
+            
+            updateQuantity(productId, quantity) {
+                const item = this.items.find(item => item.id === productId);
+                if (item) {
+                    item.quantity = quantity;
+                    if (quantity <= 0) {
+                        this.removeItem(productId);
+                    } else {
+                        this.saveCart();
+                        this.updateCartCount();
+                        this.renderCart();
+                    }
+                }
+            }
+            
+            clearCart() {
+                this.items = [];
+                this.saveCart();
+                this.updateCartCount();
+                this.renderCart();
+                this.showNotification('Carrito vaciado');
+            }
+            
+            saveCart() {
+                localStorage.setItem('cart', JSON.stringify(this.items));
+            }
+            
+            updateCartCount() {
+                const count = this.items.reduce((total, item) => total + item.quantity, 0);
+                const countElements = document.querySelectorAll('#cart-count, #cart-count-mobile');
+                
+                countElements.forEach(element => {
+                    if (count > 0) {
+                        element.textContent = count;
+                        element.classList.remove('hidden');
+                    } else {
+                        element.classList.add('hidden');
+                    }
+                });
+            }
+            
+            renderCart() {
+                const cartItems = document.getElementById('cart-items');
+                const emptyCart = document.getElementById('empty-cart');
+                const cartFooter = document.getElementById('cart-footer');
+                
+                if (this.items.length === 0) {
+                    cartItems.innerHTML = '';
+                    emptyCart.classList.remove('hidden');
+                    cartFooter.classList.add('hidden');
+                    return;
+                }
+                
+                emptyCart.classList.add('hidden');
+                cartFooter.classList.remove('hidden');
+                
+                let total = 0;
+                cartItems.innerHTML = this.items.map(item => {
+                    const itemTotal = item.price * item.quantity;
+                    total += itemTotal;
+                    
+                    return `
+                        <div class="flex items-center space-x-4 p-4 bg-tertiary-gray rounded-xl">
+                            <img src="${item.image}" alt="${item.name}" class="w-16 h-16 object-cover rounded-lg">
+                            <div class="flex-1">
+                                <h3 class="text-text-light font-medium">${item.name}</h3>
+                                <p class="text-accent-orange font-semibold">${item.price.toLocaleString()}</p>
+                            </div>
+                            <div class="flex items-center space-x-2">
+                                <button onclick="cart.updateQuantity(${item.id}, ${item.quantity - 1})" 
+                                        class="w-8 h-8 bg-secondary-gray hover:bg-light-gray text-text-light rounded-lg transition-colors duration-300 flex items-center justify-center">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"/>
+                                    </svg>
+                                </button>
+                                <span class="w-8 text-center text-text-light font-medium">${item.quantity}</span>
+                                <button onclick="cart.updateQuantity(${item.id}, ${item.quantity + 1})" 
+                                        class="w-8 h-8 bg-secondary-gray hover:bg-light-gray text-text-light rounded-lg transition-colors duration-300 flex items-center justify-center">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+                                    </svg>
+                                </button>
+                            </div>
+                            <button onclick="cart.removeItem(${item.id})" 
+                                    class="text-text-gray hover:text-accent-red transition-colors duration-300 p-2">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                                </svg>
+                            </button>
+                        </div>
+                    `;
+                }).join('');
+                
+                document.getElementById('cart-total').textContent = `${total.toLocaleString()}`;
+            }
+            
+            openCart() {
+                document.getElementById('cart-modal').classList.remove('hidden');
+                document.body.style.overflow = 'hidden';
+            }
+            
+            closeCart() {
+                document.getElementById('cart-modal').classList.add('hidden');
+                document.body.style.overflow = 'auto';
+            }
+            
+            showNotification(message) {
+                // Create notification element
+                const notification = document.createElement('div');
+                notification.className = 'fixed top-24 right-4 bg-accent-orange text-white px-6 py-3 rounded-lg shadow-lg z-50 transform translate-x-full transition-transform duration-300';
+                notification.textContent = message;
+                
+                document.body.appendChild(notification);
+                
+                // Show notification
+                setTimeout(() => {
+                    notification.classList.remove('translate-x-full');
+                }, 100);
+                
+                // Hide and remove notification
+                setTimeout(() => {
+                    notification.classList.add('translate-x-full');
+                    setTimeout(() => {
+                        document.body.removeChild(notification);
+                    }, 300);
+                }, 3000);
+            }
+        }
+        
+        // Initialize cart when page loads
+        let cart;
+        document.addEventListener('DOMContentLoaded', function() {
+            cart = new Cart();
+        });
+    </script>
+    
+    <!-- Mobile menu script -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const menuButton = document.getElementById('mobile-menu-button');
+            const mobileMenu = document.getElementById('mobile-menu');
+            
+            if (menuButton && mobileMenu) {
+                menuButton.addEventListener('click', function() {
+                    mobileMenu.classList.toggle('hidden');
+                });
+            }
+        });
+    </script>
+    
+    <!-- Additional Custom Scripts -->
+    {% block scripts %}{% endblock %}
+</body>
+</html>

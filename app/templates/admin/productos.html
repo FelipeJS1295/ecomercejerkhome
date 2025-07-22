@@ -1,0 +1,223 @@
+{% extends "admin/base_admin.html" %}
+
+{% block title %}Productos - Admin Panel JerkHome{% endblock %}
+{% block page_title %}Gestión de Productos{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+    <!-- Header con acciones -->
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-4 sm:space-y-0">
+        <div>
+            <h1 class="text-2xl font-bold">Productos</h1>
+            <p class="text-gray-400">{{ productos|length }} productos en total</p>
+        </div>
+        
+        <div class="flex space-x-3">
+            <a href="/admin/productos/nuevo" 
+               class="bg-admin-accent hover:bg-orange-600 text-white px-4 py-2 rounded transition-colors">
+                <i class="fas fa-plus mr-2"></i>Nuevo Producto
+            </a>
+            
+            <button onclick="toggleFilters()" 
+                    class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded transition-colors">
+                <i class="fas fa-filter mr-2"></i>Filtros
+            </button>
+        </div>
+    </div>
+    
+    <!-- Filtros (ocultos por defecto) -->
+    <div id="filters" class="hidden bg-admin-sidebar rounded-lg p-6 border border-gray-600">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div>
+                <label class="block text-sm font-medium mb-2">Categoría</label>
+                <select class="w-full px-3 py-2 bg-admin-dark border border-gray-600 rounded-md">
+                    <option value="">Todas las categorías</option>
+                    <option value="sofas">Sofás</option>
+                    <option value="seccionales">Seccionales</option>
+                    <option value="poltronas">Poltronas</option>
+                </select>
+            </div>
+            
+            <div>
+                <label class="block text-sm font-medium mb-2">Estado</label>
+                <select class="w-full px-3 py-2 bg-admin-dark border border-gray-600 rounded-md">
+                    <option value="">Todos</option>
+                    <option value="activo">Activos</option>
+                    <option value="inactivo">Inactivos</option>
+                </select>
+            </div>
+            
+            <div>
+                <label class="block text-sm font-medium mb-2">Stock</label>
+                <select class="w-full px-3 py-2 bg-admin-dark border border-gray-600 rounded-md">
+                    <option value="">Todos</option>
+                    <option value="bajo">Stock bajo (≤5)</option>
+                    <option value="sin_stock">Sin stock</option>
+                </select>
+            </div>
+            
+            <div>
+                <label class="block text-sm font-medium mb-2">Búsqueda</label>
+                <input type="text" placeholder="Buscar por nombre o SKU..." 
+                       class="w-full px-3 py-2 bg-admin-dark border border-gray-600 rounded-md">
+            </div>
+        </div>
+    </div>
+    
+    <!-- Tabla de productos -->
+    <div class="bg-admin-sidebar rounded-lg border border-gray-600 overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="w-full">
+                <thead class="bg-admin-dark">
+                    <tr>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                            Producto
+                        </th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                            SKU
+                        </th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                            Categoría
+                        </th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                            Precio
+                        </th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                            Stock
+                        </th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                            Vistas
+                        </th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                            Estado
+                        </th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                            Acciones
+                        </th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-600">
+                    {% for producto in productos %}
+                    <tr class="hover:bg-admin-dark transition-colors">
+                        <td class="px-6 py-4">
+                            <div class="flex items-center">
+                                {% if producto.imagen_1 %}
+                                <img src="{{ url_for('static', path='/images/productos/' + producto.imagen_1) }}" 
+                                     alt="{{ producto.nombre }}" class="h-12 w-12 object-cover rounded">
+                                {% else %}
+                                <div class="h-12 w-12 bg-gray-600 rounded flex items-center justify-center">
+                                    <i class="fas fa-image text-gray-400"></i>
+                                </div>
+                                {% endif %}
+                                
+                                <div class="ml-4">
+                                    <div class="text-sm font-medium">{{ producto.nombre }}</div>
+                                    {% if producto.destacado %}
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-500 bg-opacity-20 text-yellow-400">
+                                        Destacado
+                                    </span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </td>
+                        
+                        <td class="px-6 py-4 text-sm">
+                            {{ producto.sku }}
+                        </td>
+                        
+                        <td class="px-6 py-4 text-sm">
+                            {{ producto.categoria.nombre }}
+                        </td>
+                        
+                        <td class="px-6 py-4 text-sm">
+                            <div>
+                                {% if producto.precio_oferta %}
+                                <span class="text-red-400 font-medium">${{ "{:,.0f}".format(producto.precio_oferta) }}</span>
+                                <span class="text-gray-400 line-through text-xs block">${{ "{:,.0f}".format(producto.precio) }}</span>
+                                {% else %}
+                                <span class="font-medium">${{ "{:,.0f}".format(producto.precio) }}</span>
+                                {% endif %}
+                            </div>
+                        </td>
+                        
+                        <td class="px-6 py-4 text-sm">
+                            {% if producto.stock <= 0 %}
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-500 bg-opacity-20 text-red-400">
+                                Agotado
+                            </span>
+                            {% elif producto.stock <= 5 %}
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-500 bg-opacity-20 text-yellow-400">
+                                {{ producto.stock }}
+                            </span>
+                            {% else %}
+                            <span class="text-green-400">{{ producto.stock }}</span>
+                            {% endif %}
+                        </td>
+                        
+                        <td class="px-6 py-4 text-sm text-gray-400">
+                            {{ producto.vistas }}
+                        </td>
+                        
+                        <td class="px-6 py-4">
+                            {% if producto.activo %}
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-500 bg-opacity-20 text-green-400">
+                                Activo
+                            </span>
+                            {% else %}
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-500 bg-opacity-20 text-gray-400">
+                                Inactivo
+                            </span>
+                            {% endif %}
+                        </td>
+                        
+                        <td class="px-6 py-4 text-sm">
+                            <div class="flex space-x-2">
+                                <a href="/producto/{{ producto.id }}" target="_blank"
+                                   class="text-blue-400 hover:text-blue-300 transition-colors" title="Ver producto">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                                
+                                <a href="/admin/productos/{{ producto.id }}/editar"
+                                   class="text-admin-accent hover:text-orange-400 transition-colors" title="Editar">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                
+                                <button onclick="confirmDelete('{{ producto.nombre }}', '/admin/productos/{{ producto.id }}/eliminar')"
+                                        class="text-red-400 hover:text-red-300 transition-colors" title="Eliminar">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        
+        {% if not productos %}
+        <div class="text-center py-12">
+            <i class="fas fa-box-open text-6xl text-gray-400 mb-4"></i>
+            <h3 class="text-lg font-medium text-gray-400 mb-2">No hay productos</h3>
+            <p class="text-gray-500 mb-4">Comienza agregando tu primer producto</p>
+            <a href="/admin/productos/nuevo" 
+               class="bg-admin-accent hover:bg-orange-600 text-white px-4 py-2 rounded transition-colors">
+                <i class="fas fa-plus mr-2"></i>Crear Producto
+            </a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+function toggleFilters() {
+    const filters = document.getElementById('filters');
+    filters.classList.toggle('hidden');
+}
+
+function confirmDelete(productName, deleteUrl) {
+    if (confirm(`¿Estás seguro de que quieres eliminar "${productName}"?`)) {
+        window.location.href = deleteUrl;
+    }
+}
+</script>
+{% endblock %}

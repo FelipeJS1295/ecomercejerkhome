@@ -1,0 +1,224 @@
+{% extends "admin/base_admin.html" %}
+
+{% block title %}Venta {{ venta.orden_compra }} - Admin Panel JerkHome{% endblock %}
+{% block page_title %}Detalle de Venta{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto space-y-6">
+    <!-- Header -->
+    <div class="flex items-center justify-between mb-6">
+        <div>
+            <h1 class="text-2xl font-bold">Venta {{ venta.orden_compra }}</h1>
+            <p class="text-gray-400">{{ venta.numero_venta }} - {{ venta.fecha_compra.strftime('%d/%m/%Y %H:%M') }}</p>
+        </div>
+        <a href="/admin/ventas" class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded transition-colors">
+            <i class="fas fa-arrow-left mr-2"></i>Volver a Ventas
+        </a>
+    </div>
+    
+    <!-- Estados actuales -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="bg-admin-sidebar rounded-lg p-4 border border-gray-600">
+            <h3 class="text-sm font-medium text-gray-400 mb-2">Estado de la Venta</h3>
+            {% if venta.estado_venta.value == 'NUEVA' %}
+            <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-500 bg-opacity-20 text-blue-400">
+                <i class="fas fa-circle text-xs mr-2"></i>Nueva
+            </span>
+            {% elif venta.estado_venta.value == 'EN_DESPACHO' %}
+            <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-yellow-500 bg-opacity-20 text-yellow-400">
+                <i class="fas fa-truck text-xs mr-2"></i>En Despacho
+            </span>
+            {% elif venta.estado_venta.value == 'ENTREGADA' %}
+            <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-500 bg-opacity-20 text-green-400">
+                <i class="fas fa-check-circle text-xs mr-2"></i>Entregada
+            </span>
+            {% elif venta.estado_venta.value == 'ANULADA' %}
+            <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-red-500 bg-opacity-20 text-red-400">
+                <i class="fas fa-times-circle text-xs mr-2"></i>Anulada
+            </span>
+            {% elif venta.estado_venta.value == 'DEVOLUCION' %}
+            <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-purple-500 bg-opacity-20 text-purple-400">
+                <i class="fas fa-undo text-xs mr-2"></i>Devolución
+            </span>
+            {% endif %}
+        </div>
+        
+        <div class="bg-admin-sidebar rounded-lg p-4 border border-gray-600">
+            <h3 class="text-sm font-medium text-gray-400 mb-2">Estado del Pago</h3>
+            {% if venta.estado_pago.value == 'PENDIENTE' %}
+            <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-yellow-500 bg-opacity-20 text-yellow-400">
+                <i class="fas fa-clock text-xs mr-2"></i>Pendiente
+            </span>
+            {% elif venta.estado_pago.value == 'PAGADA' %}
+            <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-500 bg-opacity-20 text-green-400">
+                <i class="fas fa-check text-xs mr-2"></i>Pagada
+            </span>
+            {% elif venta.estado_pago.value == 'ANULADA' %}
+            <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-red-500 bg-opacity-20 text-red-400">
+                <i class="fas fa-ban text-xs mr-2"></i>Anulada
+            </span>
+            {% endif %}
+        </div>
+    </div>
+    
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <!-- Información del Cliente -->
+        <div class="bg-admin-sidebar rounded-lg p-6 border border-gray-600">
+            <h3 class="text-lg font-semibold mb-4 text-admin-accent">
+                <i class="fas fa-user mr-2"></i>Información del Cliente
+            </h3>
+            
+            <div class="space-y-3">
+                <div>
+                    <span class="text-gray-400 text-sm">Nombre:</span>
+                    <p class="font-medium">{{ venta.nombre_cliente }}</p>
+                </div>
+                
+                <div>
+                    <span class="text-gray-400 text-sm">RUT:</span>
+                    <p class="font-medium">{{ venta.rut_cliente }}</p>
+                </div>
+                
+                <div>
+                    <span class="text-gray-400 text-sm">Email:</span>
+                    <p class="font-medium">
+                        <a href="mailto:{{ venta.email }}" class="text-admin-accent hover:text-orange-400">
+                            {{ venta.email }}
+                        </a>
+                    </p>
+                </div>
+                
+                <div>
+                    <span class="text-gray-400 text-sm">Teléfono:</span>
+                    <p class="font-medium">
+                        <a href="tel:{{ venta.numero_telefono }}" class="text-admin-accent hover:text-orange-400">
+                            {{ venta.numero_telefono }}
+                        </a>
+                    </p>
+                </div>
+                
+                <div>
+                    <span class="text-gray-400 text-sm">Dirección:</span>
+                    <p class="font-medium">{{ venta.direccion_cliente }}</p>
+                    <p class="text-sm text-gray-400">{{ venta.comuna_cliente }}, {{ venta.region_cliente }}</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Información del Producto -->
+        <div class="bg-admin-sidebar rounded-lg p-6 border border-gray-600">
+            <h3 class="text-lg font-semibold mb-4 text-admin-accent">
+                <i class="fas fa-box mr-2"></i>Información del Producto
+            </h3>
+            
+            <div class="space-y-3">
+                <div>
+                    <span class="text-gray-400 text-sm">Producto:</span>
+                    <p class="font-medium">{{ venta.nombre }}</p>
+                </div>
+                
+                <div>
+                    <span class="text-gray-400 text-sm">SKU:</span>
+                    <p class="font-medium">{{ venta.sku }}</p>
+                </div>
+                
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <span class="text-gray-400 text-sm">Cantidad:</span>
+                        <p class="font-medium">{{ venta.cantidad }}</p>
+                    </div>
+                    
+                    <div>
+                        <span class="text-gray-400 text-sm">Precio Unitario:</span>
+                        <p class="font-medium">${{ "{:,.0f}".format(venta.precio) }}</p>
+                    </div>
+                </div>
+                
+                <div class="border-t border-gray-600 pt-3">
+                    <span class="text-gray-400 text-sm">Total:</span>
+                    <p class="text-2xl font-bold text-admin-accent">${{ "{:,.0f}".format(venta.total) }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Fechas -->
+    <div class="bg-admin-sidebar rounded-lg p-6 border border-gray-600">
+        <h3 class="text-lg font-semibold mb-4 text-admin-accent">
+            <i class="fas fa-calendar mr-2"></i>Fechas Importantes
+        </h3>
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div>
+                <span class="text-gray-400 text-sm">Fecha de Compra:</span>
+                <p class="font-medium">{{ venta.fecha_compra.strftime('%d/%m/%Y %H:%M') }}</p>
+            </div>
+            
+            <div>
+                <span class="text-gray-400 text-sm">Fecha de Entrega:</span>
+                {% if venta.fecha_entrega %}
+                <p class="font-medium">{{ venta.fecha_entrega.strftime('%d/%m/%Y') }}</p>
+                {% else %}
+                <p class="text-gray-500 italic">No programada</p>
+                {% endif %}
+            </div>
+            
+            <div>
+                <span class="text-gray-400 text-sm">Última Actualización:</span>
+                <p class="font-medium">{{ venta.updated_at.strftime('%d/%m/%Y %H:%M') }}</p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Formulario de actualización -->
+    <div class="bg-admin-sidebar rounded-lg p-6 border border-gray-600">
+        <h3 class="text-lg font-semibold mb-4 text-admin-accent">
+            <i class="fas fa-edit mr-2"></i>Actualizar Venta
+        </h3>
+        
+        <form method="POST" action="/admin/ventas/{{ venta.id }}/actualizar" class="space-y-4">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div>
+                    <label for="estado_venta" class="block text-sm font-medium mb-2">Estado de Venta</label>
+                    <select id="estado_venta" name="estado_venta" required
+                            class="w-full px-3 py-2 bg-admin-dark border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-admin-accent">
+                        <option value="NUEVA" {% if venta.estado_venta.value == 'NUEVA' %}selected{% endif %}>Nueva</option>
+                        <option value="EN_DESPACHO" {% if venta.estado_venta.value == 'EN_DESPACHO' %}selected{% endif %}>En Despacho</option>
+                        <option value="ENTREGADA" {% if venta.estado_venta.value == 'ENTREGADA' %}selected{% endif %}>Entregada</option>
+                        <option value="ANULADA" {% if venta.estado_venta.value == 'ANULADA' %}selected{% endif %}>Anulada</option>
+                        <option value="DEVOLUCION" {% if venta.estado_venta.value == 'DEVOLUCION' %}selected{% endif %}>Devolución</option>
+                    </select>
+                </div>
+                
+                <div>
+                    <label for="estado_pago" class="block text-sm font-medium mb-2">Estado de Pago</label>
+                    <select id="estado_pago" name="estado_pago" required
+                            class="w-full px-3 py-2 bg-admin-dark border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-admin-accent">
+                        <option value="PENDIENTE" {% if venta.estado_pago.value == 'PENDIENTE' %}selected{% endif %}>Pendiente</option>
+                        <option value="PAGADA" {% if venta.estado_pago.value == 'PAGADA' %}selected{% endif %}>Pagada</option>
+                        <option value="ANULADA" {% if venta.estado_pago.value == 'ANULADA' %}selected{% endif %}>Anulada</option>
+                    </select>
+                </div>
+                
+                <div>
+                    <label for="fecha_entrega" class="block text-sm font-medium mb-2">Fecha de Entrega</label>
+                    <input type="date" id="fecha_entrega" name="fecha_entrega"
+                           value="{% if venta.fecha_entrega %}{{ venta.fecha_entrega.strftime('%Y-%m-%d') }}{% endif %}"
+                           class="w-full px-3 py-2 bg-admin-dark border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-admin-accent">
+                </div>
+            </div>
+            
+            <div class="flex justify-end space-x-4">
+                <a href="/admin/ventas" 
+                   class="bg-gray-600 hover:bg-gray-700 text-white px-6 py-2 rounded transition-colors">
+                    Cancelar
+                </a>
+                <button type="submit" 
+                        class="bg-admin-accent hover:bg-orange-600 text-white px-6 py-2 rounded transition-colors">
+                    <i class="fas fa-save mr-2"></i>Actualizar Venta
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

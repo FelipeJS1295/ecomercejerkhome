@@ -1,0 +1,316 @@
+{% extends "base.html" %}
+
+{% block title %}{{ categoria.nombre }} - JerkHome{% endblock %}
+
+{% block description %}{{ categoria.descripcion }} - Descubre nuestra colección de {{ categoria.nombre.lower() }} en JerkHome. Muebles tapizados de alta calidad.{% endblock %}
+
+{% block content %}
+<!-- Breadcrumb -->
+<section class="bg-secondary-gray py-4">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <nav class="flex" aria-label="Breadcrumb">
+            <ol class="inline-flex items-center space-x-1 md:space-x-3">
+                <li class="inline-flex items-center">
+                    <a href="/" class="inline-flex items-center text-text-gray hover:text-accent-orange transition-colors">
+                        <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M10.707 2.293a1 1 0 00-1.414 0l-9 9a1 1 0 001.414 1.414L3 11.414V17a1 1 0 001 1h4a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1h4a1 1 0 001-1v-5.586l1.293 1.293a1 1 0 001.414-1.414l-9-9z"></path>
+                        </svg>
+                        Inicio
+                    </a>
+                </li>
+                <li>
+                    <div class="flex items-center">
+                        <svg class="w-6 h-6 text-light-gray" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"></path>
+                        </svg>
+                        <a href="/categorias" class="ml-1 text-text-gray hover:text-accent-orange transition-colors">
+                            Categorías
+                        </a>
+                    </div>
+                </li>
+                <li>
+                    <div class="flex items-center">
+                        <svg class="w-6 h-6 text-light-gray" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"></path>
+                        </svg>
+                        <span class="ml-1 text-accent-orange font-medium">{{ categoria.nombre }}</span>
+                    </div>
+                </li>
+            </ol>
+        </nav>
+    </div>
+</section>
+
+<!-- Category Header -->
+<section class="relative overflow-hidden">
+    <!-- Category Background Image -->
+    {% if categoria.imagen %}
+    <div class="absolute inset-0">
+        <img src="{{ url_for('static', path='/images/categorias/' + categoria.imagen) }}" 
+             alt="{{ categoria.nombre }}" 
+             class="w-full h-full object-cover"
+             onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+        
+        <!-- Overlay degradado para legibilidad -->
+        <div class="absolute inset-0 bg-gradient-to-b from-primary-black/80 via-primary-black/60 to-primary-black/90"></div>
+    </div>
+    {% else %}
+    <!-- Fallback gradient background -->
+    <div class="absolute inset-0 bg-gradient-to-br from-primary-black via-secondary-gray to-tertiary-gray"></div>
+    {% endif %}
+    
+    <!-- Pattern overlay sutil -->
+    <div class="absolute inset-0 opacity-10">
+        <div class="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"%3E%3Cg fill="none" fill-rule="evenodd"%3E%3Cg fill="%23e74c3c" fill-opacity="0.3"%3E%3Ccircle cx="30" cy="30" r="1"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')]"></div>
+    </div>
+    
+    <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 lg:py-32">
+        <div class="text-center">
+            <!-- Category Icon -->
+            <div class="w-24 h-24 bg-gradient-to-br from-accent-orange to-accent-red rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg">
+                {% if categoria.nombre.lower() == 'sofas' %}
+                <svg class="w-12 h-12 text-white" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M20,9V7A2,2 0 0,0 18,5H16A2,2 0 0,0 14,7V9A3,3 0 0,0 11,12V16A1,1 0 0,0 12,17H12.8L13,19H15L14.8,17H17.2L17,19H19L18.2,17H19A1,1 0 0,0 20,16V12A3,3 0 0,0 20,9M16,7H18V9H16V7Z"/>
+                </svg>
+                {% elif categoria.nombre.lower() == 'seccionales' %}
+                <svg class="w-12 h-12 text-white" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M3,11V16A1,1 0 0,0 4,17H5L5.2,19H7.2L7,17H17L17.2,19H19.2L19,17H20A1,1 0 0,0 21,16V11A3,3 0 0,0 18,8V6A2,2 0 0,0 16,4H14A2,2 0 0,0 12,6V8H8V6A2,2 0 0,0 6,4H4A2,2 0 0,0 2,6V8A3,3 0 0,0 3,11M4,6H6V8H4V6M14,6H16V8H14V6Z"/>
+                </svg>
+                {% elif categoria.nombre.lower() == 'poltronas' %}
+                <svg class="w-12 h-12 text-white" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M7,14V11A4,4 0 0,1 11,7H13A4,4 0 0,1 17,11V14H19A1,1 0 0,1 20,15V16A1,1 0 0,1 19,17H18.8L19,19H17L18.8,17H5.2L5,19H3L3.2,17H5A1,1 0 0,1 4,16V15A1,1 0 0,1 5,14H7Z"/>
+                </svg>
+                {% elif categoria.nombre.lower() == 'camas' %}
+                <svg class="w-12 h-12 text-white" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M19,7H5A3,3 0 0,0 2,10V17H4V15H20V17H22V10A3,3 0 0,0 19,7M4,10A1,1 0 0,1 5,9H19A1,1 0 0,1 20,10V13H4V10Z"/>
+                </svg>
+                {% elif categoria.nombre.lower() == 'respaldos' %}
+                <svg class="w-12 h-12 text-white" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M12,2A2,2 0 0,1 14,4V8A2,2 0 0,1 12,10A2,2 0 0,1 10,8V4A2,2 0 0,1 12,2M19,7H16V9H19A1,1 0 0,1 20,10V15H22V10A3,3 0 0,0 19,7M5,7A3,3 0 0,0 2,10V15H4V10A1,1 0 0,1 5,9H8V7H5Z"/>
+                </svg>
+                {% elif categoria.nombre.lower() == 'living' %}
+                <svg class="w-12 h-12 text-white" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M8,5V7H16V5H21V19H3V5H8M6,9V17H18V9H6M8,11H10V15H8V11M14,11H16V15H14V11Z"/>
+                </svg>
+                {% else %}
+                <svg class="w-12 h-12 text-white" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M12,2L2,7V17H22V7L12,2M4,9H20V15H4V9Z"/>
+                </svg>
+                {% endif %}
+            </div>
+            
+            <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-4 drop-shadow-lg">
+                {{ categoria.nombre }}
+            </h1>
+            <p class="text-lg md:text-xl text-white/90 max-w-3xl mx-auto mb-6 drop-shadow-md">
+                {{ categoria.descripcion }}
+            </p>
+            
+            <!-- Stats superpuestas -->
+            <div class="inline-flex items-center bg-white/10 backdrop-blur-md rounded-full px-6 py-3 border border-white/20">
+                <svg class="w-5 h-5 text-accent-orange mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4-8-4m16 0v10l-8 4-8-4V7m16 0l-8 4-8-4"></path>
+                </svg>
+                <span class="text-white font-medium">
+                    {{ productos|length }} producto{% if productos|length != 1 %}s{% endif %} disponible{% if productos|length != 1 %}s{% endif %}
+                </span>
+            </div>
+            
+            <div class="w-24 h-1 bg-gradient-to-r from-accent-orange to-accent-red mx-auto mt-8"></div>
+        </div>
+    </div>
+</section>
+
+<!-- Products Section -->
+<section class="py-16 bg-primary-black">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        
+        {% if productos %}
+        <!-- Products Count -->
+        <div class="mb-8">
+            <div class="flex items-center justify-between flex-wrap gap-4">
+                <div class="flex items-center">
+                    <svg class="w-5 h-5 text-accent-orange mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4-8-4m16 0v10l-8 4-8-4V7m16 0l-8 4-8-4"></path>
+                    </svg>
+                    <span class="text-text-light font-semibold text-lg">
+                        {{ productos|length }} producto{% if productos|length != 1 %}s{% endif %} encontrado{% if productos|length != 1 %}s{% endif %}
+                    </span>
+                </div>
+                
+                <!-- Back to Categories -->
+                <a href="/categorias" 
+                   class="inline-flex items-center text-accent-orange hover:text-accent-red transition-colors">
+                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                    </svg>
+                    <span>Ver todas las categorías</span>
+                </a>
+            </div>
+        </div>
+        
+        <!-- Products Grid -->
+        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {% for producto in productos %}
+            <div class="group bg-secondary-gray rounded-xl overflow-hidden hover:bg-tertiary-gray transition-all duration-300 hover:shadow-xl hover:shadow-accent-orange/10 border border-border-gray hover:border-accent-orange/30">
+                
+                <!-- Product Image -->
+                <div class="relative overflow-hidden aspect-w-16 aspect-h-12">
+                    {% if producto.imagen_1 %}
+                    <img src="{{ url_for('static', path='/images/productos/' + producto.imagen_1) }}" 
+                         alt="{{ producto.nombre }}" 
+                         class="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-300">
+                    {% else %}
+                    <div class="w-full h-64 bg-light-gray flex items-center justify-center">
+                        <div class="text-center">
+                            <svg class="w-16 h-16 text-text-gray mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                            </svg>
+                            <span class="text-text-gray text-sm">Sin imagen</span>
+                        </div>
+                    </div>
+                    {% endif %}
+                    
+                    <!-- Badges -->
+                    <div class="absolute top-3 left-3 right-3 flex justify-between">
+                        {% if producto.destacado %}
+                        <span class="bg-gradient-to-r from-yellow-400 to-yellow-500 text-gray-900 px-3 py-1 rounded-full text-xs font-bold">
+                            DESTACADO
+                        </span>
+                        {% else %}
+                        <div></div>
+                        {% endif %}
+                        
+                        {% if producto.precio_oferta %}
+                        <span class="bg-gradient-to-r from-accent-red to-red-600 text-white px-3 py-1 rounded-full text-xs font-bold">
+                            OFERTA
+                        </span>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <!-- Product Info -->
+                <div class="p-6">
+                    <h3 class="text-xl font-semibold text-text-light mb-2 group-hover:text-accent-orange transition-colors">
+                        {{ producto.nombre }}
+                    </h3>
+                    
+                    <p class="text-text-gray text-sm mb-4 leading-relaxed">
+                        {{ producto.descripcion[:100] }}{% if producto.descripcion|length > 100 %}...{% endif %}
+                    </p>
+                    
+                    <!-- Price Section -->
+                    <div class="mb-4">
+                        {% if producto.precio_oferta %}
+                        <div class="space-y-1">
+                            <span class="text-text-gray line-through text-sm">
+                                ${{ "{:,.0f}".format(producto.precio) }}
+                            </span>
+                            <div class="text-2xl font-bold text-accent-red">
+                                ${{ "{:,.0f}".format(producto.precio_oferta) }}
+                            </div>
+                            <div class="text-xs text-green-400">
+                                Ahorro: ${{ "{:,.0f}".format(producto.precio - producto.precio_oferta) }}
+                            </div>
+                        </div>
+                        {% else %}
+                        <div class="text-2xl font-bold text-accent-orange">
+                            ${{ "{:,.0f}".format(producto.precio) }}
+                        </div>
+                        {% endif %}
+                    </div>
+                    
+                    <!-- Product Stats -->
+                    <div class="flex items-center justify-between text-xs text-text-gray mb-6">
+                        <div class="flex items-center">
+                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4-8-4m16 0v10l-8 4-8-4V7m16 0l-8 4-8-4"></path>
+                            </svg>
+                            <span>Stock: {{ producto.stock }}</span>
+                        </div>
+                        <div class="flex items-center">
+                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                            </svg>
+                            <span>{{ producto.vistas }} vistas</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Action Button -->
+                    <a href="/producto/{{ producto.id }}" 
+                       class="block w-full text-center px-6 py-3 bg-gradient-to-r from-accent-orange to-accent-red text-white font-medium rounded-lg hover:shadow-lg hover:shadow-accent-orange/25 transition-all duration-200 transform hover:scale-105">
+                        Ver Detalles
+                    </a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        
+        {% else %}
+        <!-- Empty State -->
+        <div class="text-center py-20">
+            <div class="max-w-md mx-auto">
+                <!-- Category Icon (Larger) -->
+                <div class="w-32 h-32 bg-gradient-to-br from-light-gray to-border-gray rounded-full flex items-center justify-center mx-auto mb-8 opacity-50">
+                    {% if categoria.nombre.lower() == 'sofas' %}
+                    <svg class="w-16 h-16 text-text-gray" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M20,9V7A2,2 0 0,0 18,5H16A2,2 0 0,0 14,7V9A3,3 0 0,0 11,12V16A1,1 0 0,0 12,17H12.8L13,19H15L14.8,17H17.2L17,19H19L18.2,17H19A1,1 0 0,0 20,16V12A3,3 0 0,0 20,9M16,7H18V9H16V7Z"/>
+                    </svg>
+                    {% elif categoria.nombre.lower() == 'seccionales' %}
+                    <svg class="w-16 h-16 text-text-gray" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M3,11V16A1,1 0 0,0 4,17H5L5.2,19H7.2L7,17H17L17.2,19H19.2L19,17H20A1,1 0 0,0 21,16V11A3,3 0 0,0 18,8V6A2,2 0 0,0 16,4H14A2,2 0 0,0 12,6V8H8V6A2,2 0 0,0 6,4H4A2,2 0 0,0 2,6V8A3,3 0 0,0 3,11M4,6H6V8H4V6M14,6H16V8H14V6Z"/>
+                    </svg>
+                    {% elif categoria.nombre.lower() == 'poltronas' %}
+                    <svg class="w-16 h-16 text-text-gray" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M7,14V11A4,4 0 0,1 11,7H13A4,4 0 0,1 17,11V14H19A1,1 0 0,1 20,15V16A1,1 0 0,1 19,17H18.8L19,19H17L18.8,17H5.2L5,19H3L3.2,17H5A1,1 0 0,1 4,16V15A1,1 0 0,1 5,14H7Z"/>
+                    </svg>
+                    {% elif categoria.nombre.lower() == 'camas' %}
+                    <svg class="w-16 h-16 text-text-gray" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M19,7H5A3,3 0 0,0 2,10V17H4V15H20V17H22V10A3,3 0 0,0 19,7M4,10A1,1 0 0,1 5,9H19A1,1 0 0,1 20,10V13H4V10Z"/>
+                    </svg>
+                    {% elif categoria.nombre.lower() == 'respaldos' %}
+                    <svg class="w-16 h-16 text-text-gray" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M12,2A2,2 0 0,1 14,4V8A2,2 0 0,1 12,10A2,2 0 0,1 10,8V4A2,2 0 0,1 12,2M19,7H16V9H19A1,1 0 0,1 20,10V15H22V10A3,3 0 0,0 19,7M5,7A3,3 0 0,0 2,10V15H4V10A1,1 0 0,1 5,9H8V7H5Z"/>
+                    </svg>
+                    {% elif categoria.nombre.lower() == 'living' %}
+                    <svg class="w-16 h-16 text-text-gray" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M8,5V7H16V5H21V19H3V5H8M6,9V17H18V9H6M8,11H10V15H8V11M14,11H16V15H14V11Z"/>
+                    </svg>
+                    {% else %}
+                    <svg class="w-16 h-16 text-text-gray" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M12,2L2,7V17H22V7L12,2M4,9H20V15H4V9Z"/>
+                    </svg>
+                    {% endif %}
+                </div>
+                
+                <h3 class="text-2xl font-bold text-text-light mb-4">
+                    No hay productos en {{ categoria.nombre }}
+                </h3>
+                
+                <p class="text-text-gray mb-8">
+                    Pronto agregaremos productos a la categoría {{ categoria.nombre }}. Mientras tanto, puedes explorar otras categorías.
+                </p>
+                
+                <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                    <a href="/categorias" 
+                       class="inline-flex items-center px-6 py-3 border-2 border-accent-orange text-accent-orange font-medium rounded-lg hover:bg-accent-orange hover:text-white transition-all duration-200">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+                        </svg>
+                        Ver otras categorías
+                    </a>
+                    <a href="/productos" 
+                       class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-accent-orange to-accent-red text-white font-medium rounded-lg hover:shadow-lg hover:shadow-accent-orange/25 transition-all duration-200">
+                        <span>Ver todos los productos</span>
+                        <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
+                        </svg>
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

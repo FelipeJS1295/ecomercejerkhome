@@ -1,0 +1,318 @@
+{% extends "base.html" %}
+
+{% block title %}Nosotros - {{ config.sitio_nombre or 'JerkHome' }}{% endblock %}
+
+{% block description %}Conoce la historia y valores de {{ config.sitio_nombre or 'JerkHome' }}. Fábrica especializada en muebles tapizados de alta calidad con años de experiencia y pasión artesanal.{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="relative overflow-hidden">
+    <!-- Background Image -->
+    <div class="absolute inset-0">
+        <img src="{{ url_for('static', path='/images/nosotros/nosotros-1.jfif') }}" 
+             alt="JerkHome - Nuestra empresa" 
+             class="w-full h-full object-cover"
+             onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+        
+        <!-- Overlay degradado para legibilidad -->
+        <div class="absolute inset-0 bg-gradient-to-b from-primary-black/85 via-primary-black/70 to-primary-black/90"></div>
+    </div>
+    
+    <!-- Fallback gradient background -->
+    <div class="absolute inset-0 bg-gradient-to-br from-primary-black via-secondary-gray to-tertiary-gray" style="display:none;"></div>
+    
+    <!-- Pattern overlay sutil -->
+    <div class="absolute inset-0 opacity-10">
+        <div class="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg width="80" height="80" viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg"%3E%3Cg fill="none" fill-rule="evenodd"%3E%3Cg fill="%23e74c3c" fill-opacity="0.3"%3E%3Ccircle cx="40" cy="40" r="1"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')]"></div>
+    </div>
+    
+    <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 lg:py-32">
+        <div class="text-center">
+            <!-- Company Icon -->
+            <div class="w-20 h-20 bg-gradient-to-br from-accent-orange to-accent-red rounded-full flex items-center justify-center mx-auto mb-8 shadow-lg">
+                <svg class="w-10 h-10 text-white" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M12,2L2,7V17H22V7L12,2M4,9H20V15H4V9Z"/>
+                </svg>
+            </div>
+            
+            <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6 drop-shadow-lg">
+                Nosotros
+            </h1>
+            <p class="text-xl md:text-2xl text-white/90 max-w-3xl mx-auto drop-shadow-md">
+                {{ config.sitio_descripcion or 'Conoce nuestra historia y pasión por los muebles de calidad' }}
+            </p>
+            
+            <!-- Stats superpuestas -->
+            <div class="flex flex-col sm:flex-row gap-4 justify-center mt-8">
+                <div class="inline-flex items-center bg-white/10 backdrop-blur-md rounded-full px-6 py-3 border border-white/20">
+                    <svg class="w-5 h-5 text-accent-orange mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    <span class="text-white font-medium">Más de 10 años de experiencia</span>
+                </div>
+                <div class="inline-flex items-center bg-white/10 backdrop-blur-md rounded-full px-6 py-3 border border-white/20">
+                    <svg class="w-5 h-5 text-accent-orange mr-2" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
+                    </svg>
+                    <span class="text-white font-medium">Calidad garantizada</span>
+                </div>
+            </div>
+            
+            <div class="w-24 h-1 bg-gradient-to-r from-accent-orange to-accent-red mx-auto mt-8"></div>
+        </div>
+    </div>
+</section>
+
+<!-- Nuestra Historia -->
+<section class="py-16 lg:py-24 bg-primary-black">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid lg:grid-cols-2 gap-12 items-center">
+            <div>
+                <h2 class="text-3xl md:text-4xl font-bold text-text-light mb-8">
+                    Nuestra Historia
+                </h2>
+                <div class="space-y-6 text-text-gray leading-relaxed">
+                    <p class="text-lg">
+                        <span class="text-accent-orange font-semibold">{{ config.sitio_nombre or 'JerkHome' }}</span> nace de la pasión por crear muebles que combinen 
+                        comodidad, durabilidad y diseño excepcional. Con años de experiencia en el sector, 
+                        nos hemos consolidado como una empresa líder en la fabricación de muebles tapizados.
+                    </p>
+                    <p>
+                        Nuestro compromiso es brindar a nuestros clientes productos de la más alta calidad, 
+                        utilizando materiales premium y técnicas artesanales que garantizan la durabilidad 
+                        y el confort en cada pieza.
+                    </p>
+                    <div class="bg-secondary-gray rounded-xl p-6 border-l-4 border-accent-orange">
+                        <p class="text-text-light font-medium italic">
+                            "{{ config.sitio_slogan or 'Calidad y confort en cada pieza' }}"
+                        </p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Image Gallery -->
+            <div class="grid grid-cols-2 gap-4">
+                <div class="space-y-4">
+                    <div class="relative overflow-hidden rounded-xl shadow-lg group">
+                        <img src="{{ url_for('static', path='/images/nosotros/nosotros-1.jfif') }}" 
+                             alt="Taller de fabricación" 
+                             class="w-full h-48 object-cover transition-transform duration-300 group-hover:scale-105">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                        <div class="absolute bottom-4 left-4 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                            <p class="font-semibold">Nuestro Taller</p>
+                        </div>
+                    </div>
+                    <div class="relative overflow-hidden rounded-xl shadow-lg group">
+                        <img src="{{ url_for('static', path='/images/nosotros/nosotros-3.jfif') }}" 
+                             alt="Productos terminados" 
+                             class="w-full h-48 object-cover transition-transform duration-300 group-hover:scale-105">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                        <div class="absolute bottom-4 left-4 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                            <p class="font-semibold">Productos</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="space-y-4 mt-8">
+                    <div class="relative overflow-hidden rounded-xl shadow-lg group">
+                        <img src="{{ url_for('static', path='/images/nosotros/nosotros-2.jfif') }}" 
+                             alt="Equipo de trabajo" 
+                             class="w-full h-48 object-cover transition-transform duration-300 group-hover:scale-105">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                        <div class="absolute bottom-4 left-4 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                            <p class="font-semibold">Nuestro Equipo</p>
+                        </div>
+                    </div>
+                    <div class="relative overflow-hidden rounded-xl shadow-lg group">
+                        <img src="{{ url_for('static', path='/images/nosotros/nosotros-4.webp') }}" 
+                             alt="Showroom" 
+                             class="w-full h-48 object-cover transition-transform duration-300 group-hover:scale-105">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                        <div class="absolute bottom-4 left-4 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                            <p class="font-semibold">Showroom</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Nuestros Valores -->
+<section class="py-16 lg:py-24 bg-secondary-gray">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-16">
+            <h2 class="text-3xl md:text-4xl font-bold text-text-light mb-4">
+                Nuestros Valores
+            </h2>
+            <p class="text-lg text-text-gray max-w-2xl mx-auto">
+                Los principios que guían nuestro trabajo diario y definen nuestra identidad
+            </p>
+            <div class="w-24 h-1 bg-gradient-to-r from-accent-orange to-accent-red mx-auto mt-6"></div>
+        </div>
+        
+        <div class="grid md:grid-cols-3 gap-8">
+            <!-- Calidad -->
+            <div class="bg-tertiary-gray rounded-xl p-8 text-center hover:bg-light-gray transition-all duration-300 border border-border-gray hover:border-accent-orange/30 group">
+                <div class="w-20 h-20 bg-gradient-to-br from-accent-orange to-yellow-500 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300 shadow-lg">
+                    <svg class="w-10 h-10 text-white" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
+                    </svg>
+                </div>
+                <h3 class="text-xl font-bold text-text-light mb-4 group-hover:text-accent-orange transition-colors">
+                    Calidad
+                </h3>
+                <p class="text-text-gray leading-relaxed">
+                    Utilizamos solo los mejores materiales y técnicas de fabricación para garantizar 
+                    productos duraderos y de excelente acabado.
+                </p>
+            </div>
+            
+            <!-- Pasión -->
+            <div class="bg-tertiary-gray rounded-xl p-8 text-center hover:bg-light-gray transition-all duration-300 border border-border-gray hover:border-accent-orange/30 group">
+                <div class="w-20 h-20 bg-gradient-to-br from-accent-red to-red-600 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300 shadow-lg">
+                    <svg class="w-10 h-10 text-white" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z"></path>
+                    </svg>
+                </div>
+                <h3 class="text-xl font-bold text-text-light mb-4 group-hover:text-accent-orange transition-colors">
+                    Pasión
+                </h3>
+                <p class="text-text-gray leading-relaxed">
+                    Cada mueble es creado con dedicación y amor por el oficio, reflejando nuestro 
+                    compromiso con la excelencia artesanal.
+                </p>
+            </div>
+            
+            <!-- Confianza -->
+            <div class="bg-tertiary-gray rounded-xl p-8 text-center hover:bg-light-gray transition-all duration-300 border border-border-gray hover:border-accent-orange/30 group">
+                <div class="w-20 h-20 bg-gradient-to-br from-light-gray to-border-gray rounded-full flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300 shadow-lg">
+                    <svg class="w-10 h-10 text-white" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"></path>
+                    </svg>
+                </div>
+                <h3 class="text-xl font-bold text-text-light mb-4 group-hover:text-accent-orange transition-colors">
+                    Confianza
+                </h3>
+                <p class="text-text-gray leading-relaxed">
+                    Construimos relaciones duraderas con nuestros clientes basadas en la transparencia, 
+                    honestidad y servicio excepcional.
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Nuestro Proceso -->
+<section class="py-16 lg:py-24 bg-primary-black">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-16">
+            <h2 class="text-3xl md:text-4xl font-bold text-text-light mb-4">
+                Nuestro Proceso
+            </h2>
+            <p class="text-lg text-text-gray max-w-2xl mx-auto">
+                Cómo creamos cada pieza única con atención al detalle y craftsmanship excepcional
+            </p>
+            <div class="w-24 h-1 bg-gradient-to-r from-accent-orange to-accent-red mx-auto mt-6"></div>
+        </div>
+        
+        <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+            <!-- Diseño -->
+            <div class="text-center group">
+                <div class="relative mb-6">
+                    <div class="w-16 h-16 bg-gradient-to-br from-accent-orange to-yellow-500 rounded-full flex items-center justify-center mx-auto shadow-lg group-hover:scale-110 transition-transform duration-300">
+                        <span class="text-white font-bold text-xl">1</span>
+                    </div>
+                    <!-- Connecting Line (hidden on mobile) -->
+                    <div class="hidden lg:block absolute top-8 left-16 w-full h-0.5 bg-gradient-to-r from-accent-orange to-accent-red opacity-30"></div>
+                </div>
+                <h3 class="text-lg font-bold text-text-light mb-3 group-hover:text-accent-orange transition-colors">
+                    Diseño
+                </h3>
+                <p class="text-text-gray text-sm leading-relaxed">
+                    Creamos diseños únicos que combinan funcionalidad y estética para cada espacio.
+                </p>
+            </div>
+            
+            <!-- Materiales -->
+            <div class="text-center group">
+                <div class="relative mb-6">
+                    <div class="w-16 h-16 bg-gradient-to-br from-accent-red to-red-600 rounded-full flex items-center justify-center mx-auto shadow-lg group-hover:scale-110 transition-transform duration-300">
+                        <span class="text-white font-bold text-xl">2</span>
+                    </div>
+                    <div class="hidden lg:block absolute top-8 left-16 w-full h-0.5 bg-gradient-to-r from-accent-red to-light-gray opacity-30"></div>
+                </div>
+                <h3 class="text-lg font-bold text-text-light mb-3 group-hover:text-accent-orange transition-colors">
+                    Materiales
+                </h3>
+                <p class="text-text-gray text-sm leading-relaxed">
+                    Seleccionamos cuidadosamente los mejores materiales disponibles en el mercado.
+                </p>
+            </div>
+            
+            <!-- Fabricación -->
+            <div class="text-center group">
+                <div class="relative mb-6">
+                    <div class="w-16 h-16 bg-gradient-to-br from-light-gray to-border-gray rounded-full flex items-center justify-center mx-auto shadow-lg group-hover:scale-110 transition-transform duration-300">
+                        <span class="text-white font-bold text-xl">3</span>
+                    </div>
+                    <div class="hidden lg:block absolute top-8 left-16 w-full h-0.5 bg-gradient-to-r from-light-gray to-accent-orange opacity-30"></div>
+                </div>
+                <h3 class="text-lg font-bold text-text-light mb-3 group-hover:text-accent-orange transition-colors">
+                    Fabricación
+                </h3>
+                <p class="text-text-gray text-sm leading-relaxed">
+                    Nuestros artesanos expertos dan vida a cada diseño con precisión y maestría.
+                </p>
+            </div>
+            
+            <!-- Entrega -->
+            <div class="text-center group">
+                <div class="relative mb-6">
+                    <div class="w-16 h-16 bg-gradient-to-br from-accent-orange to-accent-red rounded-full flex items-center justify-center mx-auto shadow-lg group-hover:scale-110 transition-transform duration-300">
+                        <span class="text-white font-bold text-xl">4</span>
+                    </div>
+                </div>
+                <h3 class="text-lg font-bold text-text-light mb-3 group-hover:text-accent-orange transition-colors">
+                    Entrega
+                </h3>
+                <p class="text-text-gray text-sm leading-relaxed">
+                    Llevamos tu mueble terminado directamente a tu hogar con el mayor cuidado.
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Call to Action -->
+<section class="py-16 bg-gradient-to-br from-accent-orange via-accent-red to-red-600 relative overflow-hidden">
+    <!-- Background Pattern -->
+    <div class="absolute inset-0 opacity-10">
+        <div class="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"%3E%3Cg fill="none" fill-rule="evenodd"%3E%3Cg fill="%23ffffff" fill-opacity="0.1"%3E%3Ccircle cx="30" cy="30" r="1.5"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')]"></div>
+    </div>
+    
+    <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <h2 class="text-3xl md:text-4xl font-bold text-white mb-4">
+            ¿Listo para transformar tu hogar?
+        </h2>
+        <p class="text-xl text-white/90 mb-8 max-w-2xl mx-auto">
+            Descubre nuestra amplia gama de muebles tapizados y encuentra la pieza perfecta para tu espacio
+        </p>
+        <div class="flex flex-col sm:flex-row gap-4 justify-center">
+            <a href="/productos" 
+               class="inline-flex items-center px-8 py-4 bg-white text-accent-orange font-semibold rounded-lg hover:bg-text-light transition-all duration-200 transform hover:scale-105 shadow-lg">
+                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+                </svg>
+                Ver Productos
+            </a>
+            <a href="/categorias" 
+               class="inline-flex items-center px-8 py-4 border-2 border-white text-white font-semibold rounded-lg hover:bg-white hover:text-accent-orange transition-all duration-200 transform hover:scale-105">
+                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
+                </svg>
+                Ver Categorías
+            </a>
+        </div>
+    </div>
+</section>
+{% endblock %}

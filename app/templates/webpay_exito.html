@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block title %}Pago Exitoso - JerkHome{% endblock %}
+{% block description %}Gracias por tu compra en JerkHome. Hemos recibido tu pago correctamente.{% endblock %}
+
+{% block content %}
+<section class="py-16 bg-green-50 text-gray-800">
+    <div class="max-w-2xl mx-auto px-6 text-center">
+        <h1 class="text-4xl font-bold text-green-600 mb-6">✅ ¡Pago Exitoso!</h1>
+        <p class="text-lg mb-4">Gracias por confiar en <strong>JerkHome</strong>. Hemos recibido tu pago correctamente.</p>
+
+        <div class="bg-white border border-green-200 rounded-lg shadow p-6 text-left">
+            <h2 class="text-xl font-semibold text-gray-800 mb-4">Resumen del Pago</h2>
+            <ul class="space-y-2 text-gray-700">
+                <li><strong>Número de Orden:</strong> {{ buy_order }}</li>
+                <li><strong>Monto Pagado:</strong> ${{ '{:,.0f}'.format(amount) }}</li>
+                <li><strong>Autorización:</strong> {{ authorization_code }}</li>
+                <li><strong>Método de Pago:</strong> {{ tipo_pago }}</li>
+                <li><strong>Fecha:</strong> {{ fecha }}</li>
+            </ul>
+        </div>
+
+        <a href="/productos" class="mt-8 inline-block bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition">
+            Seguir Comprando
+        </a>
+    </div>
+</section>
+{% endblock %}

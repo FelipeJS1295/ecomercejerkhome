@@ -1,0 +1,263 @@
+{% extends "admin/base_admin.html" %}
+
+{% block title %}Usuarios - Admin Panel JerkHome{% endblock %}
+{% block page_title %}Gestión de Usuarios{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+    <!-- Header con acciones -->
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-4 sm:space-y-0">
+        <div>
+            <h1 class="text-2xl font-bold">Usuarios del Sistema</h1>
+            <p class="text-gray-400">{{ usuarios|length }} usuarios encontrados</p>
+        </div>
+        
+        <div class="flex space-x-3">
+            <a href="/admin/usuarios/nuevo" 
+               class="bg-admin-accent hover:bg-orange-600 text-white px-4 py-2 rounded transition-colors">
+                <i class="fas fa-plus mr-2"></i>Nuevo Usuario
+            </a>
+            
+            <button onclick="toggleFilters()" 
+                    class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded transition-colors">
+                <i class="fas fa-filter mr-2"></i>Filtros
+            </button>
+        </div>
+    </div>
+    
+    <!-- Error Message -->
+    {% if error %}
+    <div class="bg-red-500 bg-opacity-20 border border-red-500 text-red-400 px-4 py-3 rounded">
+        <i class="fas fa-exclamation-triangle mr-2"></i>{{ error }}
+    </div>
+    {% endif %}
+    
+    <!-- Estadísticas rápidas -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div class="bg-admin-sidebar rounded-lg p-4 border border-gray-600">
+            <div class="flex items-center">
+                <div class="p-2 rounded-full bg-blue-500 bg-opacity-20">
+                    <i class="fas fa-users text-blue-400"></i>
+                </div>
+                <div class="ml-3">
+                    <p class="text-sm text-gray-400">Total Usuarios</p>
+                    <p class="text-lg font-semibold">{{ stats.total_usuarios }}</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="bg-admin-sidebar rounded-lg p-4 border border-gray-600">
+            <div class="flex items-center">
+                <div class="p-2 rounded-full bg-green-500 bg-opacity-20">
+                    <i class="fas fa-user-check text-green-400"></i>
+                </div>
+                <div class="ml-3">
+                    <p class="text-sm text-gray-400">Usuarios Activos</p>
+                    <p class="text-lg font-semibold">{{ stats.usuarios_activos }}</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="bg-admin-sidebar rounded-lg p-4 border border-gray-600">
+            <div class="flex items-center">
+                <div class="p-2 rounded-full bg-admin-accent bg-opacity-20">
+                    <i class="fas fa-user-shield text-admin-accent"></i>
+                </div>
+                <div class="ml-3">
+                    <p class="text-sm text-gray-400">Administradores</p>
+                    <p class="text-lg font-semibold">{{ stats.usuarios_admin }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Filtros -->
+    <div id="filters" class="hidden bg-admin-sidebar rounded-lg p-6 border border-gray-600">
+        <form method="GET" class="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div>
+                <label class="block text-sm font-medium mb-2">Rol</label>
+                <select name="rol" class="w-full px-3 py-2 bg-admin-dark border border-gray-600 rounded-md">
+                    <option value="todos">Todos los roles</option>
+                    <option value="ADMIN" {% if rol_filter == 'ADMIN' %}selected{% endif %}>Administrador</option>
+                    <option value="VENDEDOR" {% if rol_filter == 'VENDEDOR' %}selected{% endif %}>Vendedor</option>
+                    <option value="OPERADOR" {% if rol_filter == 'OPERADOR' %}selected{% endif %}>Operador</option>
+                </select>
+            </div>
+            
+            <div>
+                <label class="block text-sm font-medium mb-2">Estado</label>
+                <select name="estado" class="w-full px-3 py-2 bg-admin-dark border border-gray-600 rounded-md">
+                    <option value="todos">Todos los estados</option>
+                    <option value="ACTIVO" {% if estado_filter == 'ACTIVO' %}selected{% endif %}>Activo</option>
+                    <option value="INACTIVO" {% if estado_filter == 'INACTIVO' %}selected{% endif %}>Inactivo</option>
+                    <option value="SUSPENDIDO" {% if estado_filter == 'SUSPENDIDO' %}selected{% endif %}>Suspendido</option>
+                </select>
+            </div>
+            
+            <div>
+                <label class="block text-sm font-medium mb-2">Búsqueda</label>
+                <input type="text" name="buscar" value="{{ buscar }}" 
+                       placeholder="Nombre, email, usuario..."
+                       class="w-full px-3 py-2 bg-admin-dark border border-gray-600 rounded-md">
+            </div>
+            
+            <div class="flex items-end">
+                <button type="submit" class="bg-admin-accent hover:bg-orange-600 text-white px-4 py-2 rounded transition-colors mr-2">
+                    Filtrar
+                </button>
+                <a href="/admin/usuarios" class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded transition-colors">
+                    Limpiar
+                </a>
+            </div>
+        </form>
+    </div>
+    
+    <!-- Tabla de usuarios -->
+    <div class="bg-admin-sidebar rounded-lg border border-gray-600 overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="w-full">
+                <thead class="bg-admin-dark">
+                    <tr>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                            Usuario
+                        </th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                            Contacto
+                        </th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                            Rol
+                        </th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                            Estado
+                        </th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                            Último Acceso
+                        </th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                            Fecha Creación
+                        </th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                            Acciones
+                        </th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-600">
+                    {% for usuario in usuarios %}
+                    <tr class="hover:bg-admin-dark transition-colors">
+                        <td class="px-6 py-4">
+                            <div class="flex items-center">
+                                <div class="p-2 rounded-full bg-admin-accent bg-opacity-20 mr-3">
+                                    <i class="fas fa-user text-admin-accent"></i>
+                                </div>
+                                <div>
+                                    <div class="text-sm font-medium">{{ usuario.nombre_completo }}</div>
+                                    <div class="text-xs text-gray-400">@{{ usuario.username }}</div>
+                                </div>
+                            </div>
+                        </td>
+                        
+                        <td class="px-6 py-4">
+                            <div class="text-sm">{{ usuario.email }}</div>
+                            {% if usuario.telefono %}
+                            <div class="text-xs text-gray-400">{{ usuario.telefono }}</div>
+                            {% endif %}
+                        </td>
+                        
+                        <td class="px-6 py-4">
+                            {% if usuario.rol.value == 'ADMIN' %}
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-500 bg-opacity-20 text-red-400">
+                                <i class="fas fa-crown text-xs mr-1"></i>Administrador
+                            </span>
+                            {% elif usuario.rol.value == 'VENDEDOR' %}
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-500 bg-opacity-20 text-blue-400">
+                                <i class="fas fa-handshake text-xs mr-1"></i>Vendedor
+                            </span>
+                            {% elif usuario.rol.value == 'OPERADOR' %}
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-500 bg-opacity-20 text-green-400">
+                                <i class="fas fa-user text-xs mr-1"></i>Operador
+                            </span>
+                            {% endif %}
+                        </td>
+                        
+                        <td class="px-6 py-4">
+                            {% if usuario.estado.value == 'ACTIVO' %}
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-500 bg-opacity-20 text-green-400">
+                                <i class="fas fa-circle text-xs mr-1"></i>Activo
+                            </span>
+                            {% elif usuario.estado.value == 'INACTIVO' %}
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-500 bg-opacity-20 text-gray-400">
+                                <i class="fas fa-circle text-xs mr-1"></i>Inactivo
+                            </span>
+                            {% elif usuario.estado.value == 'SUSPENDIDO' %}
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-500 bg-opacity-20 text-red-400">
+                                <i class="fas fa-ban text-xs mr-1"></i>Suspendido
+                            </span>
+                            {% endif %}
+                        </td>
+                        
+                        <td class="px-6 py-4 text-sm">
+                            {% if usuario.ultimo_acceso %}
+                            <div>{{ usuario.ultimo_acceso.strftime('%d/%m/%Y') }}</div>
+                            <div class="text-xs text-gray-400">{{ usuario.ultimo_acceso.strftime('%H:%M') }}</div>
+                            {% else %}
+                            <span class="text-gray-500">Nunca</span>
+                            {% endif %}
+                        </td>
+                        
+                        <td class="px-6 py-4 text-sm">
+                            <div>{{ usuario.created_at.strftime('%d/%m/%Y') }}</div>
+                            <div class="text-xs text-gray-400">{{ usuario.created_at.strftime('%H:%M') }}</div>
+                        </td>
+                        
+                        <td class="px-6 py-4 text-sm">
+                            <div class="flex space-x-2">
+                                <a href="/admin/usuarios/{{ usuario.id }}/editar"
+                                   class="text-admin-accent hover:text-orange-400 transition-colors" title="Editar">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                
+                                {% if not (usuario.rol.value == 'ADMIN' and stats.usuarios_admin <= 1) %}
+                                <button onclick="confirmDelete('{{ usuario.nombre_completo }}', '/admin/usuarios/{{ usuario.id }}/eliminar')"
+                                        class="text-red-400 hover:text-red-300 transition-colors" title="Eliminar">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                                {% else %}
+                                <button class="text-gray-600 cursor-not-allowed" title="No se puede eliminar el último administrador">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                                {% endif %}
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        
+        {% if not usuarios %}
+        <div class="text-center py-12">
+            <i class="fas fa-users text-6xl text-gray-400 mb-4"></i>
+            <h3 class="text-lg font-medium text-gray-400 mb-2">No hay usuarios</h3>
+            <p class="text-gray-500 mb-4">Comienza agregando tu primer usuario</p>
+            <a href="/admin/usuarios/nuevo" 
+               class="bg-admin-accent hover:bg-orange-600 text-white px-4 py-2 rounded transition-colors">
+                <i class="fas fa-plus mr-2"></i>Crear Usuario
+            </a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+function toggleFilters() {
+    const filters = document.getElementById('filters');
+    filters.classList.toggle('hidden');
+}
+
+function confirmDelete(userName, deleteUrl) {
+    if (confirm(`¿Estás seguro de que quieres eliminar al usuario "${userName}"?\n\nEsta acción no se puede deshacer.`)) {
+        window.location.href = deleteUrl;
+    }
+}
+</script>
+{% endblock %}

@@ -1,0 +1,287 @@
+{% extends "base.html" %}
+
+{% block title %}Contacto - {{ config.sitio_nombre or 'JerkHome' }}{% endblock %}
+
+{% block description %}Contáctanos para consultas sobre nuestros muebles tapizados. Teléfono, email y formulario de contacto disponible. {{ config.sitio_nombre or 'JerkHome' }} - La Pintana, Santiago.{% endblock %}
+
+{% block content %}
+<!-- Hero Section - Reduced Height -->
+<section class="bg-gradient-to-br from-secondary-gray via-tertiary-gray to-primary-black py-12 lg:py-16 relative overflow-hidden">
+    <!-- Background Pattern -->
+    <div class="absolute inset-0 opacity-10">
+        <div class="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg width="80" height="80" viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg"%3E%3Cg fill="none" fill-rule="evenodd"%3E%3Cg fill="%23ff6b35" fill-opacity="0.1"%3E%3Ccircle cx="40" cy="40" r="2"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')]"></div>
+    </div>
+    
+    <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center">
+            <!-- Contact Icon -->
+            <div class="w-16 h-16 bg-gradient-to-br from-accent-orange to-accent-red rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg">
+                <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
+                </svg>
+            </div>
+            
+            <h1 class="text-3xl md:text-4xl lg:text-5xl font-bold text-text-light mb-4">
+                Contáctanos
+            </h1>
+            <p class="text-lg md:text-xl text-text-gray max-w-2xl mx-auto">
+                Estamos aquí para ayudarte con cualquier consulta sobre nuestros muebles
+            </p>
+            <div class="w-20 h-1 bg-gradient-to-r from-accent-orange to-accent-red mx-auto mt-6"></div>
+        </div>
+    </div>
+</section>
+
+<!-- Success Message -->
+{% if success %}
+<section class="bg-green-500 py-4">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex items-center justify-center">
+            <svg class="w-6 h-6 text-white mr-3" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"></path>
+            </svg>
+            <p class="text-lg text-white font-medium">{{ success }}</p>
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- Contact Information and Form -->
+<section class="py-16 lg:py-24 bg-primary-black">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid lg:grid-cols-2 gap-12">
+            
+            <!-- Contact Information -->
+            <div>
+                <h2 class="text-3xl md:text-4xl font-bold text-text-light mb-8">
+                    Información de Contacto
+                </h2>
+                
+                <div class="space-y-8">
+                    <!-- Address -->
+                    <div class="flex items-start group">
+                        <div class="w-14 h-14 bg-gradient-to-br from-accent-orange to-yellow-500 rounded-xl flex items-center justify-center mr-4 flex-shrink-0 group-hover:scale-110 transition-transform duration-300 shadow-lg">
+                            <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-semibold text-text-light mb-2 group-hover:text-accent-orange transition-colors">
+                                Dirección
+                            </h3>
+                            <p class="text-text-gray">Los Paltos 2769, La Pintana, Santiago</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Email -->
+                    <div class="flex items-start group">
+                        <div class="w-14 h-14 bg-gradient-to-br from-light-gray to-border-gray rounded-xl flex items-center justify-center mr-4 flex-shrink-0 group-hover:scale-110 transition-transform duration-300 shadow-lg">
+                            <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-semibold text-text-light mb-2 group-hover:text-accent-orange transition-colors">
+                                Email
+                            </h3>
+                            <p class="text-text-gray">
+                                <a href="mailto:{{ config.contacto_email or 'contacto@jerkhome.cl' }}" 
+                                   class="hover:text-accent-orange transition-colors">
+                                    {{ config.contacto_email or 'contacto@jerkhome.cl' }}
+                                </a>
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <!-- Hours -->
+                    <div class="flex items-start group">
+                        <div class="w-14 h-14 bg-gradient-to-br from-accent-orange to-accent-red rounded-xl flex items-center justify-center mr-4 flex-shrink-0 group-hover:scale-110 transition-transform duration-300 shadow-lg">
+                            <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-semibold text-text-light mb-2 group-hover:text-accent-orange transition-colors">
+                                Horarios de Atención
+                            </h3>
+                            <p class="text-text-gray">{{ config.contacto_horarios or 'Lunes a Viernes: 9:00 - 18:00 hrs' }}</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Social Media -->
+                <div class="mt-12">
+                    <h3 class="text-xl font-semibold text-text-light mb-6">Síguenos en Redes Sociales</h3>
+                    <div class="flex space-x-4">
+                        <!-- Facebook - Pronto -->
+                        <div class="w-12 h-12 bg-blue-600/50 rounded-xl flex items-center justify-center text-white/60 shadow-lg relative">
+                            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+                            </svg>
+                            <span class="absolute -bottom-6 left-1/2 transform -translate-x-1/2 text-xs text-text-gray whitespace-nowrap">Pronto</span>
+                        </div>
+                        
+                        <!-- Instagram - Pronto -->
+                        <div class="w-12 h-12 bg-gradient-to-br from-purple-500/50 to-pink-500/50 rounded-xl flex items-center justify-center text-white/60 shadow-lg relative">
+                            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M12.017 0C5.396 0 .029 5.367.029 11.987c0 6.62 5.367 11.987 11.988 11.987 6.62 0 11.987-5.367 11.987-11.987C24.014 5.367 18.637.001 12.017.001zM8.449 16.988c-1.297 0-2.448-.49-3.316-1.296C4.343 14.928 3.9 13.748 3.9 12.45c0-1.297.442-2.477 1.233-3.341.868-.806 2.019-1.296 3.316-1.296s2.448.49 3.316 1.296c.791.864 1.233 2.044 1.233 3.341 0 1.298-.442 2.478-1.233 3.342-.868.806-2.019 1.296-3.316 1.296zm7.718-1.296c-.868.806-2.019 1.296-3.316 1.296s-2.448-.49-3.316-1.296c-.791-.864-1.233-2.044-1.233-3.342 0-1.297.442-2.477 1.233-3.341.868-.806 2.019-1.296 3.316-1.296s2.448.49 3.316 1.296c.791.864 1.233 2.044 1.233 3.341 0 1.298-.442 2.478-1.233 3.342z"/>
+                            </svg>
+                            <span class="absolute -bottom-6 left-1/2 transform -translate-x-1/2 text-xs text-text-gray whitespace-nowrap">Pronto</span>
+                        </div>
+                        
+                        <!-- WhatsApp - Pronto -->
+                        <div class="w-12 h-12 bg-green-500/50 rounded-xl flex items-center justify-center text-white/60 shadow-lg relative">
+                            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893A11.821 11.821 0 0020.885 3.085"/>
+                            </svg>
+                            <span class="absolute -bottom-6 left-1/2 transform -translate-x-1/2 text-xs text-text-gray whitespace-nowrap">Pronto</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Contact Form -->
+            <div class="bg-secondary-gray rounded-2xl p-8 border border-border-gray">
+                <h2 class="text-3xl md:text-4xl font-bold text-text-light mb-8">
+                    Envíanos un Mensaje
+                </h2>
+                
+                <form method="POST" class="space-y-6">
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div>
+                            <label for="nombre" class="block text-sm font-medium text-text-light mb-2">
+                                Nombre *
+                            </label>
+                            <input type="text" id="nombre" name="nombre" required
+                                   class="w-full px-4 py-3 bg-tertiary-gray border border-border-gray rounded-lg text-text-light placeholder-text-gray focus:ring-2 focus:ring-accent-orange focus:border-transparent transition-all duration-200">
+                        </div>
+                        
+                        <div>
+                            <label for="telefono" class="block text-sm font-medium text-text-light mb-2">
+                                Teléfono
+                            </label>
+                            <input type="tel" id="telefono" name="telefono"
+                                   class="w-full px-4 py-3 bg-tertiary-gray border border-border-gray rounded-lg text-text-light placeholder-text-gray focus:ring-2 focus:ring-accent-orange focus:border-transparent transition-all duration-200">
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <label for="email" class="block text-sm font-medium text-text-light mb-2">
+                            Email *
+                        </label>
+                        <input type="email" id="email" name="email" required
+                               class="w-full px-4 py-3 bg-tertiary-gray border border-border-gray rounded-lg text-text-light placeholder-text-gray focus:ring-2 focus:ring-accent-orange focus:border-transparent transition-all duration-200">
+                    </div>
+                    
+                    <div>
+                        <label for="asunto" class="block text-sm font-medium text-text-light mb-2">
+                            Asunto *
+                        </label>
+                        <select id="asunto" name="asunto" required
+                                class="w-full px-4 py-3 bg-tertiary-gray border border-border-gray rounded-lg text-text-light focus:ring-2 focus:ring-accent-orange focus:border-transparent transition-all duration-200">
+                            <option value="">Selecciona un asunto</option>
+                            <option value="Consulta de Productos">Consulta de Productos</option>
+                            <option value="Cotización">Cotización</option>
+                            <option value="Servicio Post-Venta">Servicio Post-Venta</option>
+                            <option value="Reclamo">Reclamo</option>
+                            <option value="Sugerencia">Sugerencia</option>
+                            <option value="Otro">Otro</option>
+                        </select>
+                    </div>
+                    
+                    <div>
+                        <label for="mensaje" class="block text-sm font-medium text-text-light mb-2">
+                            Mensaje *
+                        </label>
+                        <textarea id="mensaje" name="mensaje" rows="6" required
+                                  placeholder="Escribe tu mensaje aquí..."
+                                  class="w-full px-4 py-3 bg-tertiary-gray border border-border-gray rounded-lg text-text-light placeholder-text-gray focus:ring-2 focus:ring-accent-orange focus:border-transparent transition-all duration-200 resize-none"></textarea>
+                    </div>
+                    
+                    <button type="submit" 
+                            class="w-full bg-gradient-to-r from-accent-orange to-accent-red text-white py-4 px-6 rounded-lg font-semibold hover:shadow-lg hover:shadow-accent-orange/25 transition-all duration-200 transform hover:scale-105">
+                        <svg class="w-5 h-5 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
+                        </svg>
+                        Enviar Mensaje
+                    </button>
+                </form>
+                
+                <!-- Response Time Info -->
+                <div class="mt-8 p-4 bg-tertiary-gray rounded-xl border border-border-gray">
+                    <div class="flex items-start">
+                        <svg class="w-5 h-5 text-accent-orange mt-1 mr-3 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"></path>
+                        </svg>
+                        <div class="text-sm">
+                            <p class="font-semibold text-text-light mb-1">Tiempo de respuesta</p>
+                            <p class="text-text-gray">Nos esforzamos por responder todos los mensajes dentro de 24 horas hábiles.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Location Map -->
+<section class="py-16 lg:py-24 bg-secondary-gray">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-12">
+            <h2 class="text-3xl md:text-4xl font-bold text-text-light mb-4">
+                Nuestra Ubicación
+            </h2>
+            <p class="text-lg text-text-gray">
+                Visítanos en nuestro showroom y taller
+            </p>
+            <div class="w-24 h-1 bg-gradient-to-r from-accent-orange to-accent-red mx-auto mt-6"></div>
+        </div>
+        
+        <!-- Google Maps Container -->
+        <div class="bg-tertiary-gray rounded-2xl overflow-hidden border border-border-gray relative">
+            <div class="relative h-96">
+                <!-- Google Maps Embed -->
+                <iframe 
+                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3323.8762541152447!2d-70.63439492481943!3d-33.59495007350983!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x9662d6f8e1e5c8a3%3A0x5a8b4c0f8a2b6d7e!2sLos%20Paltos%202769%2C%20La%20Pintana%2C%20Regi%C3%B3n%20Metropolitana%2C%20Chile!5e0!3m2!1ses!2scl!4v1699999999999!5m2!1ses!2scl"
+                    width="100%" 
+                    height="384" 
+                    style="border:0; filter: grayscale(20%) brightness(80%) contrast(120%);" 
+                    allowfullscreen="" 
+                    loading="lazy" 
+                    referrerpolicy="no-referrer-when-downgrade"
+                    class="w-full h-full">
+                </iframe>
+                
+                <!-- Map Overlay with Info -->
+                <div class="absolute top-4 left-4 bg-secondary-gray/95 backdrop-blur-sm rounded-xl p-4 border border-border-gray shadow-lg">
+                    <div class="flex items-center">
+                        <div class="w-10 h-10 bg-gradient-to-br from-accent-orange to-accent-red rounded-lg flex items-center justify-center mr-3">
+                            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                            </svg>
+                        </div>
+                        <div>
+                            <p class="text-sm font-semibold text-text-light">JerkHome</p>
+                            <p class="text-xs text-text-gray">Los Paltos 2769, La Pintana</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Directions Button -->
+                <div class="absolute bottom-4 right-4">
+                    <a href="https://www.google.com/maps/dir//Los+Paltos+2769,+La+Pintana,+Región+Metropolitana,+Chile" 
+                       target="_blank"
+                       class="inline-flex items-center px-4 py-2 bg-accent-orange text-white rounded-lg hover:bg-accent-red transition-all duration-200 transform hover:scale-105 shadow-lg text-sm font-medium">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"></path>
+                        </svg>
+                        Cómo llegar
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

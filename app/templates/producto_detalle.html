@@ -1,0 +1,271 @@
+{% extends "base.html" %}
+
+{% block title %}{{ producto.nombre }} - JerkHome{% endblock %}
+
+{% block description %}{{ producto.descripcion }} - Muebles tapizados de alta calidad en JerkHome{% endblock %}
+
+{% block content %}
+<!-- Breadcrumb -->
+<section class="bg-gray-900 border-b border-gray-700">
+    <div class="max-w-7xl mx-auto px-6 py-6">
+        <nav class="flex items-center space-x-2 text-sm text-gray-400">
+            <a href="/" class="hover:text-orange-400 transition-colors">Inicio</a>
+            <span>/</span>
+            <a href="/categoria/{{ producto.categoria.nombre.lower() }}" class="hover:text-orange-400 transition-colors">{{ producto.categoria.nombre }}</a>
+            <span>/</span>
+            <span class="text-orange-400 font-medium">{{ producto.nombre }}</span>
+        </nav>
+    </div>
+</section>
+
+<!-- Producto -->
+<section class="bg-black min-h-screen py-16">
+    <div class="max-w-7xl mx-auto px-6">
+        <div class="grid lg:grid-cols-2 gap-16">
+            
+            <!-- Galería -->
+            <div class="space-y-4">
+                {% if producto.imagen_1 %}
+                <!-- Imagen principal -->
+                <div class="relative group">
+                    <img id="mainImage" 
+                         src="{{ url_for('static', path='/images/productos/' + producto.imagen_1) }}" 
+                         alt="{{ producto.nombre }}" 
+                         class="w-full h-96 lg:h-[600px] object-contain bg-gray-100 rounded-xl cursor-zoom-in transition-transform duration-300 group-hover:scale-[1.02] p-4"
+                         onclick="openZoom(this.src)">
+                    
+                    <!-- Indicador de zoom -->
+                    <div class="absolute top-4 left-4 bg-black bg-opacity-50 text-white p-2 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7"></path>
+                        </svg>
+                    </div>
+                </div>
+                
+                <!-- Miniaturas -->
+                {% set imagenes = [producto.imagen_1, producto.imagen_2, producto.imagen_3, producto.imagen_4, producto.imagen_5, producto.imagen_6, producto.imagen_7] %}
+                {% set imagenes_validas = imagenes | select | list %}
+                
+                {% if imagenes_validas | length > 1 %}
+                <div class="flex space-x-3 overflow-x-auto pb-2">
+                    {% for imagen in imagenes_validas %}
+                    <img src="{{ url_for('static', path='/images/productos/' + imagen) }}" 
+                         alt="{{ producto.nombre }}" 
+                         class="w-20 h-20 object-contain bg-gray-100 rounded-lg cursor-pointer border-2 transition-all duration-200 flex-shrink-0 p-1 {% if loop.index == 1 %}border-orange-400{% else %}border-transparent hover:border-orange-400{% endif %}"
+                         onclick="changeImage(this.src, this)">
+                    {% endfor %}
+                </div>
+                {% endif %}
+                
+                {% else %}
+                <!-- Placeholder -->
+                <div class="w-full h-96 lg:h-[600px] bg-gray-800 rounded-xl flex items-center justify-center">
+                    <div class="text-center text-gray-500">
+                        <svg class="w-16 h-16 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                        </svg>
+                        <p>Sin imagen disponible</p>
+                    </div>
+                </div>
+                {% endif %}
+                
+                <!-- Descripción debajo de las imágenes -->
+                <div class="mt-8">
+                    <p class="text-gray-300 text-lg leading-relaxed">{{ producto.descripcion }}</p>
+                </div>
+            </div>
+            
+            <!-- Información del producto -->
+            <div class="lg:pl-12">
+                <!-- Título y SKU -->
+                <div class="mb-8">
+                    <h1 class="text-4xl lg:text-5xl font-light text-white mb-3 leading-tight">{{ producto.nombre }}</h1>
+                    <p class="text-gray-400 text-sm">SKU: {{ producto.sku }}</p>
+                </div>
+                
+                <!-- Precio -->
+                <div class="mb-10">
+                    {% if producto.precio_oferta %}
+                    <div class="flex items-baseline space-x-4 mb-2">
+                        <span class="text-xl text-gray-400 line-through">${{ "{:,.0f}".format(producto.precio) }}</span>
+                        <span class="text-sm text-green-400 font-medium">Ahorra ${{ "{:,.0f}".format(producto.precio - producto.precio_oferta) }}</span>
+                    </div>
+                    <div class="text-4xl font-semibold text-orange-400">${{ "{:,.0f}".format(producto.precio_oferta) }}</div>
+                    {% else %}
+                    <div class="text-4xl font-semibold text-orange-400">${{ "{:,.0f}".format(producto.precio) }}</div>
+                    {% endif %}
+                </div>
+                
+                <!-- Stock -->
+                <div class="mb-8">
+                    {% if producto.stock > 5 %}
+                    <div class="flex items-center space-x-3 p-4 bg-gray-900 rounded-lg border-l-4 border-green-400">
+                        <svg class="w-5 h-5 text-green-400" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"></path>
+                        </svg>
+                        <span class="text-white font-medium">En stock ({{ producto.stock }} disponibles)</span>
+                    </div>
+                    {% elif producto.stock > 0 %}
+                    <div class="flex items-center space-x-3 p-4 bg-gray-900 rounded-lg border-l-4 border-yellow-400">
+                        <svg class="w-5 h-5 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"></path>
+                        </svg>
+                        <span class="text-white font-medium">Últimas {{ producto.stock }} unidades</span>
+                    </div>
+                    {% else %}
+                    <div class="flex items-center space-x-3 p-4 bg-gray-900 rounded-lg border-l-4 border-red-400">
+                        <svg class="w-5 h-5 text-red-400" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"></path>
+                        </svg>
+                        <span class="text-white font-medium">Agotado</span>
+                    </div>
+                    {% endif %}
+                </div>
+                
+                <!-- Botones de acción -->
+                <div class="space-y-4 mb-12">
+                    {% if producto.stock > 0 %}
+                    <button onclick="addToCartSafe({{ producto.id }}, '{{ producto.nombre }}', {{ producto.precio_oferta if producto.precio_oferta else producto.precio }}, '{{ url_for('static', path='/images/productos/' + producto.imagen_1) if producto.imagen_1 else '/static/images/placeholder.jpg' }}')" 
+                            class="w-full bg-gradient-to-r from-orange-500 to-red-500 text-white font-semibold py-4 px-8 rounded-lg hover:from-orange-600 hover:to-red-600 transform hover:-translate-y-1 transition-all duration-200 flex items-center justify-center space-x-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-1.5 6M7 13l1.5-6M17 13v6a2 2 0 01-2 2H9a2 2 0 01-2-2v-6m8 0V9a2 2 0 00-2-2H9a2 2 0 00-2 2v4.01"></path>
+                        </svg>
+                        <span>Agregar al carrito</span>
+                    </button>
+                    <button onclick="contactWhatsApp()" 
+                            class="w-full border-2 border-orange-400 text-orange-400 font-semibold py-4 px-8 rounded-lg hover:bg-orange-400 hover:text-black transition-all duration-200 flex items-center justify-center space-x-2">
+                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893A11.821 11.821 0 0020.885 3.488"></path>
+                        </svg>
+                        <span>Consultar por WhatsApp</span>
+                    </button>
+                    {% else %}
+                    <button disabled 
+                            class="w-full bg-gray-700 text-gray-400 font-semibold py-4 px-8 rounded-lg cursor-not-allowed flex items-center justify-center space-x-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728L5.636 5.636m12.728 12.728L18.364 5.636"></path>
+                        </svg>
+                        <span>No disponible</span>
+                    </button>
+                    <button onclick="notifyAvailable()" 
+                            class="w-full border-2 border-gray-400 text-gray-400 font-semibold py-4 px-8 rounded-lg hover:bg-gray-400 hover:text-black transition-all duration-200 flex items-center justify-center space-x-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-5 5-5-5h5z"></path>
+                        </svg>
+                        <span>Avisar cuando esté disponible</span>
+                    </button>
+                    {% endif %}
+                </div>
+                
+                <!-- Información adicional -->
+                <div class="border-t border-gray-700 pt-8">
+                    <div class="grid grid-cols-2 lg:grid-cols-4 gap-6">
+                        <div class="flex items-center space-x-3 text-gray-400">
+                            <svg class="w-5 h-5 text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
+                            </svg>
+                            <span class="text-sm">Envío gratis RM</span>
+                        </div>
+                        
+                        <div class="flex items-center space-x-3 text-gray-400">
+                            <svg class="w-5 h-5 text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            <span class="text-sm">Garantía 2 años</span>
+                        </div>
+                        
+                        <div class="flex items-center space-x-3 text-gray-400">
+                            <svg class="w-5 h-5 text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>
+                            </svg>
+                            <span class="text-sm">Pago en cuotas</span>
+                        </div>
+                        
+                        <div class="flex items-center space-x-3 text-gray-400">
+                            <svg class="w-5 h-5 text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
+                            </svg>
+                            <span class="text-sm">{{ producto.categoria.nombre }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Modal de zoom -->
+<div id="zoomModal" class="hidden fixed inset-0 bg-black bg-opacity-95 z-50 flex items-center justify-center">
+    <button onclick="closeZoom()" class="absolute top-6 right-6 text-white text-3xl hover:text-gray-300 w-12 h-12 flex items-center justify-center bg-black bg-opacity-50 rounded-full">&times;</button>
+    <img id="zoomImage" class="max-w-[90%] max-h-[90%] object-contain" alt="">
+</div>
+
+<script>
+// Cambiar imagen principal
+function changeImage(src, element) {
+    document.getElementById('mainImage').src = src;
+    
+    // Actualizar thumbnails activos
+    document.querySelectorAll('.flex-shrink-0').forEach(thumb => {
+        thumb.classList.remove('border-orange-400');
+        thumb.classList.add('border-transparent');
+    });
+    element.classList.remove('border-transparent');
+    element.classList.add('border-orange-400');
+}
+
+// Zoom de imagen
+function openZoom(src) {
+    document.getElementById('zoomImage').src = src;
+    document.getElementById('zoomModal').classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeZoom() {
+    document.getElementById('zoomModal').classList.add('hidden');
+    document.body.style.overflow = 'auto';
+}
+
+// Funciones de acciones
+function addToCartSafe(id, name, price, image) {
+    const product = {
+        id: id,
+        name: name,
+        price: price,
+        image: image
+    };
+    
+    function waitForCart(callback) {
+        if (typeof cart !== 'undefined') {
+            callback();
+        } else {
+            setTimeout(() => waitForCart(callback), 50);
+        }
+    }
+    
+    waitForCart(() => {
+        cart.addItem(product);
+    });
+}
+
+function contactWhatsApp() {
+    const message = `Hola! Me interesa el producto: {{ producto.nombre }} ({{ producto.sku }})`;
+    const phone = '56912345678'; // Cambiar por tu número real
+    const url = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
+    window.open(url, '_blank');
+}
+
+function notifyAvailable() {
+    alert('Te notificaremos cuando esté disponible');
+}
+
+// Event listeners
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') closeZoom();
+});
+
+document.getElementById('zoomModal').addEventListener('click', function(e) {
+    if (e.target === this) closeZoom();
+});
+</script>
+{% endblock %}

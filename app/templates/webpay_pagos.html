@@ -1,0 +1,124 @@
+{% extends "base.html" %}
+
+{% block title %}Pagar con Webpay - JerkHome{% endblock %}
+
+{% block content %}
+<section class="py-16 bg-primary-black min-h-screen">
+    <div class="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8">
+        
+        <!-- Header -->
+        <div class="text-center mb-8">
+            <div class="w-16 h-16 bg-blue-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/>
+                </svg>
+            </div>
+            <h1 class="text-3xl font-bold text-text-light mb-2">Pagar con Webpay</h1>
+            <p class="text-text-gray">Serás redirigido a la plataforma segura de Transbank</p>
+        </div>
+
+        <!-- Order Summary -->
+        <div class="bg-secondary-gray rounded-xl p-6 border border-border-gray mb-8">
+            <h2 class="text-xl font-bold text-text-light mb-4">Resumen del Pedido</h2>
+            
+            <div class="space-y-3 mb-6">
+                {% for venta in ventas %}
+                <div class="flex justify-between items-center">
+                    <div>
+                        <p class="text-text-light font-medium">{{ venta.nombre }}</p>
+                        <p class="text-text-gray text-sm">Cantidad: {{ venta.cantidad }}</p>
+                    </div>
+                    <p class="text-accent-orange font-semibold">
+                        ${{ "{:,.0f}".format(venta.cantidad * venta.precio) }}
+                    </p>
+                </div>
+                {% endfor %}
+            </div>
+            
+            <div class="border-t border-border-gray pt-4">
+                <div class="flex justify-between items-center">
+                    <span class="text-xl font-bold text-text-light">Total:</span>
+                    <span class="text-2xl font-bold text-accent-orange">
+                        ${{ "{:,.0f}".format(total) }}
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Payment Form -->
+        <div class="bg-secondary-gray rounded-xl p-6 border border-border-gray">
+            <div class="text-center mb-6">
+                <img src="https://www.transbank.cl/public/img/logo-webpay.svg" alt="Webpay" class="h-8 mx-auto mb-4">
+                <p class="text-text-gray text-sm">
+                    Transacción protegida por Transbank con la más alta seguridad
+                </p>
+            </div>
+            
+            <form id="webpay-form" action="/webpay/iniciar" method="POST" class="space-y-6">
+                <input type="hidden" name="orden" value="{{ order_id }}">
+                <input type="hidden" name="monto" value="{{ total }}">
+                
+                <div class="bg-tertiary-gray rounded-lg p-4">
+                    <h3 class="text-text-light font-medium mb-2">Información del Pedido</h3>
+                    <div class="grid grid-cols-2 gap-4 text-sm">
+                        <div>
+                            <span class="text-text-gray">Número de Pedido:</span>
+                            <p class="text-text-light font-mono">{{ order_id }}</p>
+                        </div>
+                        <div>
+                            <span class="text-text-gray">Monto:</span>
+                            <p class="text-text-light">${{ "{:,.0f}".format(total) }}</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Payment Button -->
+                <button type="submit" id="pay-button" 
+                        class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 rounded-lg transition-all duration-300 flex items-center justify-center space-x-2">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                    </svg>
+                    <span>Pagar con Webpay</span>
+                </button>
+                
+                <div class="text-center">
+                    <a href="/checkout" class="text-text-gray hover:text-accent-orange transition-colors duration-300 text-sm">
+                        ← Volver al checkout
+                    </a>
+                </div>
+            </form>
+        </div>
+
+        <!-- Security Info -->
+        <div class="mt-8 text-center">
+            <div class="bg-tertiary-gray rounded-lg p-4">
+                <div class="flex items-center justify-center space-x-2 mb-2">
+                    <svg class="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z"/>
+                    </svg>
+                    <span class="text-text-light font-medium">Transacción Segura</span>
+                </div>
+                <p class="text-text-gray text-sm">
+                    Tus datos están protegidos con encriptación SSL y los estándares de seguridad de Transbank
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+document.getElementById('webpay-form').addEventListener('submit', function(e) {
+    const button = document.getElementById('pay-button');
+    
+    // Mostrar loading
+    button.disabled = true;
+    button.innerHTML = `
+        <svg class="animate-spin w-5 h-5" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+        </svg>
+        <span>Redirigiendo a Webpay...</span>
+    `;
+});
+</script>
+{% endblock %}

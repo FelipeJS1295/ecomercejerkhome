@@ -1,0 +1,62 @@
+# FastAPI y dependencias web
+fastapi==0.116.0
+uvicorn==0.35.0
+python-multipart==0.0.20
+jinja2==3.1.6
+starlette==0.46.2
+
+# Base de datos
+sqlalchemy==2.0.41
+# MySQL connector - USAR ESTE EN LUGAR DE mysql-connector-python
+PyMySQL==1.1.1
+cryptography==43.0.0  # Requerido por PyMySQL para conexiones seguras
+
+# Alternativa (descomenta si prefieres este conector):
+# mysql-connector-python==9.3.0
+
+# PostgreSQL (mantener por si acaso)
+psycopg2-binary==2.9.10
+
+# Autenticación y seguridad
+bcrypt==4.3.0
+PyJWT==2.10.1
+
+# Variables de entorno
+python-dotenv==1.1.1
+
+# Validación y serialización
+pydantic==2.11.7
+pydantic_core==2.33.2
+email_validator==2.2.0
+marshmallow==3.26.1
+
+# Procesamiento Excel (para exportar ventas)
+openpyxl==3.1.5
+
+# Cliente HTTP (para APIs externas)
+requests==2.32.4
+
+# Transbank SDK (para pagos con Webpay)
+transbank-sdk==6.1.0
+
+# Utilidades y dependencias del sistema
+annotated-types==0.7.0
+anyio==4.9.0
+certifi==2025.7.9
+charset-normalizer==3.4.2
+click==8.2.1
+colorama==0.4.6
+dnspython==2.7.0
+et_xmlfile==2.0.0
+greenlet==3.2.3
+h11==0.16.0
+idna==3.10
+MarkupSafe==3.0.2
+packaging==25.0
+sniffio==1.3.1
+typing_extensions==4.14.1
+typing-inspection==0.4.1
+urllib3==2.5.0
+
+# Dependencias adicionales para producción
+gunicorn==21.2.0  # Servidor WSGI para producción

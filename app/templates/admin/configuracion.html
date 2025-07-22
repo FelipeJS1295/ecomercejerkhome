@@ -1,0 +1,173 @@
+{% extends "admin/base_admin.html" %}
+
+{% block title %}Configuración - Admin Panel JerkHome{% endblock %}
+{% block page_title %}Configuración del Sitio{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+    <!-- Header -->
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-4 sm:space-y-0">
+        <div>
+            <h1 class="text-2xl font-bold">Configuración del Sitio</h1>
+            <p class="text-gray-400">Personaliza la información y apariencia de tu sitio web</p>
+        </div>
+        
+        <div class="flex space-x-3">
+            <a href="/admin/configuracion/nueva" 
+               class="bg-admin-accent hover:bg-orange-600 text-white px-4 py-2 rounded transition-colors">
+                <i class="fas fa-plus mr-2"></i>Nueva Configuración
+            </a>
+            
+            <a href="/" target="_blank"
+               class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded transition-colors">
+                <i class="fas fa-external-link-alt mr-2"></i>Ver Sitio
+            </a>
+        </div>
+    </div>
+    
+    <!-- Mensajes de éxito/error -->
+    {% set success = request.query_params.get('success') %}
+    {% set error = request.query_params.get('error') %}
+    
+    {% if success %}
+    <div class="bg-green-500 bg-opacity-20 border border-green-500 text-green-400 px-4 py-3 rounded">
+        <i class="fas fa-check-circle mr-2"></i>Configuraciones actualizadas exitosamente
+    </div>
+    {% endif %}
+    
+    {% if error %}
+    <div class="bg-red-500 bg-opacity-20 border border-red-500 text-red-400 px-4 py-3 rounded">
+        <i class="fas fa-exclamation-triangle mr-2"></i>Error al actualizar las configuraciones
+    </div>
+    {% endif %}
+    
+    <!-- Formulario de configuraciones -->
+    <form method="POST" action="/admin/configuracion/actualizar" enctype="multipart/form-data" class="space-y-6">
+        
+        {% for categoria, configs in config_por_categoria.items() %}
+        <div class="bg-admin-sidebar rounded-lg border border-gray-600 overflow-hidden">
+            <div class="bg-admin-dark px-6 py-4 border-b border-gray-600">
+                <h3 class="text-lg font-semibold text-admin-accent capitalize">
+                    {% if categoria == 'general' %}
+                    <i class="fas fa-cog mr-2"></i>Información General
+                    {% elif categoria == 'contacto' %}
+                    <i class="fas fa-phone mr-2"></i>Información de Contacto
+                    {% elif categoria == 'redes_sociales' %}
+                    <i class="fas fa-share-alt mr-2"></i>Redes Sociales
+                    {% elif categoria == 'banner' %}
+                    <i class="fas fa-image mr-2"></i>Banner Principal
+                    {% elif categoria == 'seo' %}
+                    <i class="fas fa-search mr-2"></i>SEO
+                    {% else %}
+                    <i class="fas fa-folder mr-2"></i>{{ categoria.replace('_', ' ').title() }}
+                    {% endif %}
+                </h3>
+            </div>
+            
+            <div class="p-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {% for config in configs %}
+                    <div class="space-y-2">
+                        <label for="{{ config.clave }}" class="block text-sm font-medium">
+                            {{ config.descripcion or config.clave }}
+                            {% if config.tipo == 'imagen' %}<span class="text-red-400">*</span>{% endif %}
+                        </label>
+                        
+                        {% if config.tipo == 'texto' or config.tipo == 'email' or config.tipo == 'telefono' or config.tipo == 'url' %}
+                        <input type="{{ 'email' if config.tipo == 'email' else 'tel' if config.tipo == 'telefono' else 'url' if config.tipo == 'url' else 'text' }}" 
+                               id="{{ config.clave }}" 
+                               name="{{ config.clave }}" 
+                               value="{{ config.valor or '' }}"
+                               class="w-full px-3 py-2 bg-admin-dark border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-admin-accent">
+                        
+                        {% elif config.tipo == 'imagen' %}
+                        <div class="space-y-2">
+                            <input type="file" 
+                                   id="{{ config.clave }}_file" 
+                                   name="{{ config.clave }}_file" 
+                                   accept="image/*"
+                                   onchange="previewImage(this, 'preview_{{ config.clave }}')"
+                                   class="w-full px-3 py-2 bg-admin-dark border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-admin-accent">
+                            
+                            <!-- Preview de imagen actual -->
+                            {% if config.valor %}
+                            <div class="mt-2">
+                                <p class="text-xs text-gray-400 mb-1">Imagen actual:</p>
+                                <img id="preview_{{ config.clave }}" 
+                                     src="{{ url_for('static', path='/images/config/' + config.valor) }}" 
+                                     alt="Preview" 
+                                     class="w-32 h-32 object-cover rounded border border-gray-600">
+                            </div>
+                            {% else %}
+                            <img id="preview_{{ config.clave }}" src="#" alt="Preview" 
+                                 class="w-32 h-32 object-cover rounded border border-gray-600 hidden">
+                            {% endif %}
+                        </div>
+                        
+                        {% elif config.tipo == 'boolean' %}
+                        <div class="flex items-center">
+                            <input type="checkbox" 
+                                   id="{{ config.clave }}" 
+                                   name="{{ config.clave }}" 
+                                   value="true"
+                                   {% if config.valor == 'true' %}checked{% endif %}
+                                   class="h-4 w-4 text-admin-accent focus:ring-admin-accent border-gray-600 rounded">
+                            <label for="{{ config.clave }}" class="ml-2 block text-sm text-gray-300">
+                                Activado
+                            </label>
+                        </div>
+                        
+                        {% else %}
+                        <textarea id="{{ config.clave }}" 
+                                  name="{{ config.clave }}" 
+                                  rows="3"
+                                  class="w-full px-3 py-2 bg-admin-dark border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-admin-accent">{{ config.valor or '' }}</textarea>
+                        {% endif %}
+                        
+                        <p class="text-xs text-gray-400">
+                            Clave: {{ config.clave }} | Tipo: {{ config.tipo }}
+                        </p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+        
+        <!-- Botones de acción -->
+        <div class="flex justify-end space-x-4">
+            <button type="button" onclick="resetForm()" 
+                    class="bg-gray-600 hover:bg-gray-700 text-white px-6 py-3 rounded transition-colors">
+                <i class="fas fa-undo mr-2"></i>Restablecer
+            </button>
+            
+            <button type="submit" 
+                    class="bg-admin-accent hover:bg-orange-600 text-white px-6 py-3 rounded transition-colors">
+                <i class="fas fa-save mr-2"></i>Guardar Cambios
+            </button>
+        </div>
+    </form>
+</div>
+
+<script>
+function resetForm() {
+    if (confirm('¿Estás seguro de que quieres restablecer todos los cambios?')) {
+        location.reload();
+    }
+}
+
+function previewImage(input, previewId) {
+    const file = input.files[0];
+    const preview = document.getElementById(previewId);
+    
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            preview.src = e.target.result;
+            preview.classList.remove('hidden');
+        };
+        reader.readAsDataURL(file);
+    }
+}
+</script>
+{% endblock %}

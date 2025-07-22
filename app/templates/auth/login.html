@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Iniciar Sesión - JerkHome Admin</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'admin-dark': '#1e293b',
+                        'admin-darker': '#0f172a',
+                        'admin-accent': '#f97316',
+                        'admin-red': '#dc2626',
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-admin-darker min-h-screen flex items-center justify-center">
+    <div class="max-w-md w-full space-y-8 p-8">
+        <!-- Logo y título -->
+        <div class="text-center">
+            <div class="mx-auto h-16 w-16 flex items-center justify-center rounded-full bg-admin-accent">
+                <i class="fas fa-couch text-2xl text-white"></i>
+            </div>
+            <h2 class="mt-6 text-3xl font-bold text-white">JerkHome</h2>
+            <p class="mt-2 text-sm text-gray-400">Panel de Administración</p>
+        </div>
+        
+        <!-- Formulario de login -->
+        <div class="bg-admin-dark rounded-lg shadow-xl p-8">
+            <!-- Error message -->
+            {% if error %}
+            <div class="mb-6 bg-red-500 bg-opacity-20 border border-red-500 text-red-400 px-4 py-3 rounded">
+                <div class="flex items-center">
+                    <i class="fas fa-exclamation-triangle mr-2"></i>
+                    <span>{{ error }}</span>
+                </div>
+            </div>
+            {% endif %}
+            
+            <form method="POST" class="space-y-6">
+                <div>
+                    <label for="username" class="block text-sm font-medium text-gray-300 mb-2">
+                        Usuario o Email
+                    </label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <i class="fas fa-user text-gray-400"></i>
+                        </div>
+                        <input type="text" id="username" name="username" required
+                               class="w-full pl-10 pr-3 py-3 bg-admin-darker border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-admin-accent focus:border-transparent text-white placeholder-gray-400"
+                               placeholder="Ingrese su usuario o email">
+                    </div>
+                </div>
+                
+                <div>
+                    <label for="password" class="block text-sm font-medium text-gray-300 mb-2">
+                        Contraseña
+                    </label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <i class="fas fa-lock text-gray-400"></i>
+                        </div>
+                        <input type="password" id="password" name="password" required
+                               class="w-full pl-10 pr-10 py-3 bg-admin-darker border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-admin-accent focus:border-transparent text-white placeholder-gray-400"
+                               placeholder="Ingrese su contraseña">
+                        <button type="button" onclick="togglePassword()" 
+                                class="absolute inset-y-0 right-0 pr-3 flex items-center">
+                            <i id="passwordIcon" class="fas fa-eye text-gray-400 hover:text-white"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center">
+                        <input type="checkbox" id="remember" name="remember" 
+                               class="h-4 w-4 text-admin-accent focus:ring-admin-accent border-gray-600 rounded bg-admin-darker">
+                        <label for="remember" class="ml-2 block text-sm text-gray-300">
+                            Recordarme
+                        </label>
+                    </div>
+                    
+                    <div class="text-sm">
+                        <a href="#" class="font-medium text-admin-accent hover:text-orange-400">
+                            ¿Olvidaste tu contraseña?
+                        </a>
+                    </div>
+                </div>
+                
+                <div>
+                    <button type="submit" 
+                            class="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-admin-accent hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-admin-accent transition-colors">
+                        <span class="absolute left-0 inset-y-0 flex items-center pl-3">
+                            <i class="fas fa-sign-in-alt group-hover:text-orange-200"></i>
+                        </span>
+                        Iniciar Sesión
+                    </button>
+                </div>
+            </form>
+            
+            <!-- Información adicional -->
+            <div class="mt-6 text-center">
+                <p class="text-xs text-gray-400">
+                    Sistema de gestión JerkHome
+                </p>
+                <p class="text-xs text-gray-500 mt-1">
+                    v1.0 - Desarrollado para uso interno
+                </p>
+            </div>
+        </div>
+        
+        <!-- Link al sitio web -->
+        <div class="text-center">
+            <a href="/" class="text-sm text-gray-400 hover:text-admin-accent transition-colors">
+                <i class="fas fa-arrow-left mr-2"></i>Volver al sitio web
+            </a>
+        </div>
+    </div>
+    
+    <script>
+        function togglePassword() {
+            const passwordInput = document.getElementById('password');
+            const passwordIcon = document.getElementById('passwordIcon');
+            
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                passwordIcon.classList.remove('fa-eye');
+                passwordIcon.classList.add('fa-eye-slash');
+            } else {
+                passwordInput.type = 'password';
+                passwordIcon.classList.remove('fa-eye-slash');
+                passwordIcon.classList.add('fa-eye');
+            }
+        }
+        
+        // Focus automático en el campo de usuario
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('username').focus();
+        });
+    </script>
+</body>
+</html>
