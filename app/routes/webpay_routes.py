@@ -104,11 +104,11 @@ async def iniciar_transaccion_webpay(
         # Verificar si ya existe una transacción para esta orden
         transaccion_existente = db.query(TransaccionWebpay).filter(
             TransaccionWebpay.numero_orden == orden,
-            TransaccionWebpay.estado.in_([EstadoTransaccion.INICIADA, EstadoTransaccion.COMPLETADA])
+            TransaccionWebpay.estado.in_(["iniciada", "completada"])
         ).first()
         
         if transaccion_existente:
-            if transaccion_existente.estado == EstadoTransaccion.COMPLETADA:
+            if transaccion_existente.estado == "completada":
                 raise HTTPException(status_code=400, detail="Esta orden ya fue pagada")
             else:
                 # Si hay una transacción iniciada, la usamos
@@ -152,7 +152,7 @@ async def iniciar_transaccion_webpay(
             token=response['token'],
             session_id=session_id,
             monto=monto,
-            estado=EstadoTransaccion.INICIADA
+            estado="iniciada"  # Usar string directamente
         )
         
         db.add(nueva_transaccion)
@@ -258,12 +258,13 @@ async def confirmar_pago_webpay(
         # Actualizar la transacción según el resultado
         if status == 'AUTHORIZED':
             # ✅ PAGO EXITOSO
-            transaccion_webpay.marcar_como_completada(
-                authorization_code=authorization_code,
-                payment_type_code=payment_type_code,
-                response_code=response_code,
-                resultado_completo=result
-            )
+            # Actualizar manualmente en lugar de usar el método
+            transaccion_webpay.estado = "completada"
+            transaccion_webpay.authorization_code = authorization_code
+            transaccion_webpay.payment_type_code = payment_type_code
+            transaccion_webpay.response_code = response_code
+            transaccion_webpay.resultado_completo = result
+            transaccion_webpay.updated_at = datetime.now()
             
             # Actualizar ventas
             for venta in ventas:
@@ -301,10 +302,11 @@ async def confirmar_pago_webpay(
             })
         else:
             # ❌ PAGO FALLIDO
-            transaccion_webpay.marcar_como_fallida(
-                response_code=response_code,
-                resultado_completo=result
-            )
+            # Actualizar manualmente en lugar de usar el método
+            transaccion_webpay.estado = "fallida"
+            transaccion_webpay.response_code = response_code
+            transaccion_webpay.resultado_completo = result
+            transaccion_webpay.updated_at = datetime.now()
             
             # Actualizar ventas
             for venta in ventas:
@@ -481,7 +483,7 @@ async def dashboard_webpay(
         # Estadísticas generales
         total_transacciones = db.query(func.count(TransaccionWebpay.id)).scalar()
         transacciones_exitosas = db.query(func.count(TransaccionWebpay.id)).filter(
-            TransaccionWebpay.estado == EstadoTransaccion.COMPLETADA
+            TransaccionWebpay.estado == "completada"
         ).scalar()
         
         # Transacciones de hoy
