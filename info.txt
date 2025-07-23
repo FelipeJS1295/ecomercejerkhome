@@ -11,3 +11,6 @@ cd /var/www/jerkhome_ecommerce
 activar env: venv\Scripts\activate
 
 para hacer el run: python run.py
+
+USE ecomercejh;
+SHOW TABLES;

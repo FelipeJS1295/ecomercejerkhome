@@ -168,20 +168,69 @@ async def iniciar_transaccion_webpay(
 async def confirmar_pago_webpay(
     request: Request,
     token_ws: str = Form(None),
+    TBK_TOKEN: str = Form(None),
+    TBK_ID_SESION: str = Form(None), 
+    TBK_ORDEN_COMPRA: str = Form(None),
     db: Session = Depends(get_db)
 ):
-    """Confirmar transacción WebPay Plus"""
+    """Confirmar transacción WebPay Plus o manejar cancelaciones"""
     try:
-        # El token puede venir por POST o GET
+        # 🚫 VERIFICAR SI ES UNA CANCELACIÓN POR EL USUARIO
         if not token_ws:
             token_ws = request.query_params.get('token_ws')
         
+        # Obtener parámetros de cancelación de query params también
+        if not TBK_TOKEN:
+            TBK_TOKEN = request.query_params.get('TBK_TOKEN')
+        if not TBK_ID_SESION:
+            TBK_ID_SESION = request.query_params.get('TBK_ID_SESION')
+        if not TBK_ORDEN_COMPRA:
+            TBK_ORDEN_COMPRA = request.query_params.get('TBK_ORDEN_COMPRA')
+        
+        # Si hay TBK_TOKEN, es una cancelación
+        if TBK_TOKEN:
+            logger.info(f"🚫 Transacción cancelada por el usuario")
+            logger.info(f"   Token: {TBK_TOKEN}")
+            logger.info(f"   Sesión: {TBK_ID_SESION}")
+            logger.info(f"   Orden: {TBK_ORDEN_COMPRA}")
+            
+            # Actualizar estado en la base de datos
+            update_sql = text("""
+                UPDATE transacciones_webpay 
+                SET estado = 'anulada', updated_at = NOW()
+                WHERE token = :token OR numero_orden = :orden
+            """)
+            
+            db.execute(update_sql, {
+                'token': TBK_TOKEN,
+                'orden': TBK_ORDEN_COMPRA
+            })
+            
+            # Actualizar estado de la venta si existe
+            if TBK_ORDEN_COMPRA:
+                ventas = db.query(Venta).filter(Venta.orden_compra == TBK_ORDEN_COMPRA).all()
+                for venta in ventas:
+                    venta.estado_pago = EstadoPago.ANULADA
+            
+            db.commit()
+            
+            # Retornar página de cancelación
+            return templates.TemplateResponse("webpay_cancelado.html", {
+                "request": request,
+                "orden": TBK_ORDEN_COMPRA,
+                "token": TBK_TOKEN,
+                "mensaje": "Transacción cancelada por el usuario",
+                "fecha": datetime.now().strftime("%d/%m/%Y %H:%M:%S")
+            })
+        
+        # Si no hay token_ws ni TBK_TOKEN, error
         if not token_ws:
             raise HTTPException(status_code=400, detail="Token de transacción no encontrado")
         
+        # 🔍 PROCESO NORMAL DE CONFIRMACIÓN
         logger.info(f"🔍 Confirmando transacción con token: {token_ws}")
         
-        # Buscar la transacción en nuestra base de datos con SQL directo
+        # Buscar la transacción en nuestra base de datos
         search_sql = text("""
             SELECT numero_orden, token, monto, estado 
             FROM transacciones_webpay 
@@ -215,7 +264,7 @@ async def confirmar_pago_webpay(
         
         # Actualizar la transacción según el resultado
         if status == 'AUTHORIZED':
-            # ✅ PAGO EXITOSO - Actualizar con SQL directo
+            # ✅ PAGO EXITOSO
             update_sql = text("""
                 UPDATE transacciones_webpay 
                 SET estado = 'completada',
@@ -285,6 +334,8 @@ async def confirmar_pago_webpay(
                 "error_message": get_response_description(response_code)
             })
         
+    except HTTPException:
+        raise
     except Exception as e:
         error_msg = f"Error confirmando transacción: {str(e)}"
         logger.error(f"❌ {error_msg}")
@@ -292,7 +343,7 @@ async def confirmar_pago_webpay(
         return templates.TemplateResponse("webpay_error.html", {
             "request": request,
             "error_message": f"Error procesando el resultado del pago: {str(e)}",
-            "token": token_ws
+            "token": token_ws or TBK_TOKEN
         })
 
 @router.get("/webpay/pagar/{order_id}")
