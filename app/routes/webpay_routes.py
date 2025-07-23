@@ -25,8 +25,12 @@ templates = Jinja2Templates(directory="app/templates")
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+# 🔧 FORZAR MODO TESTING MIENTRAS SE COMPLETA CERTIFICACIÓN
+# Cambiar a "production" cuando recibas la API Key de Transbank
+ENVIRONMENT = "testing"  # ← LÍNEA AGREGADA PARA FORZAR TESTING
+
 # Configuración según el ambiente
-ENVIRONMENT = os.getenv("ENVIRONMENT", "testing")
+# ENVIRONMENT = os.getenv("ENVIRONMENT", "testing")  # ← Comentado temporalmente
 
 if ENVIRONMENT == "production":
     COMMERCE_CODE = os.getenv("WEBPAY_COMMERCE_CODE")
@@ -34,11 +38,22 @@ if ENVIRONMENT == "production":
     INTEGRATION_TYPE = IntegrationType.LIVE
     
     if not COMMERCE_CODE or not API_KEY:
-        raise ValueError("En producción debes configurar WEBPAY_COMMERCE_CODE y WEBPAY_API_KEY")
+        logger.warning("⚠️ Credenciales de producción no configuradas, usando testing")
+        # Fallback a testing si faltan credenciales
+        COMMERCE_CODE = "597055555537"
+        API_KEY = "579B532A7440BB0C9079DED94D31EA1615BACEB56610332264630D42D0A36B1C"
+        INTEGRATION_TYPE = IntegrationType.TEST
 else:
-    COMMERCE_CODE = "52991676"
+    # Credenciales de testing actualizadas
+    COMMERCE_CODE = "597055555537"
     API_KEY = "579B532A7440BB0C9079DED94D31EA1615BACEB56610332264630D42D0A36B1C"
     INTEGRATION_TYPE = IntegrationType.TEST
+
+# 📝 Logging para debugging
+logger.info(f"🔧 Ambiente WebPay: {ENVIRONMENT}")
+logger.info(f"🏪 Commerce Code: {COMMERCE_CODE}")
+logger.info(f"🔑 API Key configurada: {'Sí' if API_KEY else 'No'}")
+logger.info(f"🌐 Integration Type: {INTEGRATION_TYPE}")
 
 # Inicializar WebPay con las opciones
 webpay_options = WebpayOptions(COMMERCE_CODE, API_KEY, INTEGRATION_TYPE)
@@ -53,7 +68,7 @@ async def iniciar_transaccion_webpay(
 ):
     """Iniciar transacción WebPay Plus"""
     try:
-        logger.info(f"Iniciando transacción - Orden: {orden}, Monto: {monto}")
+        logger.info(f"🚀 Iniciando transacción - Orden: {orden}, Monto: {monto}")
         
         if monto <= 0:
             raise HTTPException(status_code=400, detail="El monto debe ser mayor a 0")
@@ -70,7 +85,7 @@ async def iniciar_transaccion_webpay(
         base_url = str(request.base_url).rstrip('/')
         return_url = f"{base_url}/webpay/confirmar"
         
-        logger.info(f"URL de retorno: {return_url}")
+        logger.info(f"🔗 URL de retorno: {return_url}")
         
         # 🚨 Intenta crear la transacción
         response = transaction.create(
@@ -82,20 +97,21 @@ async def iniciar_transaccion_webpay(
 
         # ✅ Verificación adicional para evitar el error 'NoneType'
         if not response or 'url' not in response or 'token' not in response:
+            logger.error("❌ Respuesta inválida de WebPay")
             raise HTTPException(status_code=500, detail="No se pudo iniciar la transacción con Webpay")
         
-        logger.info(f"Respuesta WebPay: {response}")
+        logger.info(f"✅ Respuesta WebPay: {response}")
         
         venta.estado_pago = EstadoPago.PENDIENTE
         db.commit()
         
         webpay_url = f"{response['url']}?token_ws={response['token']}"
-        logger.info(f"Redirigiendo a WebPay: {webpay_url}")
+        logger.info(f"🔄 Redirigiendo a WebPay: {webpay_url}")
         
         return RedirectResponse(url=webpay_url, status_code=303)
         
     except Exception as e:
-        logger.error(f"Error iniciando transacción: {str(e)}")
+        logger.error(f"❌ Error iniciando transacción: {str(e)}")
         return templates.TemplateResponse("webpay_error.html", {
             "request": request,
             "error_message": f"Error al procesar el pago: {str(e)}",
@@ -120,12 +136,12 @@ async def confirmar_pago_webpay(
         if not token_ws:
             raise HTTPException(status_code=400, detail="Token de transacción no encontrado")
         
-        logger.info(f"Confirmando transacción con token: {token_ws}")
+        logger.info(f"🔍 Confirmando transacción con token: {token_ws}")
         
         # Confirmar transacción con WebPay
         result = transaction.commit(token_ws)
         
-        logger.info(f"Resultado WebPay: {json.dumps(result, indent=2)}")
+        logger.info(f"📋 Resultado WebPay: {json.dumps(result, indent=2)}")
         
         # Extraer información de la respuesta
         buy_order = result.get('buy_order')
@@ -148,7 +164,7 @@ async def confirmar_pago_webpay(
                 venta.estado_venta = EstadoVenta.NUEVA
             
             db.commit()
-            logger.info(f"Pago exitoso - Orden: {buy_order}, Autorización: {authorization_code}")
+            logger.info(f"✅ Pago exitoso - Orden: {buy_order}, Autorización: {authorization_code}")
             
             # Página de éxito
             return templates.TemplateResponse("webpay_exito.html", {
@@ -166,7 +182,7 @@ async def confirmar_pago_webpay(
                 venta.estado_pago = EstadoPago.ANULADA
             
             db.commit()
-            logger.warning(f"Pago fallido - Orden: {buy_order}, Status: {status}")
+            logger.warning(f"⚠️ Pago fallido - Orden: {buy_order}, Status: {status}")
             
             return templates.TemplateResponse("webpay_error.html", {
                 "request": request,
@@ -177,7 +193,7 @@ async def confirmar_pago_webpay(
             })
         
     except Exception as e:
-        logger.error(f"Error confirmando transacción: {str(e)}")
+        logger.error(f"❌ Error confirmando transacción: {str(e)}")
         
         return templates.TemplateResponse("webpay_error.html", {
             "request": request,
@@ -210,7 +226,7 @@ async def pagina_pago_webpay(
         })
         
     except Exception as e:
-        logger.error(f"Error en página de pago: {str(e)}")
+        logger.error(f"❌ Error en página de pago: {str(e)}")
         raise HTTPException(status_code=500, detail="Error cargando página de pago")
 
 @router.get("/webpay/estado/{order_id}")
@@ -221,7 +237,6 @@ async def consultar_estado_pago(
     """Consultar estado de un pago"""
     try:
         ventas = db.query(Venta).filter(Venta.orden_compra == order_id).all()
-
         
         if not ventas:
             raise HTTPException(status_code=404, detail="Pedido no encontrado")
@@ -237,7 +252,7 @@ async def consultar_estado_pago(
         }
         
     except Exception as e:
-        logger.error(f"Error consultando estado: {str(e)}")
+        logger.error(f"❌ Error consultando estado: {str(e)}")
         raise HTTPException(status_code=500, detail="Error consultando estado del pago")
 
 def get_payment_type_description(payment_type_code):
