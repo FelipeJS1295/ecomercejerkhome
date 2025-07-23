@@ -2,6 +2,7 @@ from fastapi import APIRouter, Request, Depends, HTTPException, Form
 from fastapi.templating import Jinja2Templates
 from fastapi.responses import HTMLResponse, RedirectResponse
 from sqlalchemy.orm import Session
+from sqlalchemy import text
 from pydantic import BaseModel
 from typing import Optional
 import json
@@ -9,8 +10,6 @@ import logging
 from datetime import datetime
 import os
 from app.models import Venta, EstadoPago, EstadoVenta
-# 🆕 IMPORTAR MODELOS DE TRANSBANK
-from app.models.transbank import TransaccionWebpay, LogWebpay, TipoLog, EstadoTransaccion
 
 # Importaciones de Transbank
 from transbank.webpay.webpay_plus.transaction import Transaction
@@ -55,30 +54,6 @@ logger.info(f"🌐 Integration Type: {INTEGRATION_TYPE}")
 webpay_options = WebpayOptions(COMMERCE_CODE, API_KEY, INTEGRATION_TYPE)
 transaction = Transaction(webpay_options)
 
-def crear_log_webpay(db: Session, tipo: TipoLog, mensaje: str, numero_orden: str = None, 
-                     token: str = None, datos_adicionales: dict = None, request: Request = None):
-    """Función helper para crear logs"""
-    ip_address = None
-    user_agent = None
-    
-    if request:
-        ip_address = request.client.host if request.client else None
-        user_agent = request.headers.get("user-agent")
-    
-    log = LogWebpay.crear_log(
-        tipo=tipo,
-        mensaje=mensaje,
-        numero_orden=numero_orden,
-        token=token,
-        datos_adicionales=datos_adicionales,
-        ip_address=ip_address,
-        user_agent=user_agent
-    )
-    
-    db.add(log)
-    db.commit()
-    return log
-
 @router.post("/webpay/iniciar")
 async def iniciar_transaccion_webpay(
     request: Request,
@@ -102,18 +77,23 @@ async def iniciar_transaccion_webpay(
             raise HTTPException(status_code=404, detail="Orden no encontrada")
         
         # Verificar si ya existe una transacción para esta orden
-        transaccion_existente = db.query(TransaccionWebpay).filter(
-            TransaccionWebpay.numero_orden == orden,
-            TransaccionWebpay.estado.in_(["iniciada", "completada"])
-        ).first()
+        check_sql = text("""
+            SELECT token, estado FROM transacciones_webpay 
+            WHERE numero_orden = :orden 
+            AND estado IN ('iniciada', 'completada')
+            ORDER BY created_at DESC 
+            LIMIT 1
+        """)
         
-        if transaccion_existente:
-            if transaccion_existente.estado == "completada":
+        existing = db.execute(check_sql, {'orden': orden}).fetchone()
+        
+        if existing:
+            if existing.estado == 'completada':
                 raise HTTPException(status_code=400, detail="Esta orden ya fue pagada")
             else:
-                # Si hay una transacción iniciada, la usamos
-                logger.info(f"🔄 Reutilizando transacción existente: {transaccion_existente.token}")
-                webpay_url = f"https://webpay3gint.transbank.cl/webpayserver/initTransaction?token_ws={transaccion_existente.token}"
+                # Si hay una transacción iniciada, la reutilizamos
+                logger.info(f"🔄 Reutilizando transacción existente: {existing.token}")
+                webpay_url = f"https://webpay3gint.transbank.cl/webpayserver/initTransaction?token_ws={existing.token}"
                 return RedirectResponse(url=webpay_url, status_code=303)
         
         session_id = f"session_{orden}_{datetime.now().timestamp()}"
@@ -133,53 +113,39 @@ async def iniciar_transaccion_webpay(
         if not response or 'url' not in response or 'token' not in response:
             error_msg = "No se pudo iniciar la transacción con Webpay"
             logger.error(f"❌ {error_msg}")
-            
-            # Log del error
-            crear_log_webpay(
-                db, TipoLog.ERROR_INICIO, error_msg,
-                numero_orden=orden, 
-                datos_adicionales={"response": response},
-                request=request
-            )
-            
             raise HTTPException(status_code=500, detail=error_msg)
         
         logger.info(f"✅ Respuesta WebPay: {response}")
         
-        # 💾 CREAR REGISTRO EN TRANSACCIONES_WEBPAY
-        nueva_transaccion = TransaccionWebpay(
-            numero_orden=orden,
-            token=response['token'],
-            session_id=session_id,
-            monto=monto,
-            estado="iniciada"  # Usar string directamente
-        )
-        
-        db.add(nueva_transaccion)
-        
-        # Actualizar estado de la venta
-        venta.estado_pago = EstadoPago.PENDIENTE
-        
-        # Log de transacción iniciada
-        crear_log_webpay(
-            db, TipoLog.TRANSACCION_INICIADA, 
-            f"Transacción iniciada correctamente",
-            numero_orden=orden,
-            token=response['token'],
-            datos_adicionales={
-                "monto": monto,
-                "session_id": session_id,
-                "return_url": return_url,
-                "webpay_response": response
-            },
-            request=request
-        )
-        
-        db.commit()
+        # 💾 CREAR REGISTRO CON SQL DIRECTO (evita problemas de enum)
+        try:
+            sql_insert = text("""
+                INSERT INTO transacciones_webpay 
+                (numero_orden, token, session_id, monto, estado, created_at) 
+                VALUES (:orden, :token, :session_id, :monto, 'iniciada', NOW())
+            """)
+            
+            db.execute(sql_insert, {
+                'orden': orden,
+                'token': response['token'],
+                'session_id': session_id,
+                'monto': monto
+            })
+            
+            # Actualizar estado de la venta
+            venta.estado_pago = EstadoPago.PENDIENTE
+            
+            db.commit()
+            
+            logger.info(f"💾 Transacción creada con SQL directo - Token: {response['token']}")
+            
+        except Exception as e:
+            logger.error(f"❌ Error creando transacción: {str(e)}")
+            db.rollback()
+            raise HTTPException(status_code=500, detail="Error guardando transacción")
         
         webpay_url = f"{response['url']}?token_ws={response['token']}"
         logger.info(f"🔄 Redirigiendo a WebPay: {webpay_url}")
-        logger.info(f"💾 Token guardado: {response['token']}")
         
         return RedirectResponse(url=webpay_url, status_code=303)
         
@@ -188,14 +154,6 @@ async def iniciar_transaccion_webpay(
     except Exception as e:
         error_msg = f"Error iniciando transacción: {str(e)}"
         logger.error(f"❌ {error_msg}")
-        
-        # Log del error
-        crear_log_webpay(
-            db, TipoLog.ERROR_INICIO, error_msg,
-            numero_orden=orden,
-            datos_adicionales={"error": str(e)},
-            request=request
-        )
         
         return templates.TemplateResponse("webpay_error.html", {
             "request": request,
@@ -223,18 +181,18 @@ async def confirmar_pago_webpay(
         
         logger.info(f"🔍 Confirmando transacción con token: {token_ws}")
         
-        # Buscar la transacción en nuestra base de datos
-        transaccion_webpay = db.query(TransaccionWebpay).filter(
-            TransaccionWebpay.token == token_ws
-        ).first()
+        # Buscar la transacción en nuestra base de datos con SQL directo
+        search_sql = text("""
+            SELECT numero_orden, token, monto, estado 
+            FROM transacciones_webpay 
+            WHERE token = :token
+        """)
         
-        if not transaccion_webpay:
+        transaccion_data = db.execute(search_sql, {'token': token_ws}).fetchone()
+        
+        if not transaccion_data:
             error_msg = "Token de transacción no encontrado en la base de datos"
             logger.error(f"❌ {error_msg}")
-            crear_log_webpay(
-                db, TipoLog.ERROR_CONFIRMACION, error_msg,
-                token=token_ws, request=request
-            )
             raise HTTPException(status_code=404, detail=error_msg)
         
         # Confirmar transacción con WebPay
@@ -257,34 +215,30 @@ async def confirmar_pago_webpay(
         
         # Actualizar la transacción según el resultado
         if status == 'AUTHORIZED':
-            # ✅ PAGO EXITOSO
-            # Actualizar manualmente en lugar de usar el método
-            transaccion_webpay.estado = "completada"
-            transaccion_webpay.authorization_code = authorization_code
-            transaccion_webpay.payment_type_code = payment_type_code
-            transaccion_webpay.response_code = response_code
-            transaccion_webpay.resultado_completo = result
-            transaccion_webpay.updated_at = datetime.now()
+            # ✅ PAGO EXITOSO - Actualizar con SQL directo
+            update_sql = text("""
+                UPDATE transacciones_webpay 
+                SET estado = 'completada',
+                    authorization_code = :auth_code,
+                    payment_type_code = :payment_type,
+                    response_code = :response_code,
+                    resultado_completo = :resultado,
+                    updated_at = NOW()
+                WHERE token = :token
+            """)
+            
+            db.execute(update_sql, {
+                'auth_code': authorization_code,
+                'payment_type': payment_type_code,
+                'response_code': response_code,
+                'resultado': json.dumps(result),
+                'token': token_ws
+            })
             
             # Actualizar ventas
             for venta in ventas:
                 venta.estado_pago = EstadoPago.PAGADA
                 venta.estado_venta = EstadoVenta.NUEVA
-            
-            # Log de éxito
-            crear_log_webpay(
-                db, TipoLog.TRANSACCION_CONFIRMADA,
-                f"Pago confirmado exitosamente",
-                numero_orden=buy_order,
-                token=token_ws,
-                datos_adicionales={
-                    "authorization_code": authorization_code,
-                    "amount": amount,
-                    "payment_type": payment_type_code,
-                    "webpay_result": result
-                },
-                request=request
-            )
             
             db.commit()
             logger.info(f"✅ Pago exitoso - Orden: {buy_order}, Autorización: {authorization_code}")
@@ -295,32 +249,30 @@ async def confirmar_pago_webpay(
                 "buy_order": buy_order,
                 "amount": amount,
                 "authorization_code": authorization_code,
-                "tipo_pago": transaccion_webpay.tipo_pago_descripcion,
+                "tipo_pago": get_payment_type_description(payment_type_code),
                 "fecha": datetime.now().strftime("%d/%m/%Y %H:%M:%S"),
-                "ventas": ventas,
-                "transaccion": transaccion_webpay
+                "ventas": ventas
             })
         else:
             # ❌ PAGO FALLIDO
-            # Actualizar manualmente en lugar de usar el método
-            transaccion_webpay.estado = "fallida"
-            transaccion_webpay.response_code = response_code
-            transaccion_webpay.resultado_completo = result
-            transaccion_webpay.updated_at = datetime.now()
+            update_sql = text("""
+                UPDATE transacciones_webpay 
+                SET estado = 'fallida',
+                    response_code = :response_code,
+                    resultado_completo = :resultado,
+                    updated_at = NOW()
+                WHERE token = :token
+            """)
+            
+            db.execute(update_sql, {
+                'response_code': response_code,
+                'resultado': json.dumps(result),
+                'token': token_ws
+            })
             
             # Actualizar ventas
             for venta in ventas:
                 venta.estado_pago = EstadoPago.ANULADA
-            
-            # Log de fallo
-            crear_log_webpay(
-                db, TipoLog.ERROR_CONFIRMACION,
-                f"Pago fallido - Status: {status}, Response Code: {response_code}",
-                numero_orden=buy_order,
-                token=token_ws,
-                datos_adicionales={"webpay_result": result},
-                request=request
-            )
             
             db.commit()
             logger.warning(f"⚠️ Pago fallido - Orden: {buy_order}, Status: {status}")
@@ -330,20 +282,12 @@ async def confirmar_pago_webpay(
                 "buy_order": buy_order,
                 "amount": amount,
                 "response_code": response_code,
-                "error_message": get_response_description(response_code),
-                "transaccion": transaccion_webpay
+                "error_message": get_response_description(response_code)
             })
         
     except Exception as e:
         error_msg = f"Error confirmando transacción: {str(e)}"
         logger.error(f"❌ {error_msg}")
-        
-        crear_log_webpay(
-            db, TipoLog.ERROR_CONFIRMACION, error_msg,
-            token=token_ws,
-            datos_adicionales={"error": str(e)},
-            request=request
-        )
         
         return templates.TemplateResponse("webpay_error.html", {
             "request": request,
@@ -366,9 +310,15 @@ async def pagina_pago_webpay(
             raise HTTPException(status_code=404, detail="Pedido no encontrado")
         
         # Verificar si ya existe una transacción
-        transaccion = db.query(TransaccionWebpay).filter(
-            TransaccionWebpay.numero_orden == order_id
-        ).first()
+        check_sql = text("""
+            SELECT token, estado, monto, created_at 
+            FROM transacciones_webpay 
+            WHERE numero_orden = :orden 
+            ORDER BY created_at DESC 
+            LIMIT 1
+        """)
+        
+        transaccion_data = db.execute(check_sql, {'orden': order_id}).fetchone()
         
         # Calcular total
         total = sum(venta.cantidad * venta.precio for venta in ventas)
@@ -378,7 +328,7 @@ async def pagina_pago_webpay(
             "order_id": order_id,
             "total": int(total),
             "ventas": ventas,
-            "transaccion_existente": transaccion
+            "transaccion_existente": transaccion_data
         })
         
     except Exception as e:
@@ -399,10 +349,31 @@ async def consultar_estado_pago(
         
         venta = ventas[0]
         
-        # Buscar transacción de WebPay
-        transaccion = db.query(TransaccionWebpay).filter(
-            TransaccionWebpay.numero_orden == order_id
-        ).first()
+        # Buscar transacción de WebPay con SQL directo
+        search_sql = text("""
+            SELECT token, estado, authorization_code, payment_type_code, 
+                   monto, created_at, updated_at, response_code
+            FROM transacciones_webpay 
+            WHERE numero_orden = :orden 
+            ORDER BY created_at DESC 
+            LIMIT 1
+        """)
+        
+        transaccion_data = db.execute(search_sql, {'orden': order_id}).fetchone()
+        
+        webpay_data = None
+        if transaccion_data:
+            webpay_data = {
+                "token": transaccion_data.token,
+                "estado": transaccion_data.estado,
+                "authorization_code": transaccion_data.authorization_code,
+                "payment_type": transaccion_data.payment_type_code,
+                "payment_type_description": get_payment_type_description(transaccion_data.payment_type_code),
+                "monto": transaccion_data.monto,
+                "fecha_transaccion": transaccion_data.created_at,
+                "fecha_actualizacion": transaccion_data.updated_at,
+                "es_exitosa": transaccion_data.estado == 'completada' and transaccion_data.response_code == 0
+            }
         
         return {
             "order_id": order_id,
@@ -410,17 +381,7 @@ async def consultar_estado_pago(
             "estado_venta": venta.estado_venta,
             "total": sum(v.cantidad * v.precio for v in ventas),
             "cliente": venta.nombre_cliente,
-            # 🆕 DATOS DE WEBPAY DESDE TABLA DEDICADA
-            "webpay": {
-                "token": transaccion.token if transaccion else None,
-                "estado": transaccion.estado if transaccion else None,
-                "authorization_code": transaccion.authorization_code if transaccion else None,
-                "payment_type": transaccion.payment_type_code if transaccion else None,
-                "payment_type_description": transaccion.tipo_pago_descripcion if transaccion else None,
-                "monto": transaccion.monto if transaccion else None,
-                "fecha_transaccion": transaccion.created_at if transaccion else None,
-                "es_exitosa": transaccion.es_exitosa if transaccion else False
-            }
+            "webpay": webpay_data
         }
         
     except Exception as e:
@@ -434,30 +395,37 @@ async def consultar_por_token(
 ):
     """Consultar transacción por token de WebPay"""
     try:
-        transaccion = db.query(TransaccionWebpay).filter(
-            TransaccionWebpay.token == token
-        ).first()
+        # Buscar con SQL directo
+        search_sql = text("""
+            SELECT numero_orden, token, estado, monto, authorization_code, 
+                   payment_type_code, created_at, updated_at, response_code, 
+                   resultado_completo
+            FROM transacciones_webpay 
+            WHERE token = :token
+        """)
         
-        if not transaccion:
+        transaccion_data = db.execute(search_sql, {'token': token}).fetchone()
+        
+        if not transaccion_data:
             raise HTTPException(status_code=404, detail="Token no encontrado")
         
         # Buscar venta asociada
         ventas = db.query(Venta).filter(
-            Venta.orden_compra == transaccion.numero_orden
+            Venta.orden_compra == transaccion_data.numero_orden
         ).all()
         
         return {
             "token": token,
-            "orden_compra": transaccion.numero_orden,
-            "estado_transaccion": transaccion.estado,
-            "monto": transaccion.monto,
-            "authorization_code": transaccion.authorization_code,
-            "payment_type": transaccion.payment_type_code,
-            "payment_type_description": transaccion.tipo_pago_descripcion,
-            "fecha_transaccion": transaccion.created_at,
-            "fecha_actualizacion": transaccion.updated_at,
-            "es_exitosa": transaccion.es_exitosa,
-            "resultado_completo": transaccion.resultado_completo,
+            "orden_compra": transaccion_data.numero_orden,
+            "estado_transaccion": transaccion_data.estado,
+            "monto": transaccion_data.monto,
+            "authorization_code": transaccion_data.authorization_code,
+            "payment_type": transaccion_data.payment_type_code,
+            "payment_type_description": get_payment_type_description(transaccion_data.payment_type_code),
+            "fecha_transaccion": transaccion_data.created_at,
+            "fecha_actualizacion": transaccion_data.updated_at,
+            "es_exitosa": transaccion_data.estado == 'completada' and transaccion_data.response_code == 0,
+            "resultado_completo": json.loads(transaccion_data.resultado_completo) if transaccion_data.resultado_completo else None,
             # Datos de la venta
             "venta": {
                 "cliente": ventas[0].nombre_cliente if ventas else None,
@@ -470,45 +438,83 @@ async def consultar_por_token(
         logger.error(f"❌ Error consultando por token: {str(e)}")
         raise HTTPException(status_code=500, detail="Error consultando transacción")
 
-@router.get("/webpay/dashboard")
-async def dashboard_webpay(
+@router.get("/webpay/transacciones")
+async def listar_transacciones(
     request: Request,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    limit: int = 50
 ):
-    """Dashboard con estadísticas de WebPay"""
+    """Listar últimas transacciones"""
     try:
-        from sqlalchemy import func, desc
-        from datetime import date, timedelta
+        # Consultar con SQL directo
+        list_sql = text("""
+            SELECT numero_orden, token, estado, monto, authorization_code, 
+                   payment_type_code, created_at, updated_at
+            FROM transacciones_webpay 
+            ORDER BY created_at DESC 
+            LIMIT :limit
+        """)
         
-        # Estadísticas generales
-        total_transacciones = db.query(func.count(TransaccionWebpay.id)).scalar()
-        transacciones_exitosas = db.query(func.count(TransaccionWebpay.id)).filter(
-            TransaccionWebpay.estado == "completada"
-        ).scalar()
+        transacciones = db.execute(list_sql, {'limit': limit}).fetchall()
         
-        # Transacciones de hoy
-        hoy = date.today()
-        transacciones_hoy = db.query(TransaccionWebpay).filter(
-            func.date(TransaccionWebpay.created_at) == hoy
-        ).all()
+        # Estadísticas rápidas
+        stats_sql = text("""
+            SELECT 
+                COUNT(*) as total,
+                SUM(CASE WHEN estado = 'completada' THEN 1 ELSE 0 END) as exitosas,
+                SUM(CASE WHEN estado = 'fallida' THEN 1 ELSE 0 END) as fallidas,
+                SUM(CASE WHEN estado = 'iniciada' THEN 1 ELSE 0 END) as pendientes,
+                SUM(CASE WHEN estado = 'completada' THEN monto ELSE 0 END) as monto_total
+            FROM transacciones_webpay
+        """)
         
-        # Últimas 10 transacciones
-        ultimas_transacciones = db.query(TransaccionWebpay).order_by(
-            desc(TransaccionWebpay.created_at)
-        ).limit(10).all()
+        stats = db.execute(stats_sql).fetchone()
         
-        return templates.TemplateResponse("webpay_dashboard.html", {
-            "request": request,
-            "total_transacciones": total_transacciones,
-            "transacciones_exitosas": transacciones_exitosas,
-            "transacciones_hoy": len(transacciones_hoy),
-            "ultimas_transacciones": ultimas_transacciones,
-            "tasa_exito": (transacciones_exitosas / total_transacciones * 100) if total_transacciones > 0 else 0
-        })
+        return {
+            "transacciones": [
+                {
+                    "numero_orden": t.numero_orden,
+                    "token": t.token,
+                    "estado": t.estado,
+                    "monto": t.monto,
+                    "authorization_code": t.authorization_code,
+                    "payment_type_description": get_payment_type_description(t.payment_type_code),
+                    "created_at": t.created_at,
+                    "updated_at": t.updated_at
+                }
+                for t in transacciones
+            ],
+            "estadisticas": {
+                "total": stats.total,
+                "exitosas": stats.exitosas,
+                "fallidas": stats.fallidas,
+                "pendientes": stats.pendientes,
+                "monto_total": stats.monto_total,
+                "tasa_exito": (stats.exitosas / stats.total * 100) if stats.total > 0 else 0
+            }
+        }
         
     except Exception as e:
-        logger.error(f"❌ Error en dashboard: {str(e)}")
-        raise HTTPException(status_code=500, detail="Error cargando dashboard")
+        logger.error(f"❌ Error listando transacciones: {str(e)}")
+        raise HTTPException(status_code=500, detail="Error consultando transacciones")
+
+def get_payment_type_description(payment_type_code):
+    """Obtener descripción del tipo de pago"""
+    if not payment_type_code:
+        return "N/A"
+    
+    types = {
+        'VD': 'Tarjeta de Débito',
+        'VN': 'Tarjeta de Crédito',
+        'VC': 'Tarjeta de Crédito',
+        'SI': 'Sin Interés',
+        'S2': '2 cuotas sin interés',
+        'S3': '3 cuotas sin interés',
+        'N2': '2 cuotas con interés',
+        'N3': '3 cuotas con interés',
+        'N4': '4 cuotas con interés'
+    }
+    return types.get(payment_type_code, f'Tipo {payment_type_code}')
 
 def get_response_description(response_code):
     """Obtener descripción del código de respuesta"""
