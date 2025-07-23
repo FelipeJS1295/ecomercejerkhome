@@ -5,3 +5,9 @@ Actualización rápida (solo código): sudo ./quick_update.sh
 Ver estado del sistema: ./jerkhome_status.sh
 
 mysql -u root -p"Memo2812**"
+
+cd /var/www/jerkhome_ecommerce
+
+activar env: venv\Scripts\activate
+
+para hacer el run: python run.py
