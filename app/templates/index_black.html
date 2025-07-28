@@ -69,59 +69,28 @@
                 Los descuentos más grandes del año en muebles tapizados premium
             </p>
             
-            <!-- Contador regresivo funcional para 5 días -->
+            <!-- Contador regresivo (ejemplo visual) -->
             <div class="mb-12">
-                <div class="text-white/80 text-sm font-semibold mb-4">¡OFERTA LIMITADA - SOLO 5 DÍAS!</div>
-                <div class="flex justify-center space-x-4 text-white" id="countdown">
+                <div class="text-white/80 text-sm font-semibold mb-4">¡OFERTA LIMITADA!</div>
+                <div class="flex justify-center space-x-4 text-white">
                     <div class="bg-black/50 backdrop-blur-sm px-4 py-3 rounded-lg border border-red-500/30">
-                        <div class="text-2xl font-bold text-accent-orange" id="days">05</div>
+                        <div class="text-2xl font-bold text-accent-orange">23</div>
                         <div class="text-xs uppercase">Días</div>
                     </div>
                     <div class="bg-black/50 backdrop-blur-sm px-4 py-3 rounded-lg border border-red-500/30">
-                        <div class="text-2xl font-bold text-accent-orange" id="hours">00</div>
+                        <div class="text-2xl font-bold text-accent-orange">14</div>
                         <div class="text-xs uppercase">Horas</div>
                     </div>
                     <div class="bg-black/50 backdrop-blur-sm px-4 py-3 rounded-lg border border-red-500/30">
-                        <div class="text-2xl font-bold text-accent-orange" id="minutes">00</div>
+                        <div class="text-2xl font-bold text-accent-orange">35</div>
                         <div class="text-xs uppercase">Min</div>
                     </div>
                     <div class="bg-black/50 backdrop-blur-sm px-4 py-3 rounded-lg border border-red-500/30">
-                        <div class="text-2xl font-bold text-accent-orange" id="seconds">00</div>
+                        <div class="text-2xl font-bold text-accent-orange">42</div>
                         <div class="text-xs uppercase">Seg</div>
                     </div>
                 </div>
             </div>
-
-            <script>
-            // Configurar contador para 5 días desde hoy
-            const targetDate = new Date();
-            targetDate.setDate(targetDate.getDate() + 5);
-            targetDate.setHours(23, 59, 59, 999); // Hasta el final del quinto día
-
-            function updateCountdown() {
-                const now = new Date().getTime();
-                const distance = targetDate.getTime() - now;
-
-                if (distance > 0) {
-                    const days = Math.floor(distance / (1000 * 60 * 60 * 24));
-                    const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-                    const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-                    const seconds = Math.floor((distance % (1000 * 60)) / 1000);
-
-                    document.getElementById('days').textContent = days.toString().padStart(2, '0');
-                    document.getElementById('hours').textContent = hours.toString().padStart(2, '0');
-                    document.getElementById('minutes').textContent = minutes.toString().padStart(2, '0');
-                    document.getElementById('seconds').textContent = seconds.toString().padStart(2, '0');
-                } else {
-                    // Si el tiempo se agota, mostrar mensaje
-                    document.getElementById('countdown').innerHTML = '<div class="text-red-400 text-xl font-bold">¡OFERTA FINALIZADA!</div>';
-                }
-            }
-
-            // Actualizar cada segundo
-            updateCountdown();
-            setInterval(updateCountdown, 1000);
-            </script>
             
             <!-- CTAs principales -->
             <div class="flex flex-col sm:flex-row justify-center gap-4">
@@ -160,35 +129,13 @@
 <section class="py-4 bg-gradient-to-r from-red-600 via-red-700 to-red-600 overflow-hidden">
     <div class="flex animate-marquee whitespace-nowrap">
         <span class="text-white font-bold text-lg mx-8">🔥 BLACK FRIDAY: HASTA 50% OFF</span>
-        <span class="text-white font-bold text-lg mx-8">⚡ ENVÍO GRATIS EN COMPRAS SOBRE $100.000</span>
-        <span class="text-white font-bold text-lg mx-8">🎯 HASTA 3 CUOTAS PRECIO CONTADO</span>
-        <span class="text-white font-bold text-lg mx-8">🔥 DESCUENTOS EXCLUSIVOS ONLINE</span>
-        <span class="text-white font-bold text-lg mx-8">⚡ STOCK LIMITADO</span>
-        <span class="text-white font-bold text-lg mx-8">🎯 OFERTAS POR TIEMPO LIMITADO</span>
-        <!-- Repetir contenido para efecto continuo -->
-        <span class="text-white font-bold text-lg mx-8">🔥 BLACK FRIDAY: HASTA 50% OFF</span>
-        <span class="text-white font-bold text-lg mx-8">⚡ ENVÍO GRATIS EN COMPRAS SOBRE $100.000</span>
-        <span class="text-white font-bold text-lg mx-8">🎯 HASTA 3 CUOTAS PRECIO CONTADO</span>
+        <span class="text-white font-bold text-lg mx-8">⚡ ENVÍO GRATIS EN COMPRAS SOBRE $500.000</span>
+        <span class="text-white font-bold text-lg mx-8">🎯 12 CUOTAS SIN INTERÉS</span>
         <span class="text-white font-bold text-lg mx-8">🔥 DESCUENTOS EXCLUSIVOS ONLINE</span>
         <span class="text-white font-bold text-lg mx-8">⚡ STOCK LIMITADO</span>
         <span class="text-white font-bold text-lg mx-8">🎯 OFERTAS POR TIEMPO LIMITADO</span>
     </div>
 </section>
-
-<style>
-@keyframes marquee {
-    0% {
-        transform: translateX(0%);
-    }
-    100% {
-        transform: translateX(-50%);
-    }
-}
-
-.animate-marquee {
-    animation: marquee 20s linear infinite;
-}
-</style>
 
 <!-- Categories Section - Black Friday Edition -->
 <section class="py-20 bg-gradient-to-br from-black via-gray-900 to-black">
@@ -340,7 +287,7 @@
                     </svg>
                 </div>
                 <h3 class="text-xl font-bold text-white mb-2">Envío Gratis</h3>
-                <p class="text-gray-300">En compras sobre $100.000 durante Black Friday</p>
+                <p class="text-gray-300">En compras sobre $500.000 durante Black Friday</p>
             </div>
             
             <div class="text-center group">
@@ -349,8 +296,8 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path>
                     </svg>
                 </div>
-                <h3 class="text-xl font-bold text-white mb-2">Hasta 3 Cuotas</h3>
-                <p class="text-gray-300">Precio contado sin intereses adicionales</p>
+                <h3 class="text-xl font-bold text-white mb-2">12 Cuotas Sin Interés</h3>
+                <p class="text-gray-300">Financia tu compra sin intereses adicionales</p>
             </div>
             
             <div class="text-center group">
@@ -367,5 +314,18 @@
 </section>
 
 <!-- Urgency Footer Banner -->
-
+<section class="py-6 bg-gradient-to-r from-red-700 via-red-600 to-red-700">
+    <div class="max-w-7xl mx-auto px-4 text-center">
+        <div class="flex flex-col md:flex-row items-center justify-between">
+            <div class="text-white mb-4 md:mb-0">
+                <div class="text-2xl font-bold">¿Esperando el momento perfecto?</div>
+                <div class="text-lg opacity-90">Este ES el momento. Black Friday no se repite.</div>
+            </div>
+            <a href="/ofertas-black-friday" 
+               class="bg-white text-red-600 px-8 py-3 rounded-xl font-bold hover:bg-gray-100 transition-colors duration-300 transform hover:scale-105 shadow-xl">
+                COMPRAR AHORA
+            </a>
+        </div>
+    </div>
+</section>
 {% endblock %}

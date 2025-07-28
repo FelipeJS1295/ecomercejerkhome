@@ -82,6 +82,7 @@
                             <input type="text" id="rut" name="rut" required
                                    class="w-full px-4 py-3 bg-tertiary-gray border border-border-gray rounded-lg text-text-light placeholder-text-gray focus:border-accent-orange focus:outline-none transition-colors duration-300"
                                    placeholder="12.345.678-9">
+                            <div class="text-red-400 text-sm mt-1 hidden" id="rut-error"></div>
                         </div>
                         
                         <div class="grid md:grid-cols-2 gap-4">
@@ -141,34 +142,27 @@
                             </label>
                             <input type="text" id="address" name="address" required
                                    class="w-full px-4 py-3 bg-tertiary-gray border border-border-gray rounded-lg text-text-light placeholder-text-gray focus:border-accent-orange focus:outline-none transition-colors duration-300"
-                                   placeholder="Av. Ejemplo 123">
+                                   placeholder="Av. Ejemplo 123, Depto 456">
                         </div>
                         
-                        <div class="grid md:grid-cols-2 gap-4">
-                            <div>
-                                <label class="block text-text-light font-medium mb-2" for="city">
-                                    Ciudad *
-                                </label>
-                                <input type="text" id="city" name="city" required
-                                       class="w-full px-4 py-3 bg-tertiary-gray border border-border-gray rounded-lg text-text-light placeholder-text-gray focus:border-accent-orange focus:outline-none transition-colors duration-300"
-                                       placeholder="Santiago">
-                            </div>
-                            <div>
-                                <label class="block text-text-light font-medium mb-2" for="comuna">
-                                    Comuna *
-                                </label>
-                                <select id="comuna" name="comuna" required
-                                        class="w-full px-4 py-3 bg-tertiary-gray border border-border-gray rounded-lg text-text-light focus:border-accent-orange focus:outline-none transition-colors duration-300">
-                                    <option value="">Selecciona comuna</option>
-                                    <option value="la-pintana">La Pintana</option>
-                                    <option value="puente-alto">Puente Alto</option>
-                                    <option value="maipu">Maipú</option>
-                                    <option value="las-condes">Las Condes</option>
-                                    <option value="providencia">Providencia</option>
-                                    <option value="santiago">Santiago Centro</option>
-                                    <option value="other">Otra</option>
-                                </select>
-                            </div>
+                        <div>
+                            <label class="block text-text-light font-medium mb-2" for="region">
+                                Región *
+                            </label>
+                            <select id="region" name="region" required
+                                    class="w-full px-4 py-3 bg-tertiary-gray border border-border-gray rounded-lg text-text-light focus:border-accent-orange focus:outline-none transition-colors duration-300">
+                                <option value="">Selecciona una región</option>
+                            </select>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-text-light font-medium mb-2" for="comuna">
+                                Comuna *
+                            </label>
+                            <select id="comuna" name="comuna" required disabled
+                                    class="w-full px-4 py-3 bg-tertiary-gray border border-border-gray rounded-lg text-text-light focus:border-accent-orange focus:outline-none transition-colors duration-300 disabled:opacity-50">
+                                <option value="">Primero selecciona una región</option>
+                            </select>
                         </div>
                         
                         <div>
@@ -177,7 +171,20 @@
                             </label>
                             <textarea id="notes" name="notes" rows="3"
                                       class="w-full px-4 py-3 bg-tertiary-gray border border-border-gray rounded-lg text-text-light placeholder-text-gray focus:border-accent-orange focus:outline-none transition-colors duration-300"
-                                      placeholder="Instrucciones especiales, horarios preferidos, etc."></textarea>
+                                      placeholder="Instrucciones especiales, horarios preferidos, referencias de ubicación, etc."></textarea>
+                        </div>
+                        
+                        <!-- Shipping Cost Display -->
+                        <div id="shipping-info" class="bg-tertiary-gray rounded-lg p-4 border border-border-gray hidden">
+                            <div class="flex items-center space-x-3">
+                                <svg class="w-5 h-5 text-accent-orange" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                </svg>
+                                <div>
+                                    <p class="text-text-light font-medium">Costo de envío:</p>
+                                    <p class="text-accent-orange font-semibold" id="shipping-cost">Calculando...</p>
+                                </div>
+                            </div>
                         </div>
                     </form>
                 </div>
@@ -194,14 +201,14 @@
                     <div class="space-y-4">
                         <div class="border border-border-gray rounded-lg p-4 hover:border-accent-orange transition-colors duration-300">
                             <label class="flex items-center space-x-3 cursor-pointer">
-                                <input type="radio" name="payment-method" value="webpay" class="text-accent-orange focus:ring-accent-orange">
+                                <input type="radio" name="payment-method" value="webpay" class="text-accent-orange focus:ring-accent-orange" checked>
                                 <div class="flex items-center space-x-3">
                                     <svg class="w-6 h-6 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/>
                                     </svg>
                                     <div>
                                         <p class="text-text-light font-medium">Webpay Plus</p>
-                                        <p class="text-text-gray text-sm">Pago inmediato con tarjeta</p>
+                                        <p class="text-text-gray text-sm">Pago inmediato con tarjeta de débito o crédito</p>
                                     </div>
                                 </div>
                             </label>
@@ -231,7 +238,7 @@
                                     </svg>
                                     <div>
                                         <p class="text-text-light font-medium">Pago en Efectivo</p>
-                                        <p class="text-text-gray text-sm">Pago contra entrega</p>
+                                        <p class="text-text-gray text-sm">Pago contra entrega (solo Región Metropolitana)</p>
                                     </div>
                                 </div>
                             </label>
@@ -275,7 +282,7 @@
                             </div>
                             <div class="flex justify-between text-text-gray">
                                 <span>Envío:</span>
-                                <span id="shipping">Gratis</span>
+                                <span id="shipping">Calculando...</span>
                             </div>
                             <div class="border-t border-border-gray pt-3">
                                 <div class="flex justify-between text-xl font-bold text-text-light">
@@ -297,7 +304,8 @@
                         </button>
                         
                         <p class="text-text-gray text-sm text-center mt-4">
-                            Al confirmar tu pedido aceptas nuestros términos y condiciones
+                            Al confirmar tu pedido aceptas nuestros 
+                            <a href="/terminos" class="text-accent-orange hover:underline">términos y condiciones</a>
                         </p>
                     </div>
                 </div>
@@ -308,16 +316,240 @@
 
 <!-- JavaScript para Checkout -->
 <script>
+    // Datos completos de regiones y comunas de Chile
+    const regionesYComunas = {
+        "XV": {
+            name: "Arica y Parinacota",
+            comunas: ["Arica", "Camarones", "General Lagos", "Putre"]
+        },
+        "I": {
+            name: "Tarapacá",
+            comunas: ["Alto Hospicio", "Camiña", "Colchane", "Huara", "Iquique", "Pica", "Pozo Almonte"]
+        },
+        "II": {
+            name: "Antofagasta",
+            comunas: ["Antofagasta", "Calama", "María Elena", "Mejillones", "Ollagüe", "San Pedro de Atacama", "Sierra Gorda", "Taltal", "Tocopilla"]
+        },
+        "III": {
+            name: "Atacama",
+            comunas: ["Alto del Carmen", "Caldera", "Chañaral", "Copiapó", "Diego de Almagro", "Freirina", "Huasco", "Tierra Amarilla", "Vallenar"]
+        },
+        "IV": {
+            name: "Coquimbo",
+            comunas: ["Andacollo", "Canela", "Combarbalá", "Coquimbo", "Illapel", "La Higuera", "La Serena", "Los Vilos", "Monte Patria", "Ovalle", "Paihuano", "Punitaqui", "Río Hurtado", "Salamanca", "Vicuña"]
+        },
+        "V": {
+            name: "Valparaíso",
+            comunas: ["Algarrobo", "Cabildo", "Calera", "Calle Larga", "Cartagena", "Casablanca", "Catemu", "Concón", "El Quisco", "El Tabo", "Hijuelas", "Isla de Pascua", "Juan Fernández", "La Cruz", "La Ligua", "Limache", "Llaillay", "Los Andes", "Nogales", "Olmué", "Panquehue", "Papudo", "Petorca", "Puchuncaví", "Putaendo", "Quillota", "Quilpué", "Quintero", "Rinconada", "San Antonio", "San Esteban", "San Felipe", "Santa María", "Santo Domingo", "Valparaíso", "Villa Alemana", "Viña del Mar", "Zapallar"]
+        },
+        "RM": {
+            name: "Región Metropolitana",
+            comunas: ["Alhué", "Buin", "Calera de Tango", "Cerrillos", "Cerro Navia", "Colina", "Conchalí", "Curacaví", "El Bosque", "El Monte", "Estación Central", "Huechuraba", "Independencia", "Isla de Maipo", "La Cisterna", "La Florida", "La Granja", "La Pintana", "La Reina", "Lampa", "Las Condes", "Lo Barnechea", "Lo Espejo", "Lo Prado", "Macul", "Maipú", "María Pinto", "Melipilla", "Ñuñoa", "Padre Hurtado", "Paine", "Pedro Aguirre Cerda", "Peñaflor", "Peñalolén", "Pirque", "Providencia", "Pudahuel", "Puente Alto", "Quilicura", "Quinta Normal", "Recoleta", "Renca", "San Bernardo", "San Joaquín", "San José de Maipo", "San Miguel", "San Pedro", "San Ramón", "Santiago", "Talagante", "Tiltil", "Vitacura"]
+        },
+        "VI": {
+            name: "O'Higgins",
+            comunas: ["Chépica", "Chimbarongo", "Codegua", "Coinco", "Coltauco", "Doñihue", "Graneros", "La Estrella", "Las Cabras", "Litueche", "Lolol", "Machalí", "Malloa", "Marchigüe", "Mostazal", "Nancagua", "Navidad", "Olivar", "Palmilla", "Paredones", "Peralillo", "Peumo", "Pichidegua", "Pichilemu", "Placilla", "Pumanque", "Quinta de Tilcoco", "Rancagua", "Rengo", "Requínoa", "San Fernando", "San Vicente", "Santa Cruz"]
+        },
+        "VII": {
+            name: "Maule",
+            comunas: ["Cauquenes", "Chanco", "Colbún", "Constitución", "Curepto", "Curicó", "Empedrado", "Hualañé", "Licantén", "Linares", "Longaví", "Maule", "Molina", "Parral", "Pelarco", "Pelluhue", "Pencahue", "Rauco", "Retiro", "Río Claro", "Romeral", "Sagrada Familia", "San Clemente", "San Javier", "San Rafael", "Talca", "Teno", "Vichuquén", "Villa Alegre", "Yerbas Buenas"]
+        },
+        "XVI": {
+            name: "Ñuble",
+            comunas: ["Bulnes", "Chillán", "Chillán Viejo", "Cobquecura", "Coelemu", "Coihueco", "El Carmen", "Ninhue", "Ñiquén", "Pemuco", "Pinto", "Portezuelo", "Quillón", "Quirihue", "Ránquil", "San Carlos", "San Fabián", "San Ignacio", "San Nicolás", "Treguaco", "Yungay"]
+        },
+        "VIII": {
+            name: "Biobío",
+            comunas: ["Alto Biobío", "Antuco", "Arauco", "Cabrero", "Cañete", "Chiguayante", "Concepción", "Contulmo", "Coronel", "Curanilahue", "Florida", "Hualpén", "Hualqui", "Laja", "Lebu", "Los Álamos", "Los Ángeles", "Lota", "Mulchén", "Nacimiento", "Negrete", "Penco", "Quilaco", "Quilleco", "San Pedro de la Paz", "San Rosendo", "Santa Bárbara", "Santa Juana", "Talcahuano", "Tirúa", "Tomé", "Tucapel", "Yumbel"]
+        },
+        "IX": {
+            name: "Araucanía",
+            comunas: ["Angol", "Carahue", "Cholchol", "Collipulli", "Cunco", "Curacautín", "Curarrehue", "Ercilla", "Freire", "Galvarino", "Gorbea", "Lautaro", "Loncoche", "Lonquimay", "Los Sauces", "Lumaco", "Melipeuco", "Nueva Imperial", "Padre las Casas", "Perquenco", "Pitrufquén", "Pucón", "Purén", "Renaico", "Saavedra", "Temuco", "Teodoro Schmidt", "Toltén", "Traiguén", "Victoria", "Vilcún", "Villarrica"]
+        },
+        "XIV": {
+            name: "Los Ríos",
+            comunas: ["Corral", "Futrono", "La Unión", "Lago Ranco", "Lanco", "Los Lagos", "Máfil", "Mariquina", "Paillaco", "Panguipulli", "Río Bueno", "Valdivia"]
+        },
+        "X": {
+            name: "Los Lagos",
+            comunas: ["Ancud", "Calbuco", "Castro", "Chaitén", "Chonchi", "Cochamó", "Curaco de Vélez", "Dalcahue", "Fresia", "Frutillar", "Futaleufú", "Hualaihué", "Llanquihue", "Los Muermos", "Maullín", "Osorno", "Palena", "Puerto Montt", "Puerto Octay", "Puerto Varas", "Puqueldón", "Purranque", "Puyehue", "Queilén", "Quellón", "Quemchi", "Quinchao", "Río Negro", "San Juan de la Costa", "San Pablo"]
+        },
+        "XI": {
+            name: "Aysén",
+            comunas: ["Aysén", "Chile Chico", "Cisnes", "Cochrane", "Coyhaique", "Guaitecas", "Lago Verde", "O'Higgins", "Río Ibáñez", "Tortel"]
+        },
+        "XII": {
+            name: "Magallanes",
+            comunas: ["Antártica", "Cabo de Hornos", "Laguna Blanca", "Natales", "Porvenir", "Primavera", "Punta Arenas", "Río Verde", "San Gregorio", "Timaukel", "Torres del Paine"]
+        }
+    };
+
+    // Costos de envío por región (en CLP)
+    const shippingCosts = {
+        "RM": 0,        // Gratis en RM
+        "V": 15000,     // Valparaíso
+        "VI": 20000,    // O'Higgins
+        "VII": 25000,   // Maule
+        "VIII": 30000,  // Biobío
+        "XVI": 28000,   // Ñuble
+        "IX": 35000,    // Araucanía
+        "XIV": 40000,   // Los Ríos
+        "X": 45000,     // Los Lagos
+        "IV": 30000,    // Coquimbo
+        "III": 40000,   // Atacama
+        "II": 50000,    // Antofagasta
+        "I": 55000,     // Tarapacá
+        "XV": 60000,    // Arica y Parinacota
+        "XI": 70000,    // Aysén
+        "XII": 80000    // Magallanes
+    };
+
     class Checkout {
         constructor() {
             this.cartItems = JSON.parse(localStorage.getItem('cart')) || [];
+            this.selectedRegion = '';
+            this.selectedComuna = '';
+            this.shippingCost = 0;
             this.init();
         }
         
         init() {
+            this.populateRegions();
             this.renderCheckoutItems();
             this.bindEvents();
             this.validateCart();
+            this.initRutValidation();
+        }
+        
+        populateRegions() {
+            const regionSelect = document.getElementById('region');
+            
+            // Limpiar opciones existentes
+            regionSelect.innerHTML = '<option value="">Selecciona una región</option>';
+            
+            // Agregar regiones
+            Object.keys(regionesYComunas).forEach(code => {
+                const option = document.createElement('option');
+                option.value = code;
+                option.textContent = `${regionesYComunas[code].name}`;
+                regionSelect.appendChild(option);
+            });
+        }
+        
+        populateComunas(regionCode) {
+            const comunaSelect = document.getElementById('comuna');
+            
+            if (!regionCode) {
+                comunaSelect.innerHTML = '<option value="">Primero selecciona una región</option>';
+                comunaSelect.disabled = true;
+                return;
+            }
+            
+            const region = regionesYComunas[regionCode];
+            comunaSelect.innerHTML = '<option value="">Selecciona una comuna</option>';
+            
+            region.comunas.forEach(comuna => {
+                const option = document.createElement('option');
+                option.value = comuna.toLowerCase().replace(/\s+/g, '-');
+                option.textContent = comuna;
+                comunaSelect.appendChild(option);
+            });
+            
+            comunaSelect.disabled = false;
+        }
+        
+        updateShippingCost(regionCode) {
+            this.shippingCost = shippingCosts[regionCode] || 0;
+            
+            const shippingElement = document.getElementById('shipping');
+            const shippingInfo = document.getElementById('shipping-info');
+            const shippingCostElement = document.getElementById('shipping-cost');
+            
+            if (this.shippingCost === 0) {
+                shippingElement.textContent = 'Gratis';
+                shippingCostElement.textContent = 'Gratis';
+            } else {
+                shippingElement.textContent = `${this.shippingCost.toLocaleString()}`;
+                shippingCostElement.textContent = `${this.shippingCost.toLocaleString()}`;
+            }
+            
+            shippingInfo.classList.remove('hidden');
+            this.updateTotal();
+            
+            // Manejar pago en efectivo solo para RM
+            this.updatePaymentMethods(regionCode);
+        }
+        
+        updatePaymentMethods(regionCode) {
+            const cashOption = document.querySelector('input[value="cash"]').closest('.border');
+            const cashLabel = cashOption.querySelector('p:last-child');
+            
+            if (regionCode !== 'RM') {
+                cashOption.classList.add('opacity-50', 'pointer-events-none');
+                document.querySelector('input[value="cash"]').disabled = true;
+                cashLabel.textContent = 'Pago contra entrega (solo Región Metropolitana)';
+                
+                // Si estaba seleccionado el efectivo, cambiar a Webpay
+                if (document.querySelector('input[value="cash"]').checked) {
+                    document.querySelector('input[value="webpay"]').checked = true;
+                }
+            } else {
+                cashOption.classList.remove('opacity-50', 'pointer-events-none');
+                document.querySelector('input[value="cash"]').disabled = false;
+                cashLabel.textContent = 'Pago contra entrega';
+            }
+        }
+        
+        initRutValidation() {
+            const rutInput = document.getElementById('rut');
+            const rutError = document.getElementById('rut-error');
+            
+            rutInput.addEventListener('input', (e) => {
+                let value = e.target.value.replace(/[^0-9kK]/g, '');
+                
+                if (value.length > 1) {
+                    const rut = value.slice(0, -1);
+                    const dv = value.slice(-1);
+                    value = rut.replace(/\B(?=(\d{3})+(?!\d))/g, '.') + '-' + dv;
+                }
+                
+                e.target.value = value;
+                
+                if (value.length >= 11) {
+                    if (this.validateRut(value)) {
+                        rutError.classList.add('hidden');
+                        rutInput.classList.remove('border-red-500');
+                        rutInput.classList.add('border-green-500');
+                    } else {
+                        rutError.textContent = 'RUT inválido';
+                        rutError.classList.remove('hidden');
+                        rutInput.classList.add('border-red-500');
+                        rutInput.classList.remove('border-green-500');
+                    }
+                } else {
+                    rutError.classList.add('hidden');
+                    rutInput.classList.remove('border-red-500', 'border-green-500');
+                }
+            });
+        }
+        
+        validateRut(rut) {
+            const cleanRut = rut.replace(/[^0-9kK]/g, '');
+            const rutNumber = cleanRut.slice(0, -1);
+            const dv = cleanRut.slice(-1).toUpperCase();
+            
+            let sum = 0;
+            let multiplier = 2;
+            
+            for (let i = rutNumber.length - 1; i >= 0; i--) {
+                sum += parseInt(rutNumber[i]) * multiplier;
+                multiplier = multiplier === 7 ? 2 : multiplier + 1;
+            }
+            
+            const remainder = sum % 11;
+            const calculatedDv = remainder < 2 ? remainder.toString() : remainder === 2 ? 'K' : (11 - remainder).toString();
+            
+            return dv === calculatedDv;
         }
         
         validateCart() {
@@ -336,11 +568,11 @@
         
         renderCheckoutItems() {
             const container = document.getElementById('checkout-items');
-            let total = 0;
+            let subtotal = 0;
             
             container.innerHTML = this.cartItems.map(item => {
                 const itemTotal = item.price * item.quantity;
-                total += itemTotal;
+                subtotal += itemTotal;
                 
                 return `
                     <div class="flex items-center space-x-4 p-4 bg-tertiary-gray rounded-lg">
@@ -348,28 +580,55 @@
                         <div class="flex-1">
                             <h3 class="text-text-light font-medium">${item.name}</h3>
                             <p class="text-text-gray text-sm">Cantidad: ${item.quantity}</p>
-                            <p class="text-accent-orange font-semibold">$${item.price.toLocaleString()} c/u</p>
+                            <p class="text-accent-orange font-semibold">${item.price.toLocaleString()} c/u</p>
                         </div>
                         <div class="text-right">
-                            <p class="text-text-light font-bold">$${itemTotal.toLocaleString()}</p>
+                            <p class="text-text-light font-bold">${itemTotal.toLocaleString()}</p>
                         </div>
                     </div>
                 `;
             }).join('');
             
-            // Update totals
-            document.getElementById('subtotal').textContent = `$${total.toLocaleString()}`;
-            document.getElementById('total').textContent = `$${total.toLocaleString()}`;
+            // Update subtotal
+            document.getElementById('subtotal').textContent = `${subtotal.toLocaleString()}`;
+            this.updateTotal();
+        }
+        
+        updateTotal() {
+            const subtotal = this.cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            const total = subtotal + this.shippingCost;
+            document.getElementById('total').textContent = `${total.toLocaleString()}`;
         }
         
         bindEvents() {
+            // Region change
+            document.getElementById('region').addEventListener('change', (e) => {
+                this.selectedRegion = e.target.value;
+                this.populateComunas(this.selectedRegion);
+                
+                if (this.selectedRegion) {
+                    this.updateShippingCost(this.selectedRegion);
+                } else {
+                    document.getElementById('shipping-info').classList.add('hidden');
+                    document.getElementById('shipping').textContent = 'Calculando...';
+                    this.shippingCost = 0;
+                    this.updateTotal();
+                }
+            });
+            
+            // Comuna change
+            document.getElementById('comuna').addEventListener('change', (e) => {
+                this.selectedComuna = e.target.value;
+            });
+            
+            // Place order button
             document.getElementById('place-order-btn').addEventListener('click', () => this.placeOrder());
         }
         
         validateForm() {
             const requiredFields = [
                 'rut', 'first-name', 'last-name', 'email', 'phone', 
-                'address', 'city', 'comuna'
+                'address', 'region', 'comuna'
             ];
             
             let isValid = true;
@@ -380,7 +639,7 @@
                 if (!field.value.trim()) {
                     isValid = false;
                     field.classList.add('border-red-500');
-                    errors.push(`El campo ${field.previousElementSibling.textContent} es requerido`);
+                    errors.push(`El campo ${field.previousElementSibling.textContent.replace('*', '').trim()} es requerido`);
                 } else {
                     field.classList.remove('border-red-500');
                 }
@@ -395,6 +654,20 @@
                 errors.push('Ingresa un email válido');
             }
             
+            // Validate RUT
+            const rut = document.getElementById('rut');
+            if (rut.value && !this.validateRut(rut.value)) {
+                isValid = false;
+                errors.push('El RUT ingresado no es válido');
+            }
+            
+            // Validate payment method
+            const paymentMethod = document.querySelector('input[name="payment-method"]:checked');
+            if (!paymentMethod) {
+                isValid = false;
+                errors.push('Selecciona un método de pago');
+            }
+            
             return { isValid, errors };
         }
         
@@ -402,7 +675,7 @@
             const validation = this.validateForm();
             
             if (!validation.isValid) {
-                this.showNotification('Por favor completa todos los campos requeridos', 'error');
+                this.showNotification('Por favor completa todos los campos requeridos correctamente', 'error');
                 return;
             }
             
@@ -412,6 +685,8 @@
             }
             
             // Collect form data
+            const paymentMethod = document.querySelector('input[name="payment-method"]:checked').value;
+            
             const orderData = {
                 customer: {
                     rut: document.getElementById('rut').value,
@@ -422,16 +697,19 @@
                 },
                 delivery: {
                     address: document.getElementById('address').value,
-                    city: document.getElementById('city').value,
-                    comuna: document.getElementById('comuna').value,
-                    region: "Región Metropolitana",
+                    region: this.selectedRegion,
+                    regionName: regionesYComunas[this.selectedRegion]?.name || '',
+                    comuna: this.selectedComuna,
+                    comunaName: document.getElementById('comuna').selectedOptions[0]?.text || '',
                     notes: document.getElementById('notes').value
                 },
                 payment: {
-                    method: document.querySelector('input[name="payment-method"]:checked').value
+                    method: paymentMethod
                 },
                 items: this.cartItems,
-                total: this.cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0),
+                subtotal: this.cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0),
+                shippingCost: this.shippingCost,
+                total: this.cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0) + this.shippingCost,
                 timestamp: new Date().toISOString()
             };
             
@@ -467,8 +745,14 @@
                         // Clear cart
                         localStorage.removeItem('cart');
                         
+                        // Show success message
+                        this.showNotification('¡Pedido creado exitosamente!', 'success');
+                        
                         // Redirect según el método de pago
-                        window.location.href = result.redirect_url;
+                        setTimeout(() => {
+                            window.location.href = result.redirect_url || '/confirmacion';
+                        }, 1500);
+                        
                     } else {
                         throw new Error(result.message || 'Error creando pedido');
                     }
@@ -477,9 +761,9 @@
                     console.error('Error:', error);
                     btn.disabled = false;
                     btn.innerHTML = originalText;
-                    alert('Error procesando el pedido. Inténtalo nuevamente.');
+                    this.showNotification('Error procesando el pedido. Inténtalo nuevamente.', 'error');
                 }
-            }, 1000);
+            }, 2000);
         }
         
         showNotification(message, type = 'success') {
@@ -497,9 +781,11 @@
             setTimeout(() => {
                 notification.classList.add('translate-x-full');
                 setTimeout(() => {
-                    document.body.removeChild(notification);
+                    if (document.body.contains(notification)) {
+                        document.body.removeChild(notification);
+                    }
                 }, 300);
-            }, 3000);
+            }, 4000);
         }
     }
     
