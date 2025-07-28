@@ -46,6 +46,12 @@
                         class="bg-admin-accent hover:bg-orange-600 text-white px-4 py-2 rounded text-sm transition-colors">
                     <i class="fas fa-check mr-2"></i>Aplicar
                 </button>
+                
+                <!-- Botón de eliminación masiva -->
+                <button onclick="eliminarVentasSeleccionadas()" 
+                        class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded text-sm transition-colors">
+                    <i class="fas fa-trash mr-2"></i>Eliminar Seleccionadas
+                </button>
             </div>
             
             <button onclick="limpiarSeleccion()" class="text-gray-400 hover:text-white">
@@ -266,12 +272,11 @@
                                     <i class="fas fa-eye"></i>
                                 </a>
                                 
-                                {% if venta.estado_venta.value == 'ANULADA' %}
-                                <button onclick="confirmDelete('{{ venta.orden_compra }}', '/admin/ventas/{{ venta.id }}/eliminar')"
-                                        class="text-red-400 hover:text-red-300 transition-colors" title="Eliminar">
+                                <!-- Botón de eliminar individual -->
+                                <button onclick="confirmarEliminarVenta('{{ venta.orden_compra }}', '{{ venta.id }}')"
+                                        class="text-red-400 hover:text-red-300 transition-colors" title="Eliminar venta">
                                     <i class="fas fa-trash"></i>
                                 </button>
-                                {% endif %}
                             </div>
                         </td>
                     </tr>
@@ -287,6 +292,31 @@
             <p class="text-gray-500">Las ventas aparecerán aquí cuando se realicen.</p>
         </div>
         {% endif %}
+    </div>
+</div>
+
+<!-- Modal de confirmación para eliminación -->
+<div id="modalConfirmacion" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center">
+    <div class="bg-admin-sidebar rounded-lg p-6 max-w-md w-full mx-4 border border-gray-600">
+        <div class="flex items-center mb-4">
+            <div class="p-2 rounded-full bg-red-500 bg-opacity-20 mr-3">
+                <i class="fas fa-exclamation-triangle text-red-400"></i>
+            </div>
+            <h3 class="text-lg font-semibold">Confirmar Eliminación</h3>
+        </div>
+        
+        <p id="mensajeConfirmacion" class="text-gray-300 mb-6"></p>
+        
+        <div class="flex justify-end space-x-3">
+            <button onclick="cerrarModal()" 
+                    class="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded transition-colors">
+                Cancelar
+            </button>
+            <button id="btnConfirmarEliminacion" 
+                    class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded transition-colors">
+                <i class="fas fa-trash mr-2"></i>Eliminar
+            </button>
+        </div>
     </div>
 </div>
 
@@ -353,7 +383,6 @@ function aplicarCambioMasivo() {
     }
     
     if (confirm(`¿Estás seguro de cambiar ${ventasSeleccionadas.length} ventas al estado "${nuevoEstado}"?`)) {
-        // Hacer la petición AJAX
         fetch('/admin/ventas/cambio-masivo', {
             method: 'POST',
             headers: {
@@ -382,20 +411,101 @@ function aplicarCambioMasivo() {
     }
 }
 
-function confirmDelete(ordenCompra, deleteUrl) {
-    if (confirm(`¿Estás seguro de que quieres eliminar la venta "${ordenCompra}"?\n\nEsta acción no se puede deshacer.`)) {
-        window.location.href = deleteUrl;
+// Función para eliminar ventas seleccionadas
+function eliminarVentasSeleccionadas() {
+    if (ventasSeleccionadas.length === 0) {
+        alert('Por favor selecciona al menos una venta para eliminar.');
+        return;
+    }
+    
+    const mensaje = `¿Estás seguro de que quieres eliminar ${ventasSeleccionadas.length} venta(s) seleccionada(s)?\n\nEsta acción no se puede deshacer.`;
+    
+    if (confirm(mensaje)) {
+        fetch('/admin/ventas/eliminar-masivo', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                venta_ids: ventasSeleccionadas
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showNotification(`${data.eliminadas} ventas eliminadas correctamente`, 'success');
+                setTimeout(() => {
+                    location.reload();
+                }, 1000);
+            } else {
+                showNotification(data.message || 'Error al eliminar ventas', 'error');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showNotification('Error al eliminar ventas', 'error');
+        });
     }
 }
 
+// Función para confirmar eliminación individual
+function confirmarEliminarVenta(ordenCompra, ventaId) {
+    const modal = document.getElementById('modalConfirmacion');
+    const mensaje = document.getElementById('mensajeConfirmacion');
+    const btnConfirmar = document.getElementById('btnConfirmarEliminacion');
+    
+    mensaje.textContent = `¿Estás seguro de que quieres eliminar la venta "${ordenCompra}"? Esta acción no se puede deshacer.`;
+    
+    btnConfirmar.onclick = function() {
+        eliminarVentaIndividual(ventaId);
+        cerrarModal();
+    };
+    
+    modal.classList.remove('hidden');
+}
+
+// Función para eliminar venta individual
+function eliminarVentaIndividual(ventaId) {
+    fetch(`/admin/ventas/${ventaId}/eliminar`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showNotification('Venta eliminada correctamente', 'success');
+            setTimeout(() => {
+                location.reload();
+            }, 1000);
+        } else {
+            showNotification(data.message || 'Error al eliminar la venta', 'error');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showNotification('Error al eliminar la venta', 'error');
+    });
+}
+
+function cerrarModal() {
+    document.getElementById('modalConfirmacion').classList.add('hidden');
+}
+
+// Cerrar modal al hacer clic fuera de él
+document.getElementById('modalConfirmacion').addEventListener('click', function(e) {
+    if (e.target === this) {
+        cerrarModal();
+    }
+});
+
 function exportarVentas() {
-    // Obtener los filtros actuales de la URL
     const urlParams = new URLSearchParams(window.location.search);
     const estado_venta = urlParams.get('estado_venta') || '';
     const estado_pago = urlParams.get('estado_pago') || '';
     const buscar = urlParams.get('buscar') || '';
     
-    // Construir la URL de exportación con los mismos filtros
     let exportUrl = '/admin/ventas/exportar?';
     
     if (estado_venta && estado_venta !== 'todos') {
@@ -410,16 +520,11 @@ function exportarVentas() {
         exportUrl += `buscar=${encodeURIComponent(buscar)}&`;
     }
     
-    // Remover el último & si existe
     exportUrl = exportUrl.replace(/&$/, '');
     
-    // Mostrar mensaje de descarga
     showNotification('Preparando archivo Excel...', 'info');
-    
-    // Redirigir para descargar el archivo
     window.location.href = exportUrl;
     
-    // Mostrar mensaje de éxito después de un momento
     setTimeout(() => {
         showNotification('Archivo Excel descargado correctamente', 'success');
     }, 2000);

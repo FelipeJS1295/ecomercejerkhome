@@ -21,6 +21,10 @@ class CambioMasivoRequest(BaseModel):
     venta_ids: List[int]
     nuevo_estado: str
 
+# Modelo para eliminación masiva
+class EliminacionMasivaRequest(BaseModel):
+    venta_ids: List[int]
+
 @router.get("/ventas")
 async def admin_ventas(
     request: Request, 
@@ -230,13 +234,95 @@ async def actualizar_venta(
     db.commit()
     return RedirectResponse(url=f"/admin/ventas/{venta_id}", status_code=status.HTTP_302_FOUND)
 
+@router.post("/ventas/{venta_id}/eliminar")
+async def eliminar_venta_individual(venta_id: int, db: Session = Depends(get_db)):
+    """
+    Eliminar una venta individual (sin restricciones de estado)
+    """
+    try:
+        venta = db.query(Venta).filter(Venta.id == venta_id).first()
+        if not venta:
+            return JSONResponse(
+                content={"success": False, "message": "Venta no encontrada"}, 
+                status_code=404
+            )
+        
+        # Guardar información para el mensaje de confirmación
+        orden_compra = venta.orden_compra
+        
+        # Eliminar la venta
+        db.delete(venta)
+        db.commit()
+        
+        return JSONResponse(content={
+            "success": True, 
+            "message": f"Venta {orden_compra} eliminada correctamente"
+        })
+        
+    except Exception as e:
+        db.rollback()
+        return JSONResponse(
+            content={"success": False, "message": f"Error al eliminar la venta: {str(e)}"}, 
+            status_code=500
+        )
+
+@router.post("/ventas/eliminar-masivo")
+async def eliminar_ventas_masivo(
+    eliminacion_request: EliminacionMasivaRequest,
+    db: Session = Depends(get_db)
+):
+    """
+    Eliminar múltiples ventas seleccionadas
+    """
+    try:
+        if not eliminacion_request.venta_ids:
+            return JSONResponse(
+                content={"success": False, "message": "No se proporcionaron ventas para eliminar"}, 
+                status_code=400
+            )
+        
+        # Obtener las ventas a eliminar
+        ventas = db.query(Venta).filter(Venta.id.in_(eliminacion_request.venta_ids)).all()
+        
+        if not ventas:
+            return JSONResponse(
+                content={"success": False, "message": "No se encontraron ventas para eliminar"}, 
+                status_code=404
+            )
+        
+        ventas_eliminadas = len(ventas)
+        
+        # Eliminar todas las ventas seleccionadas
+        for venta in ventas:
+            db.delete(venta)
+        
+        db.commit()
+        
+        return JSONResponse(content={
+            "success": True, 
+            "message": f"Se eliminaron {ventas_eliminadas} ventas correctamente",
+            "eliminadas": ventas_eliminadas
+        })
+        
+    except Exception as e:
+        db.rollback()
+        return JSONResponse(
+            content={"success": False, "message": f"Error al eliminar las ventas: {str(e)}"}, 
+            status_code=500
+        )
+
+# Mantener la ruta antigua para compatibilidad (pero cambiar a POST)
 @router.get("/ventas/{venta_id}/eliminar")
-async def eliminar_venta(venta_id: int, request: Request, db: Session = Depends(get_db)):
+async def eliminar_venta_legacy(venta_id: int, request: Request, db: Session = Depends(get_db)):
+    """
+    Ruta legacy para eliminación (solo para ventas anuladas)
+    Se mantiene para compatibilidad con enlaces existentes
+    """
     venta = db.query(Venta).filter(Venta.id == venta_id).first()
     if not venta:
         raise HTTPException(status_code=404, detail="Venta no encontrada")
     
-    # Solo permitir eliminar ventas anuladas
+    # Solo permitir eliminar ventas anuladas en la ruta legacy
     if venta.estado_venta != EstadoVenta.ANULADA:
         return RedirectResponse(
             url="/admin/ventas?error=solo_anuladas", 
