@@ -699,3 +699,39 @@ async def webpay_health():
             "error": str(e),
             "timestamp": datetime.now().isoformat()
         }
+
+def get_payment_type_description(payment_type_code):
+    """Obtener descripción del tipo de pago"""
+    if not payment_type_code:
+        return "N/A"
+    
+    types = {
+        'VD': 'Tarjeta de Débito',
+        'VN': 'Tarjeta de Crédito',
+        'VC': 'Tarjeta de Crédito', 
+        'VP': 'Tarjeta de Crédito Prepago',
+        'SI': 'Sin Interés',
+        'S2': '2 cuotas sin interés',
+        'S3': '3 cuotas sin interés',
+        'N2': '2 cuotas con interés',
+        'N3': '3 cuotas con interés',
+        'N4': '4 cuotas con interés',
+        'N5': '5 cuotas con interés',
+        'N6': '6 cuotas con interés'
+    }
+    return types.get(payment_type_code, f'Tipo {payment_type_code}')
+
+def get_response_description(response_code):
+    """Obtener descripción del código de respuesta"""
+    codes = {
+        '0': 'Transacción aprobada',
+        '-1': 'Rechazo - Transacción rechazada',
+        '-2': 'Transacción debe reintentarse',
+        '-3': 'Error en transacción',
+        '-4': 'Rechazo - Transacción rechazada',
+        '-5': 'Rechazo - Transacción rechazada',
+        '-6': 'Rechazo - Transacción rechazada',
+        '-7': 'Rechazo - Transacción rechazada',
+        '-8': 'Rechazo - Transacción rechazada'
+    }
+    return codes.get(str(response_code), f'Código {response_code}')
