@@ -606,37 +606,6 @@
         </div>
     </section>
 
-    <!-- ÍNDICE -->
-    <section class="index-page">
-        <h2 class="index-title fade-in">Índice de Contenidos</h2>
-        <p class="index-subtitle fade-in">Explora nuestra colección de muebles de alta calidad</p>
-        
-        <div class="index-grid">
-            {% for categoria in categorias if categoria.activo %}
-            <div class="index-category fade-in" onclick="scrollToSection('categoria-{{ categoria.id }}')">
-                <div class="category-header">
-                    <div class="category-number">.{{ loop.index }} {{ categoria.nombre.upper() }}</div>
-                    <div class="category-name">{{ categoria.nombre.title() }}</div>
-                    <div class="category-description">
-                        {% set productos_categoria = productos_por_categoria[categoria.id] if productos_por_categoria[categoria.id] else [] %}
-                        {{ productos_categoria|length }} productos disponibles con diseños únicos y materiales premium
-                    </div>
-                </div>
-                <div class="category-preview">
-                    <div class="preview-icon">
-                        {% if 'silla' in categoria.nombre.lower() %}🪑
-                        {% elif 'mueble' in categoria.nombre.lower() %}🏠
-                        {% elif 'lampara' in categoria.nombre.lower() %}💡
-                        {% elif 'mesa' in categoria.nombre.lower() %}🪑
-                        {% elif 'sofa' in categoria.nombre.lower() %}🛋️
-                        {% else %}🏠{% endif %}
-                    </div>
-                </div>
-            </div>
-            {% endfor %}
-        </div>
-    </section>
-
     <!-- PÁGINAS DE CATEGORÍAS -->
     {% for categoria in categorias if categoria.activo %}
     <section class="category-page" id="categoria-{{ categoria.id }}">
@@ -680,10 +649,6 @@
                             <span class="spec-label">Código</span>
                             <span class="spec-value">{{ producto.sku }}</span>
                         </div>
-                        <div class="spec-row">
-                            <span class="spec-label">Disponibilidad</span>
-                            <span class="spec-value">{{ producto.stock }} unidades</span>
-                        </div>
                         {% if producto.vistas %}
                         <div class="spec-row">
                             <span class="spec-label">Popularidad</span>
@@ -694,15 +659,6 @@
                             <span class="spec-label">Categoría</span>
                             <span class="spec-value">{{ categoria.nombre }}</span>
                         </div>
-                    </div>
-                    
-                    <div class="product-price">
-                        {% if producto.precio_oferta and producto.precio_oferta < producto.precio %}
-                        <div class="price-original">${{ "{:,.0f}".format(producto.precio) }}</div>
-                        <div class="price-current">${{ "{:,.0f}".format(producto.precio_oferta) }}</div>
-                        {% else %}
-                        <div class="price-current">${{ "{:,.0f}".format(producto.precio) }}</div>
-                        {% endif %}
                     </div>
                 </div>
             </div>
@@ -737,13 +693,6 @@
                     </div>
                     <div class="mosaic-content">
                         <div class="mosaic-name">{{ producto.nombre }}</div>
-                        <div class="mosaic-price">
-                            {% if producto.precio_oferta and producto.precio_oferta < producto.precio %}
-                            ${{ "{:,.0f}".format(producto.precio_oferta) }}
-                            {% else %}
-                            ${{ "{:,.0f}".format(producto.precio) }}
-                            {% endif %}
-                        </div>
                         <div class="mosaic-sku">{{ producto.sku }}</div>
                     </div>
                 </div>
@@ -758,12 +707,6 @@
     <button class="control-btn" onclick="scrollToTop()" title="Inicio">
         <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
             <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"/>
-        </svg>
-    </button>
-    
-    <button class="control-btn" onclick="scrollToSection('mosaic-page')" title="Vista general">
-        <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
-            <path d="M4 11h5V5H4v6zm0 7h5v-6H4v6zm6 0h5v-6h-5v6zm6 0h5v-6h-5v6zm-6-7h5V5h-5v6zm6-6v6h5V5h-5z"/>
         </svg>
     </button>
     
