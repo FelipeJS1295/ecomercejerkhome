@@ -16,6 +16,7 @@ from app.routes.admin.venta_admin_routes import router as venta_admin_router
 from app.routes.admin.usuario_admin_routes import router as usuario_admin_router
 from app.routes.checkout_routes import router as checkout_router
 from app.routes.webpay_routes import router as webpay_router
+from app.routes.catalogo_routes import router as catalogo_router
 
 # Crear las tablas en la base de datos
 Categoria.metadata.create_all(bind=engine)
@@ -67,6 +68,7 @@ app.include_router(venta_admin_router)
 app.include_router(usuario_admin_router)
 app.include_router(checkout_router)
 app.include_router(webpay_router)
+app.include_router(catalogo_router)
 
 # Ruta principal actualizada
 @app.get("/")

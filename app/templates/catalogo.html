@@ -1,0 +1,1182 @@
+{% extends "base.html" %}
+
+{% block title %}Catálogo Editorial - JerkHome{% endblock %}
+{% block description %}Catálogo editorial de productos JerkHome - Muebles tapizados de alta calidad{% endblock %}
+
+{% block content %}
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    body {
+        font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background-color: #f8f9fa;
+        color: #2c2c2c;
+        line-height: 1.6;
+    }
+
+    .catalog-container {
+        max-width: 1400px;
+        margin: 0 auto;
+        background: white;
+        box-shadow: 0 0 50px rgba(0,0,0,0.1);
+        min-height: 100vh;
+    }
+
+    /* PORTADA */
+    .cover-page {
+        height: 100vh;
+        background: linear-gradient(135deg, #8B4513 0%, #D2B48C 50%, #F5DEB3 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .cover-content {
+        text-align: center;
+        color: white;
+        z-index: 10;
+        position: relative;
+    }
+
+    .cover-logo {
+        width: 300px;
+        height: 200px;
+        margin: 0 auto 30px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .lotus-icon {
+        width: 80px;
+        height: 80px;
+        fill: #8B4513;
+    }
+
+    .cover-title {
+        font-size: 6rem;
+        font-weight: 300;
+        margin-bottom: 20px;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        letter-spacing: -2px;
+    }
+
+    .cover-subtitle {
+        font-size: 2rem;
+        font-weight: 300;
+        margin-bottom: 40px;
+        opacity: 0.9;
+    }
+
+    .cover-year {
+        font-size: 1.2rem;
+        opacity: 0.8;
+        letter-spacing: 4px;
+        text-transform: uppercase;
+    }
+
+    .cover-pattern {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        opacity: 0.1;
+        background-image: 
+            radial-gradient(circle at 25% 25%, white 2px, transparent 2px),
+            radial-gradient(circle at 75% 75%, white 2px, transparent 2px);
+        background-size: 100px 100px;
+        animation: float 20s ease-in-out infinite;
+    }
+
+    @keyframes float {
+        0%, 100% { transform: translate(0px, 0px); }
+        50% { transform: translate(-20px, -20px); }
+    }
+
+    /* ÍNDICE */
+    .index-page {
+        padding: 80px 60px;
+        background: white;
+    }
+
+    .index-title {
+        text-align: center;
+        font-size: 3.5rem;
+        font-weight: 300;
+        margin-bottom: 20px;
+        color: #2c2c2c;
+    }
+
+    .index-subtitle {
+        text-align: center;
+        font-size: 1.2rem;
+        color: #666;
+        margin-bottom: 60px;
+    }
+
+    .index-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+        gap: 40px;
+        margin-bottom: 80px;
+    }
+
+    .index-category {
+        background: #f8f9fa;
+        border-radius: 20px;
+        overflow: hidden;
+        transition: all 0.3s ease;
+        cursor: pointer;
+        border: 2px solid transparent;
+    }
+
+    .index-category:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 25px 50px rgba(0,0,0,0.15);
+        border-color: #8B4513;
+    }
+
+    .category-header {
+        background: linear-gradient(135deg, #8B4513, #A0522D);
+        color: white;
+        padding: 30px;
+        text-align: center;
+    }
+
+    .category-number {
+        font-size: 1rem;
+        opacity: 0.8;
+        margin-bottom: 10px;
+    }
+
+    .category-name {
+        font-size: 1.8rem;
+        font-weight: 600;
+        margin-bottom: 10px;
+    }
+
+    .category-description {
+        font-size: 0.9rem;
+        opacity: 0.9;
+        line-height: 1.4;
+    }
+
+    .category-preview {
+        padding: 20px;
+        height: 200px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: white;
+    }
+
+    .preview-icon {
+        font-size: 4rem;
+        color: #8B4513;
+        opacity: 0.7;
+    }
+
+    /* PÁGINAS DE CATEGORÍAS */
+    .category-page {
+        min-height: 100vh;
+        padding: 0;
+    }
+
+    .category-banner {
+        background: linear-gradient(135deg, #8B4513, #D2B48C);
+        color: white;
+        padding: 80px 60px;
+        text-align: center;
+        position: relative;
+    }
+
+    .category-banner::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="2" fill="white" opacity="0.1"/></svg>');
+        background-size: 50px 50px;
+    }
+
+    .category-banner h2 {
+        font-size: 4rem;
+        font-weight: 300;
+        margin-bottom: 20px;
+        position: relative;
+        z-index: 2;
+    }
+
+    .category-banner p {
+        font-size: 1.3rem;
+        opacity: 0.9;
+        max-width: 600px;
+        margin: 0 auto;
+        position: relative;
+        z-index: 2;
+    }
+
+    .products-grid {
+        padding: 80px 60px;
+        background: white;
+    }
+
+    .product-showcase {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0;
+        margin-bottom: 80px;
+        min-height: 600px;
+        border-radius: 20px;
+        overflow: hidden;
+        box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+    }
+
+    .product-showcase:nth-child(even) {
+        direction: rtl;
+    }
+
+    .product-showcase:nth-child(even) * {
+        direction: ltr;
+    }
+
+    .product-image-container {
+        background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .product-image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.5s ease;
+    }
+
+    .product-showcase:hover .product-image {
+        transform: scale(1.05);
+    }
+
+    .product-placeholder {
+        font-size: 6rem;
+        color: #8B4513;
+        opacity: 0.3;
+    }
+
+    .product-info {
+        padding: 60px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        background: white;
+    }
+
+    .product-category-tag {
+        color: #8B4513;
+        font-size: 0.9rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        margin-bottom: 20px;
+    }
+
+    .product-name {
+        font-size: 3rem;
+        font-weight: 300;
+        color: #2c2c2c;
+        margin-bottom: 25px;
+        line-height: 1.1;
+    }
+
+    .product-description {
+        font-size: 1.1rem;
+        color: #666;
+        margin-bottom: 35px;
+        line-height: 1.6;
+    }
+
+    .product-specs {
+        margin-bottom: 35px;
+    }
+
+    .spec-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 12px 0;
+        border-bottom: 1px solid #f0f0f0;
+    }
+
+    .spec-row:last-child {
+        border-bottom: none;
+    }
+
+    .spec-label {
+        font-size: 0.9rem;
+        color: #999;
+        font-weight: 500;
+    }
+
+    .spec-value {
+        font-size: 0.9rem;
+        color: #2c2c2c;
+        font-weight: 600;
+    }
+
+    .product-price {
+        text-align: center;
+        padding: 25px;
+        background: linear-gradient(135deg, #8B4513, #A0522D);
+        color: white;
+        border-radius: 15px;
+        box-shadow: 0 10px 20px rgba(139, 69, 19, 0.2);
+    }
+
+    .price-current {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 5px;
+    }
+
+    .price-original {
+        font-size: 1.2rem;
+        text-decoration: line-through;
+        opacity: 0.7;
+    }
+
+    /* MOSAICO FINAL */
+    .mosaic-page {
+        padding: 80px 60px;
+        background: #f8f9fa;
+    }
+
+    .mosaic-title {
+        text-align: center;
+        font-size: 3.5rem;
+        font-weight: 300;
+        margin-bottom: 60px;
+        color: #2c2c2c;
+    }
+
+    .mosaic-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 30px;
+        margin-bottom: 60px;
+    }
+
+    .mosaic-item {
+        background: white;
+        border-radius: 20px;
+        overflow: hidden;
+        transition: all 0.3s ease;
+        box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+    }
+
+    .mosaic-item:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 25px 50px rgba(0,0,0,0.15);
+    }
+
+    .mosaic-image {
+        height: 220px;
+        background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+    }
+
+    .mosaic-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .mosaic-icon {
+        font-size: 3rem;
+        color: #8B4513;
+        opacity: 0.4;
+    }
+
+    .mosaic-content {
+        padding: 25px;
+        text-align: center;
+    }
+
+    .mosaic-name {
+        font-size: 1.2rem;
+        font-weight: 600;
+        color: #2c2c2c;
+        margin-bottom: 10px;
+    }
+
+    .mosaic-price {
+        font-size: 1.1rem;
+        color: #8B4513;
+        font-weight: 700;
+        margin-bottom: 5px;
+    }
+
+    .mosaic-sku {
+        font-size: 0.8rem;
+        color: #999;
+    }
+
+    /* CONTROLES */
+    .catalog-controls {
+        position: fixed;
+        bottom: 30px;
+        right: 30px;
+        z-index: 1000;
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .control-btn {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        background: #8B4513;
+        color: white;
+        border: none;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.3rem;
+        transition: all 0.3s ease;
+        box-shadow: 0 10px 20px rgba(139, 69, 19, 0.3);
+    }
+
+    .control-btn:hover {
+        background: #A0522D;
+        transform: scale(1.1);
+        box-shadow: 0 15px 30px rgba(139, 69, 19, 0.4);
+    }
+
+    .pdf-btn {
+        background: #2c2c2c;
+    }
+
+    .pdf-btn:hover {
+        background: #444;
+    }
+
+    /* RESPONSIVE */
+    @media (max-width: 1200px) {
+        .catalog-container {
+            margin: 0 20px;
+        }
+        
+        .products-grid, .index-page, .mosaic-page {
+            padding: 60px 40px;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .cover-title {
+            font-size: 4rem;
+        }
+        
+        .cover-subtitle {
+            font-size: 1.5rem;
+        }
+        
+        .product-showcase {
+            grid-template-columns: 1fr;
+            min-height: auto;
+        }
+        
+        .product-info {
+            padding: 40px 30px;
+        }
+        
+        .product-name {
+            font-size: 2.2rem;
+        }
+        
+        .category-banner h2 {
+            font-size: 2.5rem;
+        }
+        
+        .mosaic-grid {
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+        }
+        
+        .catalog-controls {
+            bottom: 20px;
+            right: 20px;
+            transform: scale(0.9);
+        }
+        
+        .products-grid, .index-page, .mosaic-page {
+            padding: 40px 20px;
+        }
+    }
+
+    /* ANIMACIONES */
+    .fade-in {
+        animation: fadeIn 0.8s ease-out;
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .slide-in-left {
+        animation: slideInLeft 0.8s ease-out;
+    }
+
+    @keyframes slideInLeft {
+        from {
+            opacity: 0;
+            transform: translateX(-50px);
+        }
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+
+    .slide-in-right {
+        animation: slideInRight 0.8s ease-out;
+    }
+
+    @keyframes slideInRight {
+        from {
+            opacity: 0;
+            transform: translateX(50px);
+        }
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+
+    /* PRINT STYLES */
+    @media print {
+        .catalog-controls {
+            display: none;
+        }
+        
+        .cover-page, .category-page, .mosaic-page {
+            page-break-after: always;
+        }
+        
+        .product-showcase {
+            page-break-inside: avoid;
+        }
+    }
+</style>
+
+<div class="catalog-container">
+    <!-- PORTADA -->
+    <section class="cover-page">
+        <div class="cover-pattern"></div>
+        <div class="cover-content fade-in">
+            <div class="cover-logo">
+                <img src="{{ url_for('static', path='/images/logo_pn.png') }}" 
+                     alt="JerkHome Logo" 
+                     style="width: 100%; height: 100%; object-fit: contain;">
+            </div>
+            <h2 class="cover-subtitle">CATÁLOGO MUEBLES INTERIORES</h2>
+            <p class="cover-year">2025</p>
+        </div>
+    </section>
+
+    <!-- ÍNDICE -->
+    <section class="index-page">
+        <h2 class="index-title fade-in">Índice de Contenidos</h2>
+        <p class="index-subtitle fade-in">Explora nuestra colección de muebles de alta calidad</p>
+        
+        <div class="index-grid">
+            {% for categoria in categorias if categoria.activo %}
+            <div class="index-category fade-in" onclick="scrollToSection('categoria-{{ categoria.id }}')">
+                <div class="category-header">
+                    <div class="category-number">.{{ loop.index }} {{ categoria.nombre.upper() }}</div>
+                    <div class="category-name">{{ categoria.nombre.title() }}</div>
+                    <div class="category-description">
+                        {% set productos_categoria = productos_por_categoria[categoria.id] if productos_por_categoria[categoria.id] else [] %}
+                        {{ productos_categoria|length }} productos disponibles con diseños únicos y materiales premium
+                    </div>
+                </div>
+                <div class="category-preview">
+                    <div class="preview-icon">
+                        {% if 'silla' in categoria.nombre.lower() %}🪑
+                        {% elif 'mueble' in categoria.nombre.lower() %}🏠
+                        {% elif 'lampara' in categoria.nombre.lower() %}💡
+                        {% elif 'mesa' in categoria.nombre.lower() %}🪑
+                        {% elif 'sofa' in categoria.nombre.lower() %}🛋️
+                        {% else %}🏠{% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+
+    <!-- PÁGINAS DE CATEGORÍAS -->
+    {% for categoria in categorias if categoria.activo %}
+    <section class="category-page" id="categoria-{{ categoria.id }}">
+        <div class="category-banner">
+            <h2 class="slide-in-left">{{ categoria.nombre.upper() }}</h2>
+            <p class="slide-in-right">
+                {{ categoria.descripcion if categoria.descripcion else 'Descubre nuestra exclusiva colección de ' + categoria.nombre.lower() + ' diseñados con los más altos estándares de calidad y confort.' }}
+            </p>
+        </div>
+        
+        <div class="products-grid">
+            {% set productos_categoria = productos_por_categoria[categoria.id] if productos_por_categoria[categoria.id] else [] %}
+            {% for producto in productos_categoria if producto.activo %}
+            <div class="product-showcase fade-in">
+                <div class="product-image-container">
+                    {% if producto.imagen_1 %}
+                    <img src="{{ url_for('static', path='/images/productos/' + producto.imagen_1) }}" 
+                         alt="{{ producto.nombre }}" 
+                         class="product-image"
+                         onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                    {% endif %}
+                    <div class="product-placeholder" {% if producto.imagen_1 %}style="display:none;"{% endif %}>
+                        {% if 'silla' in categoria.nombre.lower() %}🪑
+                        {% elif 'mueble' in categoria.nombre.lower() %}🏠
+                        {% elif 'lampara' in categoria.nombre.lower() %}💡
+                        {% elif 'mesa' in categoria.nombre.lower() %}🪑
+                        {% elif 'sofa' in categoria.nombre.lower() %}🛋️
+                        {% else %}🏠{% endif %}
+                    </div>
+                </div>
+                
+                <div class="product-info">
+                    <div class="product-category-tag">{{ categoria.nombre.upper() }}</div>
+                    <h3 class="product-name">{{ producto.nombre }}</h3>
+                    <p class="product-description">
+                        {{ producto.descripcion if producto.descripcion else 'Producto de alta calidad diseñado para ofrecer comodidad y elegancia en tu hogar. Fabricado con materiales premium y acabados de lujo que garantizan durabilidad y estilo.' }}
+                    </p>
+                    
+                    <div class="product-specs">
+                        <div class="spec-row">
+                            <span class="spec-label">Código</span>
+                            <span class="spec-value">{{ producto.sku }}</span>
+                        </div>
+                        <div class="spec-row">
+                            <span class="spec-label">Disponibilidad</span>
+                            <span class="spec-value">{{ producto.stock }} unidades</span>
+                        </div>
+                        {% if producto.vistas %}
+                        <div class="spec-row">
+                            <span class="spec-label">Popularidad</span>
+                            <span class="spec-value">{{ producto.vistas }} vistas</span>
+                        </div>
+                        {% endif %}
+                        <div class="spec-row">
+                            <span class="spec-label">Categoría</span>
+                            <span class="spec-value">{{ categoria.nombre }}</span>
+                        </div>
+                    </div>
+                    
+                    <div class="product-price">
+                        {% if producto.precio_oferta and producto.precio_oferta < producto.precio %}
+                        <div class="price-original">${{ "{:,.0f}".format(producto.precio) }}</div>
+                        <div class="price-current">${{ "{:,.0f}".format(producto.precio_oferta) }}</div>
+                        {% else %}
+                        <div class="price-current">${{ "{:,.0f}".format(producto.precio) }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+    {% endfor %}
+
+    <!-- MOSAICO FINAL -->
+    <section class="mosaic-page">
+        <h2 class="mosaic-title fade-in">Colección Completa</h2>
+        
+        <div class="mosaic-grid">
+            {% for categoria in categorias if categoria.activo %}
+                {% set productos_categoria = productos_por_categoria[categoria.id] if productos_por_categoria[categoria.id] else [] %}
+                {% for producto in productos_categoria if producto.activo %}
+                <div class="mosaic-item fade-in">
+                    <div class="mosaic-image">
+                        {% if producto.imagen_1 %}
+                        <img src="{{ url_for('static', path='/images/productos/' + producto.imagen_1) }}" 
+                             alt="{{ producto.nombre }}"
+                             onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                        {% endif %}
+                        <div class="mosaic-icon" {% if producto.imagen_1 %}style="display:none;"{% endif %}>
+                            {% if 'silla' in categoria.nombre.lower() %}🪑
+                            {% elif 'mueble' in categoria.nombre.lower() %}🏠
+                            {% elif 'lampara' in categoria.nombre.lower() %}💡
+                            {% elif 'mesa' in categoria.nombre.lower() %}🪑
+                            {% elif 'sofa' in categoria.nombre.lower() %}🛋️
+                            {% else %}🏠{% endif %}
+                        </div>
+                    </div>
+                    <div class="mosaic-content">
+                        <div class="mosaic-name">{{ producto.nombre }}</div>
+                        <div class="mosaic-price">
+                            {% if producto.precio_oferta and producto.precio_oferta < producto.precio %}
+                            ${{ "{:,.0f}".format(producto.precio_oferta) }}
+                            {% else %}
+                            ${{ "{:,.0f}".format(producto.precio) }}
+                            {% endif %}
+                        </div>
+                        <div class="mosaic-sku">{{ producto.sku }}</div>
+                    </div>
+                </div>
+                {% endfor %}
+            {% endfor %}
+        </div>
+    </section>
+</div>
+
+<!-- CONTROLES -->
+<div class="catalog-controls">
+    <button class="control-btn" onclick="scrollToTop()" title="Inicio">
+        <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"/>
+        </svg>
+    </button>
+    
+    <button class="control-btn" onclick="scrollToSection('mosaic-page')" title="Vista general">
+        <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M4 11h5V5H4v6zm0 7h5v-6H4v6zm6 0h5v-6h-5v6zm6 0h5v-6h-5v6zm-6-7h5V5h-5v6zm6-6v6h5V5h-5z"/>
+        </svg>
+    </button>
+    
+    <button class="control-btn pdf-btn" onclick="generatePDF()" title="Descargar PDF">
+        <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"/>
+        </svg>
+    </button>
+</div>
+
+<script>
+    // Navegación suave
+    function scrollToSection(sectionId) {
+        const element = document.getElementById(sectionId) || document.querySelector('.' + sectionId);
+        if (element) {
+            element.scrollIntoView({ 
+                behavior: 'smooth',
+                block: 'start'
+            });
+        }
+    }
+
+    function scrollToTop() {
+        window.scrollTo({ 
+            top: 0, 
+            behavior: 'smooth' 
+        });
+    }
+
+    // Animaciones al scroll
+    const observerOptions = {
+        threshold: 0.1,
+        rootMargin: '0px 0px -100px 0px'
+    };
+
+    const observer = new IntersectionObserver(function(entries) {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.style.opacity = '1';
+                entry.target.style.transform = 'translateY(0)';
+            }
+        });
+    }, observerOptions);
+
+    // Observar elementos para animaciones
+    document.addEventListener('DOMContentLoaded', function() {
+        // Configurar animaciones
+        document.querySelectorAll('.fade-in, .slide-in-left, .slide-in-right').forEach(el => {
+            el.style.opacity = '0';
+            el.style.transform = el.classList.contains('slide-in-left') ? 'translateX(-50px)' : 
+                                el.classList.contains('slide-in-right') ? 'translateX(50px)' : 'translateY(30px)';
+            el.style.transition = 'opacity 0.8s ease, transform 0.8s ease';
+            observer.observe(el);
+        });
+
+        // Efecto parallax en la portada
+        window.addEventListener('scroll', function() {
+            const scrolled = window.pageYOffset;
+            const cover = document.querySelector('.cover-page');
+            if (cover && scrolled < window.innerHeight) {
+                cover.style.transform = `translateY(${scrolled * 0.3}px)`;
+            }
+        });
+    });
+
+    // Generar PDF
+    function generatePDF() {
+        const btn = document.querySelector('.pdf-btn');
+        const originalHTML = btn.innerHTML;
+        
+        btn.innerHTML = `
+            <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24" class="animate-spin">
+                <path d="M12,4V2A10,10 0 0,0 2,12H4A8,8 0 0,1 12,4Z"/>
+            </svg>
+        `;
+        btn.disabled = true;
+
+        // Simular generación de PDF
+        setTimeout(() => {
+            showNotification('Generando catálogo PDF...', 'info');
+            
+            setTimeout(() => {
+                // Aquí podrías implementar la generación real del PDF
+                showNotification('¡Catálogo PDF generado exitosamente!', 'success');
+                btn.innerHTML = originalHTML;
+                btn.disabled = false;
+            }, 2000);
+        }, 1000);
+    }
+
+    // Sistema de notificaciones
+    function showNotification(message, type = 'success') {
+        const notification = document.createElement('div');
+        notification.style.cssText = `
+            position: fixed;
+            top: 30px;
+            right: 30px;
+            padding: 15px 25px;
+            border-radius: 10px;
+            color: white;
+            font-weight: 500;
+            z-index: 10000;
+            transform: translateX(400px);
+            transition: transform 0.3s ease;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            ${type === 'success' ? 'background: linear-gradient(135deg, #4CAF50, #45a049);' : 
+              type === 'info' ? 'background: linear-gradient(135deg, #2196F3, #1976D2);' : 
+              'background: linear-gradient(135deg, #f44336, #d32f2f);'}
+        `;
+        notification.textContent = message;
+        
+        document.body.appendChild(notification);
+        
+        // Mostrar notificación
+        setTimeout(() => {
+            notification.style.transform = 'translateX(0)';
+        }, 100);
+        
+        // Ocultar y remover notificación
+        setTimeout(() => {
+            notification.style.transform = 'translateX(400px)';
+            setTimeout(() => {
+                if (document.body.contains(notification)) {
+                    document.body.removeChild(notification);
+                }
+            }, 300);
+        }, 3000);
+    }
+
+    // Navegación con teclado
+    document.addEventListener('keydown', function(e) {
+        switch(e.key) {
+            case 'Home':
+                e.preventDefault();
+                scrollToTop();
+                break;
+            case 'End':
+                e.preventDefault();
+                scrollToSection('mosaic-page');
+                break;
+            case 'p':
+            case 'P':
+                if (e.ctrlKey || e.metaKey) {
+                    e.preventDefault();
+                    generatePDF();
+                }
+                break;
+        }
+    });
+
+    // Optimización de imágenes
+    function optimizeImages() {
+        const images = document.querySelectorAll('img');
+        images.forEach(img => {
+            img.addEventListener('load', function() {
+                this.style.opacity = '1';
+            });
+            
+            img.addEventListener('error', function() {
+                this.style.display = 'none';
+                const placeholder = this.nextElementSibling;
+                if (placeholder && placeholder.classList.contains('product-placeholder')) {
+                    placeholder.style.display = 'flex';
+                }
+            });
+        });
+    }
+
+    // Lazy loading para mejor rendimiento
+    function setupLazyLoading() {
+        const imageObserver = new IntersectionObserver((entries, observer) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const img = entry.target;
+                    if (img.dataset.src) {
+                        img.src = img.dataset.src;
+                        img.removeAttribute('data-src');
+                    }
+                    observer.unobserve(img);
+                }
+            });
+        });
+
+        document.querySelectorAll('img[data-src]').forEach(img => {
+            imageObserver.observe(img);
+        });
+    }
+
+    // Función para imprimir catálogo
+    function printCatalog() {
+        const printStyles = `
+            <style>
+                @media print {
+                    * { -webkit-print-color-adjust: exact !important; color-adjust: exact !important; }
+                    .catalog-controls { display: none !important; }
+                    .cover-page, .category-page, .mosaic-page { page-break-after: always; }
+                    .product-showcase { page-break-inside: avoid; margin-bottom: 20px; }
+                    .index-category { page-break-inside: avoid; }
+                    body { font-size: 12px; }
+                    .cover-title { font-size: 4rem; }
+                    .product-name { font-size: 2rem; }
+                    .category-banner h2 { font-size: 3rem; }
+                }
+            </style>
+        `;
+        
+        const head = document.getElementsByTagName('head')[0];
+        const printStyleElement = document.createElement('div');
+        printStyleElement.innerHTML = printStyles;
+        head.appendChild(printStyleElement.firstChild);
+        
+        window.print();
+    }
+
+    // Funciones de utilidad para navegación táctil
+    let touchStartY = 0;
+    let touchEndY = 0;
+    let isScrolling = false;
+
+    document.addEventListener('touchstart', function(e) {
+        touchStartY = e.changedTouches[0].screenY;
+    });
+
+    document.addEventListener('touchmove', function(e) {
+        isScrolling = true;
+    });
+
+    document.addEventListener('touchend', function(e) {
+        if (!isScrolling) {
+            touchEndY = e.changedTouches[0].screenY;
+            handleSwipe();
+        }
+        isScrolling = false;
+    });
+
+    function handleSwipe() {
+        const swipeThreshold = 100;
+        const diff = touchStartY - touchEndY;
+        
+        if (Math.abs(diff) > swipeThreshold) {
+            if (diff > 0) {
+                // Swipe up - scroll down
+                window.scrollBy({ top: window.innerHeight, behavior: 'smooth' });
+            } else {
+                // Swipe down - scroll up
+                window.scrollBy({ top: -window.innerHeight, behavior: 'smooth' });
+            }
+        }
+    }
+
+    // Funciones adicionales para mejorar UX
+    document.addEventListener('DOMContentLoaded', function() {
+        optimizeImages();
+        setupLazyLoading();
+        
+        // Agregar indicador de carga
+        const loadingIndicator = document.createElement('div');
+        loadingIndicator.style.cssText = `
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, #8B4513, #D2B48C);
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.3s ease;
+            z-index: 10000;
+        `;
+        document.body.appendChild(loadingIndicator);
+        
+        // Simular carga
+        setTimeout(() => {
+            loadingIndicator.style.transform = 'scaleX(1)';
+            setTimeout(() => {
+                loadingIndicator.style.opacity = '0';
+                setTimeout(() => {
+                    document.body.removeChild(loadingIndicator);
+                }, 300);
+            }, 500);
+        }, 100);
+    });
+
+    // Función para compartir catálogo (si está disponible Web Share API)
+    function shareCatalog() {
+        if (navigator.share) {
+            navigator.share({
+                title: 'Catálogo JerkHome 2025',
+                text: 'Descubre nuestra exclusiva colección de muebles de alta calidad',
+                url: window.location.href
+            }).then(() => {
+                showNotification('¡Catálogo compartido exitosamente!', 'success');
+            }).catch(() => {
+                showNotification('Error al compartir', 'error');
+            });
+        } else {
+            // Fallback: copiar URL al portapapeles
+            navigator.clipboard.writeText(window.location.href).then(() => {
+                showNotification('¡URL copiada al portapapeles!', 'success');
+            }).catch(() => {
+                showNotification('Error al copiar URL', 'error');
+            });
+        }
+    }
+
+    // Función para modo oscuro (opcional)
+    function toggleDarkMode() {
+        document.body.classList.toggle('dark-mode');
+        localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
+    }
+
+    // Cargar preferencia de modo oscuro
+    if (localStorage.getItem('darkMode') === 'true') {
+        document.body.classList.add('dark-mode');
+    }
+
+    // Función para zoom en imágenes
+    function setupImageZoom() {
+        document.querySelectorAll('.product-image, .mosaic-image img').forEach(img => {
+            img.addEventListener('click', function() {
+                const modal = document.createElement('div');
+                modal.style.cssText = `
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    width: 100%;
+                    height: 100%;
+                    background: rgba(0,0,0,0.9);
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    z-index: 10000;
+                    cursor: pointer;
+                `;
+                
+                const zoomedImg = this.cloneNode();
+                zoomedImg.style.cssText = `
+                    max-width: 90%;
+                    max-height: 90%;
+                    object-fit: contain;
+                    border-radius: 10px;
+                    box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+                `;
+                
+                modal.appendChild(zoomedImg);
+                document.body.appendChild(modal);
+                
+                modal.addEventListener('click', function() {
+                    document.body.removeChild(modal);
+                });
+                
+                // Cerrar con ESC
+                const closeOnEsc = function(e) {
+                    if (e.key === 'Escape') {
+                        document.body.removeChild(modal);
+                        document.removeEventListener('keydown', closeOnEsc);
+                    }
+                };
+                document.addEventListener('keydown', closeOnEsc);
+            });
+        });
+    }
+
+    // Inicializar zoom de imágenes cuando el DOM esté listo
+    document.addEventListener('DOMContentLoaded', function() {
+        setTimeout(setupImageZoom, 1000); // Delay para asegurar que las imágenes estén cargadas
+    });
+</script>
+
+{% endblock %}
+
+{% block scripts %}
+<!-- Scripts adicionales para funcionalidades avanzadas -->
+<script>
+    // Script para analytics o tracking (opcional)
+    function trackCatalogView(section) {
+        // Aquí podrías integrar Google Analytics, Mixpanel, etc.
+        console.log('Viewing section:', section);
+    }
+
+    // Script para feedback del usuario
+    function collectFeedback() {
+        const feedback = prompt('¿Qué te parece nuestro catálogo? (1-5 estrellas)');
+        if (feedback && feedback >= 1 && feedback <= 5) {
+            showNotification('¡Gracias por tu feedback!', 'success');
+            // Aquí enviarías el feedback a tu servidor
+        }
+    }
+
+    // Función para exportar información de productos (JSON)
+    function exportProductData() {
+        const products = [];
+        document.querySelectorAll('.product-showcase').forEach(showcase => {
+            const name = showcase.querySelector('.product-name')?.textContent;
+            const price = showcase.querySelector('.price-current')?.textContent;
+            const category = showcase.querySelector('.product-category-tag')?.textContent;
+            const sku = showcase.querySelector('.spec-value')?.textContent;
+            
+            if (name && price) {
+                products.push({ name, price, category, sku });
+            }
+        });
+        
+        const dataStr = JSON.stringify(products, null, 2);
+        const dataBlob = new Blob([dataStr], {type:'application/json'});
+        const url = URL.createObjectURL(dataBlob);
+        
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = 'jerkhome-productos.json';
+        link.click();
+        
+        showNotification('¡Datos de productos exportados!', 'success');
+    }
+</script>
+{% endblock %}
