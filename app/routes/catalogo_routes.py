@@ -1,10 +1,21 @@
-# app/routes/catalogo_routes.py
 from fastapi import APIRouter, Request, HTTPException, Depends
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, Response
 from fastapi.templating import Jinja2Templates
 from sqlalchemy.orm import Session
 from typing import List, Optional
 import json
+import io
+import base64
+from datetime import datetime
+
+# Para generar PDF - necesitas instalar: pip install reportlab weasyprint
+try:
+    from weasyprint import HTML, CSS
+    from weasyprint.text.fonts import FontConfiguration
+    PDF_AVAILABLE = True
+except ImportError:
+    print("WeasyPrint no disponible. Instala con: pip install weasyprint")
+    PDF_AVAILABLE = False
 
 # Importar según tu estructura
 from app.database.database import get_db
@@ -82,6 +93,302 @@ async def mostrar_catalogo(
     except Exception as e:
         print(f"Error en catálogo: {e}")
         raise HTTPException(status_code=500, detail="Error al cargar el catálogo")
+
+@router.post("/catalogo/pdf")
+async def generar_pdf_catalogo(
+    request: Request,
+    db: Session = Depends(get_db)
+):
+    """Generar y descargar PDF del catálogo"""
+    try:
+        if not PDF_AVAILABLE:
+            raise HTTPException(
+                status_code=501, 
+                detail="Generación de PDF no disponible. Instala WeasyPrint: pip install weasyprint"
+            )
+        
+        # Obtener datos del catálogo
+        categorias = db.query(Categoria).filter(
+            Categoria.activo == True
+        ).order_by(Categoria.nombre).all()
+        
+        productos_por_categoria = {}
+        for categoria in categorias:
+            productos = db.query(Producto).filter(
+                Producto.categoria_id == categoria.id,
+                Producto.activo == True
+            ).order_by(
+                Producto.destacado.desc(),
+                Producto.nombre
+            ).all()
+            productos_por_categoria[categoria.id] = productos
+        
+        # Crear HTML para el PDF
+        html_content = await crear_html_para_pdf(categorias, productos_por_categoria)
+        
+        # CSS específico para PDF
+        css_content = """
+        @page {
+            size: A4;
+            margin: 2cm;
+        }
+        
+        body {
+            font-family: 'Arial', sans-serif;
+            line-height: 1.4;
+            color: #333;
+        }
+        
+        .portada {
+            page-break-after: always;
+            text-align: center;
+            padding: 100px 0;
+            background: linear-gradient(135deg, #8B4513, #D2B48C);
+            color: white;
+            height: 80vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        
+        .portada h1 {
+            font-size: 48px;
+            margin-bottom: 30px;
+        }
+        
+        .portada h2 {
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+        
+        .categoria-seccion {
+            page-break-before: always;
+        }
+        
+        .categoria-titulo {
+            background: #8B4513;
+            color: white;
+            padding: 30px;
+            text-align: center;
+            font-size: 32px;
+            margin-bottom: 30px;
+        }
+        
+        .producto {
+            page-break-inside: avoid;
+            margin-bottom: 40px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            min-height: 300px;
+        }
+        
+        .producto-imagen {
+            text-align: center;
+        }
+        
+        .producto-imagen img {
+            max-width: 100%;
+            max-height: 250px;
+            object-fit: contain;
+            border-radius: 10px;
+        }
+        
+        .producto-info h3 {
+            color: #8B4513;
+            font-size: 24px;
+            margin-bottom: 15px;
+        }
+        
+        .producto-descripcion {
+            margin-bottom: 20px;
+            text-align: justify;
+        }
+        
+        .producto-specs {
+            border-top: 1px solid #ddd;
+            padding-top: 15px;
+        }
+        
+        .spec-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+        
+        .spec-label {
+            font-weight: bold;
+            color: #666;
+        }
+        
+        .galeria-miniaturas {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            margin-top: 15px;
+        }
+        
+        .miniatura {
+            width: 40px;
+            height: 40px;
+            object-fit: cover;
+            border-radius: 5px;
+        }
+        
+        .footer {
+            position: fixed;
+            bottom: 1cm;
+            left: 2cm;
+            right: 2cm;
+            text-align: center;
+            font-size: 12px;
+            color: #666;
+            border-top: 1px solid #ddd;
+            padding-top: 10px;
+        }
+        """
+        
+        # Generar PDF
+        html = HTML(string=html_content, base_url=str(request.base_url))
+        css = CSS(string=css_content)
+        
+        pdf_buffer = io.BytesIO()
+        html.write_pdf(pdf_buffer, stylesheets=[css])
+        pdf_buffer.seek(0)
+        
+        # Crear nombre del archivo
+        fecha = datetime.now().strftime("%Y%m%d")
+        filename = f"Catalogo_JerkHome_{fecha}.pdf"
+        
+        # Retornar PDF como respuesta
+        return Response(
+            content=pdf_buffer.getvalue(),
+            media_type="application/pdf",
+            headers={
+                "Content-Disposition": f"attachment; filename={filename}",
+                "Content-Type": "application/pdf"
+            }
+        )
+        
+    except Exception as e:
+        print(f"Error generando PDF: {e}")
+        raise HTTPException(status_code=500, detail=f"Error al generar PDF: {str(e)}")
+
+async def crear_html_para_pdf(categorias, productos_por_categoria):
+    """Crear HTML optimizado para PDF"""
+    html = """
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <meta charset="UTF-8">
+        <title>Catálogo JerkHome 2025</title>
+    </head>
+    <body>
+        <!-- PORTADA -->
+        <div class="portada">
+            <h1>JERKHOME</h1>
+            <h2>CATÁLOGO MUEBLES INTERIORES</h2>
+            <p style="font-size: 18px;">2025</p>
+            <p style="margin-top: 50px;">Fábrica de Muebles Tapizados de Alta Calidad</p>
+        </div>
+    """
+    
+    # Agregar cada categoría
+    for categoria in categorias:
+        productos = productos_por_categoria.get(categoria.id, [])
+        if not productos:
+            continue
+            
+        html += f"""
+        <div class="categoria-seccion">
+            <div class="categoria-titulo">
+                {categoria.nombre.upper()}
+            </div>
+        """
+        
+        # Agregar productos de la categoría
+        for producto in productos:
+            html += f"""
+            <div class="producto">
+                <div class="producto-imagen">
+            """
+            
+            # Imagen principal
+            if hasattr(producto, 'imagen_1') and producto.imagen_1:
+                html += f"""
+                    <img src="/static/images/productos/{producto.imagen_1}" 
+                         alt="{producto.nombre}" 
+                         onerror="this.style.display='none'">
+                """
+            else:
+                html += f"""
+                    <div style="height: 200px; background: #f0f0f0; display: flex; align-items: center; justify-content: center; border-radius: 10px;">
+                        <span style="font-size: 48px; opacity: 0.5;">🏠</span>
+                    </div>
+                """
+            
+            # Miniaturas adicionales
+            html += '<div class="galeria-miniaturas">'
+            for i in range(2, 8):  # imagen_2 a imagen_7
+                imagen_field = f'imagen_{i}'
+                if hasattr(producto, imagen_field) and getattr(producto, imagen_field):
+                    imagen_url = getattr(producto, imagen_field)
+                    html += f"""
+                        <img src="/static/images/productos/{imagen_url}" 
+                             alt="{producto.nombre} - {i}" 
+                             class="miniatura"
+                             onerror="this.style.display='none'">
+                    """
+            html += '</div>'
+            
+            html += '</div>'  # Cerrar producto-imagen
+            
+            # Información del producto
+            descripcion = producto.descripcion if producto.descripcion else "Producto de alta calidad diseñado para ofrecer comodidad y elegancia en tu hogar."
+            
+            html += f"""
+                <div class="producto-info">
+                    <h3>{producto.nombre}</h3>
+                    <div class="producto-descripcion">
+                        {descripcion}
+                    </div>
+                    <div class="producto-specs">
+                        <div class="spec-row">
+                            <span class="spec-label">Código:</span>
+                            <span>{producto.sku}</span>
+                        </div>
+            """
+            
+            if hasattr(producto, 'vistas') and producto.vistas:
+                html += f"""
+                        <div class="spec-row">
+                            <span class="spec-label">Popularidad:</span>
+                            <span>{producto.vistas} vistas</span>
+                        </div>
+                """
+            
+            html += f"""
+                        <div class="spec-row">
+                            <span class="spec-label">Categoría:</span>
+                            <span>{categoria.nombre}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            """
+        
+        html += '</div>'  # Cerrar categoria-seccion
+    
+    # Footer y cierre
+    html += """
+        <div class="footer">
+            <p>JerkHome - Fábrica de Muebles Tapizados | www.jerkhome.cl | Catálogo 2025</p>
+        </div>
+    </body>
+    </html>
+    """
+    
+    return html
 
 
 @router.get("/catalogo/categoria/{categoria_id}", response_class=HTMLResponse)

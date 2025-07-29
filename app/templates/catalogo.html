@@ -1,4 +1,7 @@
-{% extends "base.html" %}
+@keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }    /* RESPONSIVE */{% extends "base.html" %}
 
 {% block title %}Catálogo Editorial - JerkHome{% endblock %}
 {% block description %}Catálogo editorial de productos JerkHome - Muebles tapizados de alta calidad{% endblock %}
@@ -259,10 +262,12 @@
     }
 
     .product-image {
-        width: 100%;
-        height: 100%;
+        width: 85%;
+        height: 70%;
         object-fit: cover;
         transition: transform 0.5s ease;
+        border-radius: 15px;
+        box-shadow: 0 15px 30px rgba(0,0,0,0.15);
     }
 
     .product-showcase:hover .product-image {
@@ -476,7 +481,101 @@
         background: #444;
     }
 
-    /* RESPONSIVE */
+    /* GALERÍA DE MINIATURAS */
+    .product-gallery {
+        margin-top: 35px;
+    }
+
+    .gallery-title {
+        font-size: 1rem;
+        color: #2c2c2c;
+        margin-bottom: 15px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .gallery-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
+        gap: 10px;
+        max-height: 140px;
+        overflow-y: auto;
+    }
+
+    .gallery-thumbnail {
+        width: 60px;
+        height: 60px;
+        border-radius: 8px;
+        overflow: hidden;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        border: 2px solid transparent;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+
+    .gallery-thumbnail:hover {
+        transform: scale(1.05);
+        border-color: #8B4513;
+        box-shadow: 0 6px 12px rgba(139, 69, 19, 0.2);
+    }
+
+    .gallery-thumbnail img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    /* MODAL PARA IMÁGENES */
+    .image-modal {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.9);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 10000;
+        cursor: pointer;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+
+    .image-modal.show {
+        opacity: 1;
+    }
+
+    .modal-content {
+        max-width: 90%;
+        max-height: 90%;
+        object-fit: contain;
+        border-radius: 10px;
+        box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+        transform: scale(0.8);
+        transition: transform 0.3s ease;
+    }
+
+    .image-modal.show .modal-content {
+        transform: scale(1);
+    }
+
+    .modal-close {
+        position: absolute;
+        top: 20px;
+        right: 30px;
+        color: white;
+        font-size: 40px;
+        font-weight: bold;
+        cursor: pointer;
+        z-index: 10001;
+        transition: opacity 0.3s ease;
+    }
+
+    .modal-close:hover {
+        opacity: 0.7;
+    }
     @media (max-width: 1200px) {
         .catalog-container {
             margin: 0 20px;
@@ -499,6 +598,16 @@
         .product-showcase {
             grid-template-columns: 1fr;
             min-height: auto;
+        }
+        
+        .gallery-grid {
+            grid-template-columns: repeat(auto-fill, minmax(50px, 1fr));
+            gap: 8px;
+        }
+        
+        .gallery-thumbnail {
+            width: 50px;
+            height: 50px;
         }
         
         .product-info {
@@ -665,6 +774,23 @@
                         <div class="spec-row">
                             <span class="spec-label">Categoría</span>
                             <span class="spec-value">{{ categoria.nombre }}</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Galería de imágenes en miniatura -->
+                    <div class="product-gallery">
+                        <div class="gallery-title">Imágenes adicionales</div>
+                        <div class="gallery-grid">
+                            {% for i in range(1, 8) %}
+                                {% set imagen_field = 'imagen_' + i|string %}
+                                {% if producto[imagen_field] %}
+                                <div class="gallery-thumbnail" onclick="showImageModal('{{ url_for('static', path='/images/productos/' + producto[imagen_field]) }}', '{{ producto.nombre }}')">
+                                    <img src="{{ url_for('static', path='/images/productos/' + producto[imagen_field]) }}" 
+                                         alt="{{ producto.nombre }} - Imagen {{ i }}"
+                                         onerror="this.parentElement.style.display='none';">
+                                </div>
+                                {% endif %}
+                            {% endfor %}
                         </div>
                     </div>
                 </div>
