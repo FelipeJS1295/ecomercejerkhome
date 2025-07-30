@@ -257,7 +257,7 @@
                             {{ categoria.nombre }}
                         </h3>
                         <div class="text-red-400 font-semibold mt-1">
-                            {% if loop.index == 1 %}Desde $299.990{% elif loop.index == 2 %}Desde $459.990{% else %}Desde $189.990{% endif %}
+                            {% if loop.index == 1 %}Desde $5.990{% elif loop.index == 2 %}Desde $59.990{% else %}Desde $189.990{% endif %}
                         </div>
                     </div>
                     
@@ -288,20 +288,6 @@
                 </div>
             </div>
             {% endfor %}
-        </div>
-        
-        <!-- View All Button -->
-        <div class="text-center mt-16">
-            <a href="/ofertas-black-friday" 
-               class="inline-flex items-center px-12 py-4 bg-gradient-to-r from-red-600 to-red-700 text-white font-bold rounded-xl hover:shadow-2xl hover:shadow-red-500/40 transition-all duration-300 transform hover:scale-105 border border-red-500">
-                <svg class="w-6 h-6 mr-3" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M12,2L13.09,8.26L22,9L13.09,9.74L12,16L10.91,9.74L2,9L10.91,8.26L12,2Z"/>
-                </svg>
-                <span>VER TODAS LAS OFERTAS BLACK</span>
-                <svg class="w-6 h-6 ml-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
-                </svg>
-            </a>
         </div>
     </div>
 </section>
