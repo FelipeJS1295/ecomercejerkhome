@@ -5,34 +5,23 @@
 {% block description %}Contáctanos para consultas sobre nuestros muebles tapizados. Teléfono, email y formulario de contacto disponible. {{ config.sitio_nombre or 'JerkHome' }} - La Pintana, Santiago.{% endblock %}
 
 {% block content %}
-<!-- Hero Section - Reduced Height -->
+<!-- Hero Section -->
 <section class="bg-gradient-to-br from-secondary-gray via-tertiary-gray to-primary-black py-12 lg:py-16 relative overflow-hidden">
-    <!-- Background Pattern -->
-    <div class="absolute inset-0 opacity-10">
-        <div class="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg width="80" height="80" viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg"%3E%3Cg fill="none" fill-rule="evenodd"%3E%3Cg fill="%23ff6b35" fill-opacity="0.1"%3E%3Ccircle cx="40" cy="40" r="2"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')]"></div>
-    </div>
-    
     <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="text-center">
-            <!-- Contact Icon -->
             <div class="w-16 h-16 bg-gradient-to-br from-accent-orange to-accent-red rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg">
                 <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
                 </svg>
             </div>
-            
-            <h1 class="text-3xl md:text-4xl lg:text-5xl font-bold text-text-light mb-4">
-                Contáctanos
-            </h1>
-            <p class="text-lg md:text-xl text-text-gray max-w-2xl mx-auto">
-                Estamos aquí para ayudarte con cualquier consulta sobre nuestros muebles
-            </p>
+            <h1 class="text-3xl md:text-4xl lg:text-5xl font-bold text-text-light mb-4">Contáctanos</h1>
+            <p class="text-lg md:text-xl text-text-gray max-w-2xl mx-auto">Estamos aquí para ayudarte con cualquier consulta sobre nuestros muebles</p>
             <div class="w-20 h-1 bg-gradient-to-r from-accent-orange to-accent-red mx-auto mt-6"></div>
         </div>
     </div>
 </section>
 
-<!-- Success Message -->
+<!-- Success/Error Messages -->
 {% if success %}
 <section class="bg-green-600 py-4">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -46,7 +35,6 @@
 </section>
 {% endif %}
 
-<!-- Error Message -->
 {% if error %}
 <section class="bg-red-600 py-4">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -60,16 +48,14 @@
 </section>
 {% endif %}
 
-<!-- Contact Information and Form -->
+<!-- Contact Section -->
 <section class="py-16 lg:py-24 bg-primary-black">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="grid lg:grid-cols-2 gap-12">
             
             <!-- Contact Information -->
             <div>
-                <h2 class="text-3xl md:text-4xl font-bold text-text-light mb-8">
-                    Información de Contacto
-                </h2>
+                <h2 class="text-3xl md:text-4xl font-bold text-text-light mb-8">Información de Contacto</h2>
                 
                 <div class="space-y-8">
                     <!-- Address -->
@@ -81,9 +67,7 @@
                             </svg>
                         </div>
                         <div>
-                            <h3 class="text-xl font-semibold text-text-light mb-2 group-hover:text-accent-orange transition-colors">
-                                Dirección
-                            </h3>
+                            <h3 class="text-xl font-semibold text-text-light mb-2">Dirección</h3>
                             <p class="text-text-gray">{{ config.contacto_direccion or 'Los Paltos 2769, La Pintana, Santiago' }}</p>
                         </div>
                     </div>
@@ -96,39 +80,14 @@
                             </svg>
                         </div>
                         <div>
-                            <h3 class="text-xl font-semibold text-text-light mb-2 group-hover:text-accent-orange transition-colors">
-                                Email
-                            </h3>
+                            <h3 class="text-xl font-semibold text-text-light mb-2">Email</h3>
                             <p class="text-text-gray">
-                                <a href="mailto:{{ config.contacto_email or 'contacto@jerkhome.cl' }}" 
-                                   class="hover:text-accent-orange transition-colors">
+                                <a href="mailto:{{ config.contacto_email or 'contacto@jerkhome.cl' }}" class="hover:text-accent-orange transition-colors">
                                     {{ config.contacto_email or 'contacto@jerkhome.cl' }}
                                 </a>
                             </p>
                         </div>
                     </div>
-                    
-                    <!-- Phone -->
-                    {% if config.contacto_telefono %}
-                    <div class="flex items-start group">
-                        <div class="w-14 h-14 bg-gradient-to-br from-green-500 to-green-600 rounded-xl flex items-center justify-center mr-4 flex-shrink-0 group-hover:scale-110 transition-transform duration-300 shadow-lg">
-                            <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path>
-                            </svg>
-                        </div>
-                        <div>
-                            <h3 class="text-xl font-semibold text-text-light mb-2 group-hover:text-accent-orange transition-colors">
-                                Teléfono
-                            </h3>
-                            <p class="text-text-gray">
-                                <a href="tel:{{ config.contacto_telefono }}" 
-                                   class="hover:text-accent-orange transition-colors">
-                                    {{ config.contacto_telefono }}
-                                </a>
-                            </p>
-                        </div>
-                    </div>
-                    {% endif %}
                     
                     <!-- Hours -->
                     <div class="flex items-start group">
@@ -138,99 +97,77 @@
                             </svg>
                         </div>
                         <div>
-                            <h3 class="text-xl font-semibold text-text-light mb-2 group-hover:text-accent-orange transition-colors">
-                                Horarios de Atención
-                            </h3>
-                            <p class="text-text-gray whitespace-pre-line">{{ config.contacto_horarios or 'Lunes a Viernes: 9:00 - 18:00 hrs\nSábados: 9:00 - 14:00 hrs' }}</p>
+                            <h3 class="text-xl font-semibold text-text-light mb-2">Horarios de Atención</h3>
+                            <p class="text-text-gray">{{ config.contacto_horarios or 'Lunes a Viernes: 9:00 - 18:00 hrs' }}</p>
                         </div>
-                    </div>
-                </div>
-                
-                <!-- Social Media -->
-                <div class="mt-12">
-                    <h3 class="text-xl font-semibold text-text-light mb-6">Síguenos en Redes Sociales</h3>
-                    <div class="flex space-x-4">
-                        <!-- Facebook -->
-                        {% if config.facebook_url %}
-                        <a href="{{ config.facebook_url }}" target="_blank" class="w-12 h-12 bg-blue-600 rounded-xl flex items-center justify-center text-white hover:bg-blue-700 transition-colors shadow-lg">
-                            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-                                <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
-                            </svg>
-                        </a>
-                        {% else %}
-                        <div class="w-12 h-12 bg-blue-600/50 rounded-xl flex items-center justify-center text-white/60 shadow-lg relative">
-                            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-                                <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
-                            </svg>
-                            <span class="absolute -bottom-6 left-1/2 transform -translate-x-1/2 text-xs text-text-gray whitespace-nowrap">Pronto</span>
-                        </div>
-                        {% endif %}
-                        
-                        <!-- Instagram -->
-                        {% if config.instagram_url %}
-                        <a href="{{ config.instagram_url }}" target="_blank" class="w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-500 rounded-xl flex items-center justify-center text-white hover:from-purple-600 hover:to-pink-600 transition-colors shadow-lg">
-                            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-                                <path d="M12.017 0C5.396 0 .029 5.367.029 11.987c0 6.62 5.367 11.987 11.988 11.987 6.62 0 11.987-5.367 11.987-11.987C24.014 5.367 18.637.001 12.017.001zM8.449 16.988c-1.297 0-2.448-.49-3.316-1.296C4.343 14.928 3.9 13.748 3.9 12.45c0-1.297.442-2.477 1.233-3.341.868-.806 2.019-1.296 3.316-1.296s2.448.49 3.316 1.296c.791.864 1.233 2.044 1.233 3.341 0 1.298-.442 2.478-1.233 3.342-.868.806-2.019 1.296-3.316 1.296zm7.718-1.296c-.868.806-2.019 1.296-3.316 1.296s-2.448-.49-3.316-1.296c-.791-.864-1.233-2.044-1.233-3.342 0-1.297.442-2.477 1.233-3.341.868-.806 2.019-1.296 3.316-1.296s2.448.49 3.316 1.296c.791.864 1.233 2.044 1.233 3.341 0 1.298-.442 2.478-1.233 3.342z"/>
-                            </svg>
-                        </a>
-                        {% else %}
-                        <div class="w-12 h-12 bg-gradient-to-br from-purple-500/50 to-pink-500/50 rounded-xl flex items-center justify-center text-white/60 shadow-lg relative">
-                            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-                                <path d="M12.017 0C5.396 0 .029 5.367.029 11.987c0 6.62 5.367 11.987 11.988 11.987 6.62 0 11.987-5.367 11.987-11.987C24.014 5.367 18.637.001 12.017.001zM8.449 16.988c-1.297 0-2.448-.49-3.316-1.296C4.343 14.928 3.9 13.748 3.9 12.45c0-1.297.442-2.477 1.233-3.341.868-.806 2.019-1.296 3.316-1.296s2.448.49 3.316 1.296c.791.864 1.233 2.044 1.233 3.341 0 1.298-.442 2.478-1.233 3.342-.868.806-2.019 1.296-3.316 1.296zm7.718-1.296c-.868.806-2.019 1.296-3.316 1.296s-2.448-.49-3.316-1.296c-.791-.864-1.233-2.044-1.233-3.342 0-1.297.442-2.477 1.233-3.341.868-.806 2.019-1.296 3.316-1.296s2.448.49 3.316 1.296c.791.864 1.233 2.044 1.233 3.341 0 1.298-.442 2.478-1.233 3.342z"/>
-                            </svg>
-                            <span class="absolute -bottom-6 left-1/2 transform -translate-x-1/2 text-xs text-text-gray whitespace-nowrap">Pronto</span>
-                        </div>
-                        {% endif %}
-                        
-                        <!-- WhatsApp -->
-                        {% if config.whatsapp_number %}
-                        <a href="https://wa.me/{{ config.whatsapp_number.replace('+', '').replace(' ', '') }}?text=Hola, me gustaría hacer una consulta sobre sus muebles." target="_blank" class="w-12 h-12 bg-green-500 rounded-xl flex items-center justify-center text-white hover:bg-green-600 transition-colors shadow-lg">
-                            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-                                <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893A11.821 11.821 0 0020.885 3.085"/>
-                            </svg>
-                        </a>
-                        {% else %}
-                        <div class="w-12 h-12 bg-green-500/50 rounded-xl flex items-center justify-center text-white/60 shadow-lg relative">
-                            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-                                <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893A11.821 11.821 0 0020.885 3.085"/>
-                            </svg>
-                            <span class="absolute -bottom-6 left-1/2 transform -translate-x-1/2 text-xs text-text-gray whitespace-nowrap">Pronto</span>
-                        </div>
-                        {% endif %}
                     </div>
                 </div>
             </div>
             
             <!-- Contact Form -->
             <div class="bg-secondary-gray rounded-2xl p-8 border border-border-gray">
-                <h2 class="text-3xl md:text-4xl font-bold text-text-light mb-8">
-                    Envíanos un Mensaje
-                </h2>
+                <h2 class="text-3xl md:text-4xl font-bold text-text-light mb-8">Envíanos un Mensaje</h2>
                 
-                <form method="POST" action="/contacto" class="space-y-6" id="contact-form">
+                <form method="POST" action="/contacto" class="space-y-6">
+                    <!-- Nombre y Teléfono -->
                     <div class="grid md:grid-cols-2 gap-6">
                         <div>
-                            <label for="nombre" class="block text-sm font-medium text-text-light mb-2">
-                                Nombre *
-                            </label>
+                            <label for="nombre" class="block text-sm font-medium text-text-light mb-2">Nombre *</label>
                             <input type="text" id="nombre" name="nombre" required
                                    value="{{ form_data.nombre if form_data else '' }}"
                                    class="w-full px-4 py-3 bg-tertiary-gray border border-border-gray rounded-lg text-text-light placeholder-text-gray focus:ring-2 focus:ring-accent-orange focus:border-transparent transition-all duration-200"
                                    placeholder="Tu nombre completo">
-                            <div class="text-xs text-text-gray" id="mensaje-counter">0 / 2000 caracteres</div>
+                        </div>
+                        
+                        <div>
+                            <label for="telefono" class="block text-sm font-medium text-text-light mb-2">Teléfono</label>
+                            <input type="tel" id="telefono" name="telefono"
+                                   value="{{ form_data.telefono if form_data else '' }}"
+                                   class="w-full px-4 py-3 bg-tertiary-gray border border-border-gray rounded-lg text-text-light placeholder-text-gray focus:ring-2 focus:ring-accent-orange focus:border-transparent transition-all duration-200"
+                                   placeholder="+56 9 1234 5678">
                         </div>
                     </div>
                     
-                    <button type="submit" id="submit-btn"
-                            class="w-full bg-gradient-to-r from-accent-orange to-accent-red text-white py-4 px-6 rounded-lg font-semibold hover:shadow-lg hover:shadow-accent-orange/25 transition-all duration-200 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none">
+                    <!-- Email -->
+                    <div>
+                        <label for="email" class="block text-sm font-medium text-text-light mb-2">Email *</label>
+                        <input type="email" id="email" name="email" required
+                               value="{{ form_data.email if form_data else '' }}"
+                               class="w-full px-4 py-3 bg-tertiary-gray border border-border-gray rounded-lg text-text-light placeholder-text-gray focus:ring-2 focus:ring-accent-orange focus:border-transparent transition-all duration-200"
+                               placeholder="tu@email.com">
+                    </div>
+                    
+                    <!-- Asunto -->
+                    <div>
+                        <label for="asunto" class="block text-sm font-medium text-text-light mb-2">Asunto *</label>
+                        <select id="asunto" name="asunto" required
+                                class="w-full px-4 py-3 bg-tertiary-gray border border-border-gray rounded-lg text-text-light focus:ring-2 focus:ring-accent-orange focus:border-transparent transition-all duration-200">
+                            <option value="">Selecciona un asunto</option>
+                            <option value="Consulta de Productos" {{ 'selected' if form_data and form_data.asunto == 'Consulta de Productos' else '' }}>Consulta de Productos</option>
+                            <option value="Cotización" {{ 'selected' if form_data and form_data.asunto == 'Cotización' else '' }}>Cotización</option>
+                            <option value="Servicio Post-Venta" {{ 'selected' if form_data and form_data.asunto == 'Servicio Post-Venta' else '' }}>Servicio Post-Venta</option>
+                            <option value="Reclamo" {{ 'selected' if form_data and form_data.asunto == 'Reclamo' else '' }}>Reclamo</option>
+                            <option value="Sugerencia" {{ 'selected' if form_data and form_data.asunto == 'Sugerencia' else '' }}>Sugerencia</option>
+                            <option value="Otro" {{ 'selected' if form_data and form_data.asunto == 'Otro' else '' }}>Otro</option>
+                        </select>
+                    </div>
+                    
+                    <!-- Mensaje -->
+                    <div>
+                        <label for="mensaje" class="block text-sm font-medium text-text-light mb-2">Mensaje *</label>
+                        <textarea id="mensaje" name="mensaje" rows="6" required
+                                  placeholder="Escribe tu mensaje aquí..."
+                                  class="w-full px-4 py-3 bg-tertiary-gray border border-border-gray rounded-lg text-text-light placeholder-text-gray focus:ring-2 focus:ring-accent-orange focus:border-transparent transition-all duration-200 resize-none">{{ form_data.mensaje if form_data else '' }}</textarea>
+                        <div class="text-xs text-text-gray mt-1">Mínimo 10 caracteres</div>
+                    </div>
+                    
+                    <!-- Submit Button -->
+                    <button type="submit" 
+                            class="w-full bg-gradient-to-r from-accent-orange to-accent-red text-white py-4 px-6 rounded-lg font-semibold hover:shadow-lg hover:shadow-accent-orange/25 transition-all duration-200 transform hover:scale-105">
                         <svg class="w-5 h-5 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
                         </svg>
-                        <span id="submit-text">Enviar Mensaje</span>
-                        <svg class="w-5 h-5 inline ml-2 animate-spin hidden" id="loading-spinner" fill="none" viewBox="0 0 24 24">
-                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                        </svg>
+                        Enviar Mensaje
                     </button>
                 </form>
                 
@@ -263,372 +200,5 @@
         </div>
     </div>
 </section>
-
-<!-- Location Map -->
-<section class="py-16 lg:py-24 bg-secondary-gray">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="text-center mb-12">
-            <h2 class="text-3xl md:text-4xl font-bold text-text-light mb-4">
-                Nuestra Ubicación
-            </h2>
-            <p class="text-lg text-text-gray">
-                Visítanos en nuestro showroom y taller
-            </p>
-            <div class="w-24 h-1 bg-gradient-to-r from-accent-orange to-accent-red mx-auto mt-6"></div>
-        </div>
-        
-        <!-- Google Maps Container -->
-        <div class="bg-tertiary-gray rounded-2xl overflow-hidden border border-border-gray relative">
-            <div class="relative h-96">
-                <!-- Google Maps Embed -->
-                <iframe 
-                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3323.8762541152447!2d-70.63439492481943!3d-33.59495007350983!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x9662d6f8e1e5c8a3%3A0x5a8b4c0f8a2b6d7e!2sLos%20Paltos%202769%2C%20La%20Pintana%2C%20Regi%C3%B3n%20Metropolitana%2C%20Chile!5e0!3m2!1ses!2scl!4v1699999999999!5m2!1ses!2scl"
-                    width="100%" 
-                    height="384" 
-                    style="border:0; filter: grayscale(20%) brightness(80%) contrast(120%);" 
-                    allowfullscreen="" 
-                    loading="lazy" 
-                    referrerpolicy="no-referrer-when-downgrade"
-                    class="w-full h-full">
-                </iframe>
-                
-                <!-- Map Overlay with Info -->
-                <div class="absolute top-4 left-4 bg-secondary-gray/95 backdrop-blur-sm rounded-xl p-4 border border-border-gray shadow-lg">
-                    <div class="flex items-center">
-                        <div class="w-10 h-10 bg-gradient-to-br from-accent-orange to-accent-red rounded-lg flex items-center justify-center mr-3">
-                            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                            </svg>
-                        </div>
-                        <div>
-                            <p class="text-sm font-semibold text-text-light">{{ config.sitio_nombre or 'JerkHome' }}</p>
-                            <p class="text-xs text-text-gray">{{ config.contacto_direccion or 'Los Paltos 2769, La Pintana' }}</p>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Directions Button -->
-                <div class="absolute bottom-4 right-4">
-                    <a href="https://www.google.com/maps/dir//{{ config.contacto_direccion or 'Los+Paltos+2769,+La+Pintana,+Región+Metropolitana,+Chile' }}" 
-                       target="_blank"
-                       class="inline-flex items-center px-4 py-2 bg-accent-orange text-white rounded-lg hover:bg-accent-red transition-all duration-200 transform hover:scale-105 shadow-lg text-sm font-medium">
-                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"></path>
-                        </svg>
-                        Cómo llegar
-                    </a>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- FAQ Section -->
-<section class="py-16 lg:py-24 bg-primary-black">
-    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="text-center mb-12">
-            <h2 class="text-3xl md:text-4xl font-bold text-text-light mb-4">
-                Preguntas Frecuentes
-            </h2>
-            <p class="text-lg text-text-gray">
-                Respuestas a las consultas más comunes sobre nuestros muebles
-            </p>
-            <div class="w-24 h-1 bg-gradient-to-r from-accent-orange to-accent-red mx-auto mt-6"></div>
-        </div>
-
-        <div class="space-y-4">
-            <!-- FAQ Item 1 -->
-            <div class="bg-secondary-gray rounded-lg border border-border-gray overflow-hidden">
-                <button class="w-full px-6 py-4 text-left flex items-center justify-between hover:bg-tertiary-gray transition-colors focus:outline-none focus:bg-tertiary-gray" onclick="toggleFaq(1)">
-                    <span class="font-semibold text-text-light">¿Hacen muebles a medida?</span>
-                    <svg class="w-5 h-5 text-accent-orange transform transition-transform duration-200" id="faq-icon-1">
-                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" fill="none"/>
-                    </svg>
-                </button>
-                <div class="px-6 pb-4 hidden" id="faq-content-1">
-                    <p class="text-text-gray">Sí, nos especializamos en muebles tapizados personalizados. Trabajamos contigo para crear el diseño perfecto que se adapte a tu espacio y necesidades específicas.</p>
-                </div>
-            </div>
-
-            <!-- FAQ Item 2 -->
-            <div class="bg-secondary-gray rounded-lg border border-border-gray overflow-hidden">
-                <button class="w-full px-6 py-4 text-left flex items-center justify-between hover:bg-tertiary-gray transition-colors focus:outline-none focus:bg-tertiary-gray" onclick="toggleFaq(2)">
-                    <span class="font-semibold text-text-light">¿Cuánto tiempo toma la fabricación?</span>
-                    <svg class="w-5 h-5 text-accent-orange transform transition-transform duration-200" id="faq-icon-2">
-                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" fill="none"/>
-                    </svg>
-                </button>
-                <div class="px-6 pb-4 hidden" id="faq-content-2">
-                    <p class="text-text-gray">El tiempo de fabricación varía según la complejidad del mueble, pero generalmente oscila entre 2 a 4 semanas. Te mantendremos informado sobre el progreso durante todo el proceso.</p>
-                </div>
-            </div>
-
-            <!-- FAQ Item 3 -->
-            <div class="bg-secondary-gray rounded-lg border border-border-gray overflow-hidden">
-                <button class="w-full px-6 py-4 text-left flex items-center justify-between hover:bg-tertiary-gray transition-colors focus:outline-none focus:bg-tertiary-gray" onclick="toggleFaq(3)">
-                    <span class="font-semibold text-text-light">¿Qué tipo de garantía ofrecen?</span>
-                    <svg class="w-5 h-5 text-accent-orange transform transition-transform duration-200" id="faq-icon-3">
-                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" fill="none"/>
-                    </svg>
-                </button>
-                <div class="px-6 pb-4 hidden" id="faq-content-3">
-                    <p class="text-text-gray">Ofrecemos garantía de 1 año en estructura y 6 meses en tapizado. Además, brindamos servicio de mantenimiento y reparación post-venta.</p>
-                </div>
-            </div>
-
-            <!-- FAQ Item 4 -->
-            <div class="bg-secondary-gray rounded-lg border border-border-gray overflow-hidden">
-                <button class="w-full px-6 py-4 text-left flex items-center justify-between hover:bg-tertiary-gray transition-colors focus:outline-none focus:bg-tertiary-gray" onclick="toggleFaq(4)">
-                    <span class="font-semibold text-text-light">¿Realizan entregas a domicilio?</span>
-                    <svg class="w-5 h-5 text-accent-orange transform transition-transform duration-200" id="faq-icon-4">
-                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" fill="none"/>
-                    </svg>
-                </button>
-                <div class="px-6 pb-4 hidden" id="faq-content-4">
-                    <p class="text-text-gray">Sí, realizamos entregas en Santiago y alrededores. El costo de entrega se calcula según la distancia y el tamaño del mueble. También ofrecemos servicio de instalación.</p>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-
-<script>
-// Validación del formulario en tiempo real
-document.addEventListener('DOMContentLoaded', function() {
-    const form = document.getElementById('contact-form');
-    const submitBtn = document.getElementById('submit-btn');
-    const submitText = document.getElementById('submit-text');
-    const loadingSpinner = document.getElementById('loading-spinner');
-    
-    // Elementos del formulario
-    const nombreInput = document.getElementById('nombre');
-    const telefonoInput = document.getElementById('telefono');
-    const emailInput = document.getElementById('email');
-    const asuntoSelect = document.getElementById('asunto');
-    const mensajeTextarea = document.getElementById('mensaje');
-    
-    // Contadores y validadores
-    const mensajeCounter = document.getElementById('mensaje-counter');
-    
-    // Funciones de validación
-    function validateNombre() {
-        const value = nombreInput.value.trim();
-        const errorElement = document.getElementById('nombre-error');
-        
-        if (value.length < 2) {
-            showError(errorElement, 'El nombre debe tener al menos 2 caracteres');
-            return false;
-        } else if (value.length > 100) {
-            showError(errorElement, 'El nombre no puede exceder 100 caracteres');
-            return false;
-        } else {
-            hideError(errorElement);
-            return true;
-        }
-    }
-    
-    function validateTelefono() {
-        const value = telefonoInput.value.trim();
-        const errorElement = document.getElementById('telefono-error');
-        
-        if (value && !/^[\d\s\-\+\(\)]{8,20}$/.test(value)) {
-            showError(errorElement, 'Formato de teléfono no válido');
-            return false;
-        } else {
-            hideError(errorElement);
-            return true;
-        }
-    }
-    
-    function validateEmail() {
-        const value = emailInput.value.trim();
-        const errorElement = document.getElementById('email-error');
-        const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-        
-        if (!emailRegex.test(value)) {
-            showError(errorElement, 'Formato de email no válido');
-            return false;
-        } else {
-            hideError(errorElement);
-            return true;
-        }
-    }
-    
-    function validateAsunto() {
-        const value = asuntoSelect.value;
-        const errorElement = document.getElementById('asunto-error');
-        
-        if (!value) {
-            showError(errorElement, 'Debes seleccionar un asunto');
-            return false;
-        } else {
-            hideError(errorElement);
-            return true;
-        }
-    }
-    
-    function validateMensaje() {
-        const value = mensajeTextarea.value.trim();
-        const errorElement = document.getElementById('mensaje-error');
-        
-        // Actualizar contador
-        mensajeCounter.textContent = `${value.length} / 2000 caracteres`;
-        
-        if (value.length < 10) {
-            showError(errorElement, 'El mensaje debe tener al menos 10 caracteres');
-            mensajeCounter.classList.add('text-red-400');
-            return false;
-        } else if (value.length > 2000) {
-            showError(errorElement, 'El mensaje no puede exceder 2000 caracteres');
-            mensajeCounter.classList.add('text-red-400');
-            return false;
-        } else {
-            hideError(errorElement);
-            mensajeCounter.classList.remove('text-red-400');
-            return true;
-        }
-    }
-    
-    function showError(element, message) {
-        element.textContent = message;
-        element.classList.remove('hidden');
-        element.parentElement.querySelector('input, select, textarea').classList.add('border-red-500');
-    }
-    
-    function hideError(element) {
-        element.classList.add('hidden');
-        element.parentElement.querySelector('input, select, textarea').classList.remove('border-red-500');
-    }
-    
-    function validateForm() {
-        const isNombreValid = validateNombre();
-        const isTelefonoValid = validateTelefono();
-        const isEmailValid = validateEmail();
-        const isAsuntoValid = validateAsunto();
-        const isMensajeValid = validateMensaje();
-        
-        const isFormValid = isNombreValid && isTelefonoValid && isEmailValid && isAsuntoValid && isMensajeValid;
-        
-        submitBtn.disabled = !isFormValid;
-        return isFormValid;
-    }
-    
-    // Event listeners para validación en tiempo real
-    if (nombreInput) nombreInput.addEventListener('input', validateForm);
-    if (telefonoInput) telefonoInput.addEventListener('input', validateForm);
-    if (emailInput) emailInput.addEventListener('input', validateForm);
-    if (asuntoSelect) asuntoSelect.addEventListener('change', validateForm);
-    if (mensajeTextarea) mensajeTextarea.addEventListener('input', validateForm);
-    
-    // Validación inicial
-    validateForm();
-    
-    // Manejo del envío del formulario
-    if (form) {
-        form.addEventListener('submit', function(e) {
-            if (!validateForm()) {
-                e.preventDefault();
-                return;
-            }
-            
-            // Mostrar estado de carga
-            submitBtn.disabled = true;
-            submitText.textContent = 'Enviando...';
-            if (loadingSpinner) loadingSpinner.classList.remove('hidden');
-        });
-    }
-    
-    // Auto-resize del textarea
-    if (mensajeTextarea) {
-        mensajeTextarea.addEventListener('input', function() {
-            this.style.height = 'auto';
-            this.style.height = this.scrollHeight + 'px';
-        });
-    }
-});
-
-// Función para toggle de FAQs
-function toggleFaq(index) {
-    const content = document.getElementById(`faq-content-${index}`);
-    const icon = document.getElementById(`faq-icon-${index}`);
-    
-    if (content && icon) {
-        if (content.classList.contains('hidden')) {
-            content.classList.remove('hidden');
-            icon.style.transform = 'rotate(180deg)';
-        } else {
-            content.classList.add('hidden');
-            icon.style.transform = 'rotate(0deg)';
-        }
-    }
-}
-
-// Smooth scrolling para enlaces internos
-document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-    anchor.addEventListener('click', function (e) {
-        e.preventDefault();
-        const target = document.querySelector(this.getAttribute('href'));
-        if (target) {
-            target.scrollIntoView({
-                behavior: 'smooth',
-                block: 'start'
-            });
-        }
-    });
-});
-
-// Animaciones al hacer scroll
-const observerOptions = {
-    threshold: 0.1,
-    rootMargin: '0px 0px -50px 0px'
-};
-
-const observer = new IntersectionObserver(function(entries) {
-    entries.forEach(entry => {
-        if (entry.isIntersecting) {
-            entry.target.classList.add('animate-fade-in');
-        }
-    });
-}, observerOptions);
-
-// Observar elementos para animación
-document.querySelectorAll('.group, .bg-secondary-gray, .bg-tertiary-gray').forEach(el => {
-    observer.observe(el);
-});
-</script>
-
-<style>
-@keyframes fade-in {
-    from {
-        opacity: 0;
-        transform: translateY(20px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-.animate-fade-in {
-    animation: fade-in 0.6s ease-out forwards;
-}
-
-/* Mejoras visuales para el formulario */
-input:focus, select:focus, textarea:focus {
-    box-shadow: 0 0 0 3px rgba(251, 146, 60, 0.1);
-}
-
-/* Estilos para el mapa responsivo */
-@media (max-width: 768px) {
-    .relative.h-96 {
-        height: 300px;
-    }
-}
-
-/* Animación suave para los FAQs */
-#faq-content-1, #faq-content-2, #faq-content-3, #faq-content-4 {
-    transition: all 0.3s ease;
-}
-</style>
 {% endblock %}
+
