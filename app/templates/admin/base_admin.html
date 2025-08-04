@@ -132,25 +132,48 @@
         
         <!-- Page Content -->
         <main class="p-6">
-            <!-- Alertas/Mensajes -->
-            {% if get_flashed_messages() %}
+            <!-- Alertas/Mensajes - VERSIÓN CORREGIDA PARA FASTAPI -->
+            {% if request.query_params.get('success') %}
             <div class="mb-6">
-                {% for category, message in get_flashed_messages(with_categories=true) %}
-                <div class="alert alert-{{ category }} mb-4 p-4 rounded-lg {% if category == 'error' %}bg-red-900 border border-red-700 text-red-100{% elif category == 'success' %}bg-green-900 border border-green-700 text-green-100{% elif category == 'warning' %}bg-yellow-900 border border-yellow-700 text-yellow-100{% else %}bg-blue-900 border border-blue-700 text-blue-100{% endif %}">
+                <div class="alert alert-success mb-4 p-4 rounded-lg bg-green-900 border border-green-700 text-green-100">
                     <div class="flex items-center">
-                        {% if category == 'error' %}
-                        <i class="fas fa-exclamation-triangle mr-3"></i>
-                        {% elif category == 'success' %}
                         <i class="fas fa-check-circle mr-3"></i>
-                        {% elif category == 'warning' %}
-                        <i class="fas fa-exclamation-circle mr-3"></i>
-                        {% else %}
-                        <i class="fas fa-info-circle mr-3"></i>
-                        {% endif %}
-                        {{ message }}
+                        {{ request.query_params.get('success') }}
                     </div>
                 </div>
-                {% endfor %}
+            </div>
+            {% endif %}
+
+            {% if request.query_params.get('error') %}
+            <div class="mb-6">
+                <div class="alert alert-error mb-4 p-4 rounded-lg bg-red-900 border border-red-700 text-red-100">
+                    <div class="flex items-center">
+                        <i class="fas fa-exclamation-triangle mr-3"></i>
+                        {{ request.query_params.get('error') }}
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            {% if request.query_params.get('warning') %}
+            <div class="mb-6">
+                <div class="alert alert-warning mb-4 p-4 rounded-lg bg-yellow-900 border border-yellow-700 text-yellow-100">
+                    <div class="flex items-center">
+                        <i class="fas fa-exclamation-circle mr-3"></i>
+                        {{ request.query_params.get('warning') }}
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            {% if request.query_params.get('info') %}
+            <div class="mb-6">
+                <div class="alert alert-info mb-4 p-4 rounded-lg bg-blue-900 border border-blue-700 text-blue-100">
+                    <div class="flex items-center">
+                        <i class="fas fa-info-circle mr-3"></i>
+                        {{ request.query_params.get('info') }}
+                    </div>
+                </div>
             </div>
             {% endif %}
 
@@ -191,6 +214,7 @@
     setInterval(updateContactosBadge, 30000);
     </script>
     
-    <script src="{{ url_for('static', path='/js/admin/admin.js') }}"></script>
+    <!-- ✨ CORREGIDO - Ruta estática sin url_for -->
+    <script src="/static/js/admin/admin.js"></script>
 </body>
 </html>
