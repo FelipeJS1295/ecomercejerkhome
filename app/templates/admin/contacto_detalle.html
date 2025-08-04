@@ -1,0 +1,374 @@
+{% extends "admin/base_admin.html" %}
+
+{% block title %}Mensaje #{{ contacto.id }} - Admin JerkHome{% endblock %}
+{% block page_title %}Mensaje #{{ contacto.id }}{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+    <!-- Header con navegación -->
+    <div class="flex items-center justify-between">
+        <div class="flex items-center space-x-4">
+            <a href="/admin/contactos" 
+               class="text-gray-400 hover:text-white transition-colors flex items-center">
+                <i class="fas fa-arrow-left w-6 h-6 mr-2"></i>
+                Volver a Mensajes
+            </a>
+            <div>
+                <h1 class="text-2xl font-bold text-white">Mensaje #{{ contacto.id }}</h1>
+                <p class="text-gray-400">{{ contacto.asunto }}</p>
+            </div>
+        </div>
+        
+        <!-- Estado actual -->
+        <div>
+            {% if contacto.estado == 'pendiente' %}
+            <span class="inline-flex px-3 py-1 text-sm font-semibold bg-yellow-500/20 text-yellow-400 rounded-full">
+                <i class="fas fa-clock mr-2"></i>Pendiente
+            </span>
+            {% elif contacto.estado == 'en_proceso' %}
+            <span class="inline-flex px-3 py-1 text-sm font-semibold bg-orange-500/20 text-orange-400 rounded-full">
+                <i class="fas fa-hourglass-half mr-2"></i>En Proceso
+            </span>
+            {% elif contacto.estado == 'resuelto' %}
+            <span class="inline-flex px-3 py-1 text-sm font-semibold bg-green-500/20 text-green-400 rounded-full">
+                <i class="fas fa-check mr-2"></i>Resuelto
+            </span>
+            {% endif %}
+        </div>
+    </div>
+    
+    <div class="grid lg:grid-cols-3 gap-6">
+        <!-- Información del contacto -->
+        <div class="lg:col-span-2 space-y-6">
+            <!-- Datos personales -->
+            <div class="bg-admin-sidebar rounded-lg p-6 border border-gray-600">
+                <h2 class="text-lg font-semibold text-white mb-4 flex items-center">
+                    <i class="fas fa-user mr-2 text-admin-accent"></i>
+                    Información del Contacto
+                </h2>
+                <div class="grid md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-300 mb-1">Nombre</label>
+                        <p class="text-white bg-admin-dark p-3 rounded border border-gray-600">{{ contacto.nombre }}</p>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-300 mb-1">Email</label>
+                        <p class="text-white bg-admin-dark p-3 rounded border border-gray-600">
+                            <a href="mailto:{{ contacto.email }}" class="text-blue-400 hover:text-blue-300 flex items-center">
+                                <i class="fas fa-envelope mr-2"></i>{{ contacto.email }}
+                            </a>
+                        </p>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-300 mb-1">Teléfono</label>
+                        <p class="text-white bg-admin-dark p-3 rounded border border-gray-600">
+                            {% if contacto.telefono %}
+                                <a href="tel:{{ contacto.telefono }}" class="text-blue-400 hover:text-blue-300 flex items-center">
+                                    <i class="fas fa-phone mr-2"></i>{{ contacto.telefono }}
+                                </a>
+                            {% else %}
+                                <span class="text-gray-400 italic">No proporcionado</span>
+                            {% endif %}
+                        </p>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-300 mb-1">Fecha de contacto</label>
+                        <p class="text-white bg-admin-dark p-3 rounded border border-gray-600">
+                            <i class="fas fa-calendar mr-2 text-admin-accent"></i>
+                            {{ contacto.fecha_creacion.strftime('%d de %B de %Y a las %H:%M') }}
+                        </p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Mensaje -->
+            <div class="bg-admin-sidebar rounded-lg p-6 border border-gray-600">
+                <h2 class="text-lg font-semibold text-white mb-4 flex items-center">
+                    <i class="fas fa-comment mr-2 text-admin-accent"></i>
+                    Mensaje
+                </h2>
+                <div class="bg-admin-dark rounded-lg p-4 border border-gray-600">
+                    <p class="text-gray-300 whitespace-pre-wrap leading-relaxed">{{ contacto.mensaje }}</p>
+                </div>
+            </div>
+            
+            <!-- Información de resolución -->
+            {% if contacto.estado == 'resuelto' and contacto.fecha_respuesta %}
+            <div class="bg-green-500/10 border border-green-500/20 rounded-lg p-6">
+                <h2 class="text-lg font-semibold text-green-400 mb-4 flex items-center">
+                    <i class="fas fa-check-circle mr-2"></i>
+                    Mensaje Resuelto
+                </h2>
+                <div class="space-y-3">
+                    <div class="grid md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-green-300 mb-1">Resuelto por</label>
+                            <p class="text-green-100">{{ contacto.respondido_por or 'Administrador' }}</p>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-green-300 mb-1">Fecha de resolución</label>
+                            <p class="text-green-100">{{ contacto.fecha_respuesta.strftime('%d/%m/%Y a las %H:%M') }}</p>
+                        </div>
+                    </div>
+                    
+                    {% if contacto.tiempo_respuesta() %}
+                    <div>
+                        <label class="block text-sm font-medium text-green-300 mb-1">Tiempo de respuesta</label>
+                        <p class="text-green-100">{{ contacto.tiempo_respuesta() }}</p>
+                    </div>
+                    {% endif %}
+                    
+                    {% if contacto.notas_internas %}
+                    <div>
+                        <label class="block text-sm font-medium text-green-300 mb-1">Notas de resolución</label>
+                        <div class="bg-green-900/30 rounded p-3 mt-2">
+                            <p class="text-green-100 whitespace-pre-wrap">{{ contacto.notas_internas }}</p>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            {% endif %}
+        </div>
+        
+        <!-- Panel de acciones -->
+        <div class="space-y-6">
+            <!-- Actualizar estado -->
+            <div class="bg-admin-sidebar rounded-lg p-6 border border-gray-600">
+                <h2 class="text-lg font-semibold text-white mb-4 flex items-center">
+                    <i class="fas fa-cogs mr-2 text-admin-accent"></i>
+                    Gestionar Mensaje
+                </h2>
+                
+                <form method="POST" action="/admin/contactos/{{ contacto.id }}/actualizar" class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-300 mb-2">Estado</label>
+                        <select name="estado" class="w-full bg-admin-dark border border-gray-600 rounded-md px-3 py-2 text-white focus:ring-2 focus:ring-admin-accent focus:border-transparent">
+                            <option value="pendiente" {% if contacto.estado == 'pendiente' %}selected{% endif %}>
+                                Pendiente
+                            </option>
+                            <option value="en_proceso" {% if contacto.estado == 'en_proceso' %}selected{% endif %}>
+                                En Proceso
+                            </option>
+                            <option value="resuelto" {% if contacto.estado == 'resuelto' %}selected{% endif %}>
+                                Resuelto
+                            </option>
+                        </select>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-300 mb-2">Notas internas</label>
+                        <textarea name="notas_internas" rows="4" 
+                                  class="w-full bg-admin-dark border border-gray-600 rounded-md px-3 py-2 text-white placeholder-gray-400 focus:ring-2 focus:ring-admin-accent focus:border-transparent"
+                                  placeholder="Agrega notas sobre el seguimiento, resolución o comentarios internos...">{{ contacto.notas_internas or '' }}</textarea>
+                        <p class="text-xs text-gray-400 mt-1">Estas notas son solo para uso interno y no son visibles para el cliente.</p>
+                    </div>
+                    
+                    <button type="submit" 
+                            class="w-full bg-admin-accent hover:bg-orange-600 text-white py-3 px-4 rounded-md transition-colors font-medium">
+                        <i class="fas fa-save mr-2"></i>
+                        Actualizar Mensaje
+                    </button>
+                </form>
+            </div>
+            
+            <!-- Acciones rápidas -->
+            <div class="bg-admin-sidebar rounded-lg p-6 border border-gray-600">
+                <h2 class="text-lg font-semibold text-white mb-4 flex items-center">
+                    <i class="fas fa-bolt mr-2 text-admin-accent"></i>
+                    Acciones Rápidas
+                </h2>
+                
+                <div class="space-y-3">
+                    <!-- Responder por email -->
+                    <a href="mailto:{{ contacto.email }}?subject=Re: {{ contacto.asunto }}&body=Hola {{ contacto.nombre }},%0D%0A%0D%0AGracias por contactarnos.%0D%0A%0D%0ASaludos,%0D%0AEquipo JerkHome" 
+                       class="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 px-4 rounded-md transition-colors flex items-center justify-center font-medium">
+                        <i class="fas fa-reply mr-2"></i>
+                        Responder por Email
+                    </a>
+                    
+                    <!-- Llamar por teléfono -->
+                    {% if contacto.telefono %}
+                    <a href="tel:{{ contacto.telefono }}" 
+                       class="w-full bg-green-600 hover:bg-green-700 text-white py-3 px-4 rounded-md transition-colors flex items-center justify-center font-medium">
+                        <i class="fas fa-phone mr-2"></i>
+                        Llamar
+                    </a>
+                    {% endif %}
+                    
+                    <!-- Copiar información -->
+                    <button onclick="copyContactInfo()" 
+                            class="w-full bg-purple-600 hover:bg-purple-700 text-white py-3 px-4 rounded-md transition-colors flex items-center justify-center font-medium">
+                        <i class="fas fa-copy mr-2"></i>
+                        Copiar Información
+                    </button>
+                    
+                    <!-- Eliminar mensaje -->
+                    <form method="POST" action="/admin/contactos/{{ contacto.id }}/eliminar" 
+                          onsubmit="return confirm('¿Estás seguro de que quieres eliminar este mensaje? Esta acción no se puede deshacer.')" 
+                          class="w-full">
+                        <button type="submit" 
+                                class="w-full bg-admin-red hover:bg-red-700 text-white py-3 px-4 rounded-md transition-colors flex items-center justify-center font-medium">
+                            <i class="fas fa-trash mr-2"></i>
+                            Eliminar Mensaje
+                        </button>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- Información adicional -->
+            <div class="bg-admin-sidebar rounded-lg p-6 border border-gray-600">
+                <h2 class="text-lg font-semibold text-white mb-4 flex items-center">
+                    <i class="fas fa-info-circle mr-2 text-admin-accent"></i>
+                    Información Adicional
+                </h2>
+                
+                <div class="space-y-3 text-sm">
+                    <div class="flex justify-between py-2 border-b border-gray-600">
+                        <span class="text-gray-400">ID del mensaje:</span>
+                        <span class="text-white font-mono">#{{ contacto.id }}</span>
+                    </div>
+                    <div class="flex justify-between py-2 border-b border-gray-600">
+                        <span class="text-gray-400">Asunto:</span>
+                        <span class="text-white">{{ contacto.asunto }}</span>
+                    </div>
+                    <div class="flex justify-between py-2 border-b border-gray-600">
+                        <span class="text-gray-400">Fecha de creación:</span>
+                        <span class="text-white">{{ contacto.fecha_creacion.strftime('%d/%m/%Y %H:%M') }}</span>
+                    </div>
+                    {% if contacto.fecha_respuesta %}
+                    <div class="flex justify-between py-2 border-b border-gray-600">
+                        <span class="text-gray-400">Tiempo de respuesta:</span>
+                        <span class="text-white">{{ contacto.tiempo_respuesta() }}</span>
+                    </div>
+                    {% endif %}
+                    <div class="flex justify-between py-2">
+                        <span class="text-gray-400">Caracteres del mensaje:</span>
+                        <span class="text-white">{{ contacto.mensaje|length }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function copyContactInfo() {
+    const contactInfo = `
+Mensaje de Contacto #{{ contacto.id }}
+=====================================
+
+Nombre: {{ contacto.nombre }}
+Email: {{ contacto.email }}
+{% if contacto.telefono %}Teléfono: {{ contacto.telefono }}{% endif %}
+Asunto: {{ contacto.asunto }}
+Fecha: {{ contacto.fecha_creacion.strftime('%d/%m/%Y %H:%M') }}
+Estado: {{ contacto.estado }}
+
+Mensaje:
+{{ contacto.mensaje }}
+
+{% if contacto.notas_internas %}
+Notas Internas:
+{{ contacto.notas_internas }}
+{% endif %}
+    `.trim();
+    
+    if (navigator.clipboard) {
+        navigator.clipboard.writeText(contactInfo).then(function() {
+            // Mostrar notificación de éxito
+            showNotification('Información copiada al portapapeles', 'success');
+        }).catch(function() {
+            fallbackCopyTextToClipboard(contactInfo);
+        });
+    } else {
+        fallbackCopyTextToClipboard(contactInfo);
+    }
+}
+
+function fallbackCopyTextToClipboard(text) {
+    const textArea = document.createElement("textarea");
+    textArea.value = text;
+    textArea.style.top = "0";
+    textArea.style.left = "0";
+    textArea.style.position = "fixed";
+    
+    document.body.appendChild(textArea);
+    textArea.focus();
+    textArea.select();
+    
+    try {
+        const successful = document.execCommand('copy');
+        if (successful) {
+            showNotification('Información copiada al portapapeles', 'success');
+        } else {
+            showNotification('Error al copiar información', 'error');
+        }
+    } catch (err) {
+        showNotification('Error al copiar información', 'error');
+    }
+    
+    document.body.removeChild(textArea);
+}
+
+function showNotification(message, type = 'info') {
+    // Crear elemento de notificación
+    const notification = document.createElement('div');
+    notification.className = `fixed top-4 right-4 z-50 p-4 rounded-lg shadow-lg transition-all duration-300 transform translate-x-full`;
+    
+    if (type === 'success') {
+        notification.className += ' bg-green-600 text-white';
+        notification.innerHTML = `<i class="fas fa-check-circle mr-2"></i>${message}`;
+    } else if (type === 'error') {
+        notification.className += ' bg-red-600 text-white';
+        notification.innerHTML = `<i class="fas fa-exclamation-circle mr-2"></i>${message}`;
+    } else {
+        notification.className += ' bg-blue-600 text-white';
+        notification.innerHTML = `<i class="fas fa-info-circle mr-2"></i>${message}`;
+    }
+    
+    document.body.appendChild(notification);
+    
+    // Animar entrada
+    setTimeout(() => {
+        notification.classList.remove('translate-x-full');
+    }, 100);
+    
+    // Animar salida y remover
+    setTimeout(() => {
+        notification.classList.add('translate-x-full');
+        setTimeout(() => {
+            document.body.removeChild(notification);
+        }, 300);
+    }, 3000);
+}
+
+// Función para auto-guardar notas mientras se escriben (opcional)
+let saveTimeout;
+const notasTextarea = document.querySelector('textarea[name="notas_internas"]');
+if (notasTextarea) {
+    notasTextarea.addEventListener('input', function() {
+        clearTimeout(saveTimeout);
+        
+        // Mostrar indicador de que se están guardando los cambios
+        const indicator = document.getElementById('auto-save-indicator');
+        if (indicator) {
+            indicator.textContent = 'Guardando...';
+            indicator.className = 'text-yellow-400 text-xs mt-1';
+        }
+        
+        saveTimeout = setTimeout(() => {
+            // Aquí podrías implementar auto-guardado con AJAX
+            if (indicator) {
+                indicator.textContent = 'Cambios guardados automáticamente';
+                indicator.className = 'text-green-400 text-xs mt-1';
+                
+                setTimeout(() => {
+                    indicator.textContent = '';
+                }, 2000);
+            }
+        }, 2000);
+    });
+}
+</script>
+{% endblock %}

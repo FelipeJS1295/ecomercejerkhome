@@ -5,6 +5,9 @@ from .ventas import Venta, EstadoPago, EstadoVenta
 from .transbank import TransaccionWebpay, LogWebpay, ConfiguracionWebpay
 from .usuario import Usuario, RolUsuario, EstadoUsuario
 
+# ✨ NUEVA IMPORTACIÓN - Modelo de contacto
+from .contacto import Contacto, ContactoCreate, ContactoUpdate, ContactoResponse, ContactoStats
+
 __all__ = [
     "Categoria", 
     "Producto", 
@@ -17,5 +20,10 @@ __all__ = [
     "ConfiguracionWebpay",
     "Usuario",
     "RolUsuario",
-    "EstadoUsuario"
+    "EstadoUsuario",
+    "Contacto",
+    "ContactoCreate",
+    "ContactoUpdate", 
+    "ContactoResponse",
+    "ContactoStats"
 ]
