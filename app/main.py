@@ -8,8 +8,8 @@ from app.models import (
     Venta, EstadoPago, EstadoVenta,
     TransaccionWebpay, LogWebpay, ConfiguracionWebpay, 
     Usuario, RolUsuario, EstadoUsuario,
-    # ✨ COMENTADO TEMPORALMENTE - Modelo de contacto
-    # Contacto
+    # ✨ NUEVA IMPORTACIÓN - Modelo de contacto
+    Contacto
 )
 
 from app.routes.categoria_routes import router as categoria_router
@@ -22,13 +22,13 @@ from app.routes.admin.categoria_admin_routes import router as categoria_admin_ro
 from app.routes.admin.configuracion_admin_routes import router as configuracion_admin_router
 from app.routes.admin.venta_admin_routes import router as venta_admin_router
 from app.routes.admin.usuario_admin_routes import router as usuario_admin_router
-# ✨ COMENTADO TEMPORALMENTE - Rutas de admin de contactos
-# from app.routes.admin.contacto_admin_routes import router as contacto_admin_router
+# ✨ NUEVA IMPORTACIÓN - Rutas de admin de contactos
+from app.routes.admin.contacto_admin_routes import router as contacto_admin_router
 from app.routes.checkout_routes import router as checkout_router
 from app.routes.webpay_routes import router as webpay_router
 from app.routes.catalogo_routes import router as catalogo_router
-# ✨ COMENTADO TEMPORALMENTE - Rutas públicas de contacto
-# from app.routes.contacto_routes import router as contacto_router
+# ✨ NUEVA IMPORTACIÓN - Rutas públicas de contacto
+from app.routes.contacto_routes import router as contacto_router
 
 # Crear las tablas en la base de datos
 Categoria.metadata.create_all(bind=engine)
@@ -39,8 +39,8 @@ TransaccionWebpay.metadata.create_all(bind=engine)
 LogWebpay.metadata.create_all(bind=engine)
 ConfiguracionWebpay.metadata.create_all(bind=engine)
 Usuario.metadata.create_all(bind=engine)
-# ✨ COMENTADO TEMPORALMENTE - Tabla Contactos
-# Contacto.metadata.create_all(bind=engine)
+# ✨ NUEVA TABLA - Contactos
+Contacto.metadata.create_all(bind=engine)
 
 # Crear la aplicación FastAPI
 app = FastAPI(title="JerkHome - Fábrica de Muebles Tapizados")
@@ -80,13 +80,13 @@ app.include_router(categoria_admin_router)
 app.include_router(configuracion_admin_router)
 app.include_router(venta_admin_router)
 app.include_router(usuario_admin_router)
-# ✨ COMENTADO TEMPORALMENTE - Admin de contactos
-# app.include_router(contacto_admin_router)
+# ✨ NUEVA RUTA - Admin de contactos
+app.include_router(contacto_admin_router)
 app.include_router(checkout_router)
 app.include_router(webpay_router)
 app.include_router(catalogo_router)
-# ✨ COMENTADO TEMPORALMENTE - Contactos públicos
-# app.include_router(contacto_router)
+# ✨ NUEVA RUTA - Contactos públicos
+app.include_router(contacto_router)
 
 # Ruta principal actualizada
 @app.get("/")
@@ -176,16 +176,35 @@ async def nosotros_page(request: Request, db: Session = Depends(get_db)):
         **global_context
     })
 
-# ✨ RUTA DE CONTACTO BÁSICA TEMPORAL
+# ✨ RUTA DE CONTACTO ACTUALIZADA - Ahora solo GET, el POST está en contacto_routes
 @app.get("/contacto")
 async def contacto_page(request: Request, db: Session = Depends(get_db)):
     global_context = await get_global_context(db)
     
+    # Obtener mensajes de éxito/error desde query params
+    success = request.query_params.get('success')
+    error = request.query_params.get('error')
+    
     return templates.TemplateResponse("contacto.html", {
         "request": request,
-        "asuntos": ['Consulta de Productos', 'Cotización', 'Servicio Post-Venta', 'Reclamo', 'Sugerencia', 'Otro'],
+        "success": success,
+        "error": error,
+        "asuntos": Contacto.get_asuntos_disponibles(),  # ✨ NUEVO: Lista de asuntos
         **global_context
     })
+
+# ✨ NUEVA RUTA API - Estadísticas de contactos para el badge del sidebar
+@app.get("/api/contactos/stats")
+async def api_contactos_stats_public(db: Session = Depends(get_db)):
+    """API pública para estadísticas básicas de contactos (para el badge del admin)"""
+    try:
+        stats = {
+            'pendientes': db.query(Contacto).filter_by(estado='pendiente').count(),
+        }
+        return stats
+    except Exception as e:
+        print(f"Error obteniendo estadísticas básicas: {e}")
+        return {'pendientes': 0}
 
 # Middleware para añadir contexto global (alternativa más elegante)
 @app.middleware("http")
